@@ -48,9 +48,9 @@ func main() {
 		line = strings.TrimSpace(line)
 		switch {
 		case line == "help":
-			usage(rl.Stderr())
+			husage(line)
 		case strings.HasPrefix(line, "echo"):
-			fmt.Println("printing the content of an environment variable")
+			hecho(line)
 		case strings.HasPrefix(line, "ps"):
 			fmt.Println("listing your distributed processes running in the cluster")
 		case line == "exit" || line == "quit":
@@ -61,9 +61,4 @@ func main() {
 		}
 	}
 exit:
-}
-
-func usage(w io.Writer) {
-	_, _ = io.WriteString(w, "Currently the following commands are available:\n")
-	_, _ = io.WriteString(w, completer.Tree("    "))
 }
