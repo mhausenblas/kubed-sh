@@ -4,11 +4,11 @@ Hello and welcome to `kubed-sh`, the Kubernetes distributed shell for the casual
 
 Prerequisites (for now, this will likely change if this project gains any traction):
 
-- There are no binaries, so you need Go installed in order to build it. I'm using `go1.9.2 darwin/amd64` on my machine.
-- In order to work you need a Kubernetes cluster configured. If you do `ls ~/.kube/config > /dev/null && echo $?` you should see a `0` as a result.
-- Currently, `kubed-sh` has the following dependencies (that is, must be installed on your local machine otherwise it won't work):
- - Go 1.9 or above to build `kubed-sh`
- - `kubectl` installed and configured. If you do `kubectl config get-contexts | wc -l` you should see a number greater than `0`.
+* There are no binaries, so you need Go installed in order to build it. I'm using `go1.9.2 darwin/amd64` on my machine.
+* In order to work you need a Kubernetes cluster configured. If you do `ls ~/.kube/config > /dev/null && echo $?` you should see a `0` as a result.
+* Currently, `kubed-sh` has the following dependencies (that is, must be installed on your local machine otherwise it won't work):
+ * Go 1.9 or above to build `kubed-sh`
+ * `kubectl` installed and configured. If you do `kubectl config get-contexts | wc -l` you should see a number greater than `0`.
 
 ## Install it
 
@@ -31,10 +31,10 @@ TBD: example session
 
 ## FAQ
 
-Q: Why another Kubernetes shell? There's already [cloudnativelabs/kube-shell](https://github.com/cloudnativelabs/kube-shell) and [c-bata/kube-prompt](https://github.com/c-bata/kube-prompt). <br>
-A: True, there is previous art, though these shells more or less aim at making `kubectl` interactive, exposing the commands such as `get` or `apply` to the user.
+**Q**: Why another Kubernetes shell? There's already [cloudnativelabs/kube-shell](https://github.com/cloudnativelabs/kube-shell) and [c-bata/kube-prompt](https://github.com/c-bata/kube-prompt). <br>
+**A**: True, there is previous art, though these shells more or less aim at making `kubectl` interactive, exposing the commands such as `get` or `apply` to the user.
 In a sense `kubed-sh` is more like [technosophos/kubeshell](https://github.com/technosophos/kubeshell), trying to provide an environment a typical *nix user is comfortable with.
 For example, rather than providing a `create` or `apply` command to run a program, the user would simply enter the name of the executable, as she would do, for example, in the bash shell.
 
-Q: How is kubed-sh pronounced? <br>
-A: I pronounce it /ku:bˈdæʃ/ as in 'kube dash'.
+**Q**: How is kubed-sh pronounced? <br>
+**A**: I pronounce it /ku:bˈdæʃ/ as in 'kube dash'.
