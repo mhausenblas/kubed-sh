@@ -1,14 +1,16 @@
 # kubed-sh
 
 Hello and welcome to `kubed-sh`, the Kubernetes distributed shell for the casual cluster user.
+If you have access to a [Kubernetes](https://kubernetes.io/) cluster, you can [install it](#install-it) now
+and then learn how to [use it](#use-it).
 
 Prerequisites (for now, this will likely change if this project gains any traction):
 
-* There are no binaries, so you need Go installed in order to build it. I'm using `go1.9.2 darwin/amd64` on my machine.
-* In order to work you need a Kubernetes cluster configured. If you do `ls ~/.kube/config > /dev/null && echo $?` you should see a `0` as a result.
-* Currently, `kubed-sh` has the following dependencies (that is, must be installed on your local machine otherwise it won't work):
- * Go 1.9 or above to build `kubed-sh`
- * `kubectl` installed and configured. If you do `kubectl config get-contexts | wc -l` you should see a number greater than `0`.
+- There are no binaries, so you need Go installed in order to build it. I'm using `go1.9.2 darwin/amd64` on my machine.
+- In order to work you need a Kubernetes cluster configured. If you do `ls ~/.kube/config > /dev/null && echo $?` you should see a `0` as a result.
+- Currently, `kubed-sh` has the following dependencies (that is, must be installed on your local machine otherwise it won't work):
+  - Go 1.9 or above to build `kubed-sh`
+  - `kubectl` installed and configured. If you do `kubectl config get-contexts | wc -l` you should see a number greater than `0`.
 
 ## Install it
 
