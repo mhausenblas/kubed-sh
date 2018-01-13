@@ -11,14 +11,14 @@ import (
 )
 
 func main() {
-
-	kubecontext := "replace me with kube context> "
-
+	kubecontext, err := kubectl("config", "current-context")
+	if err != nil {
+		panic(err)
+	}
 	rl, err := readline.NewEx(&readline.Config{
-		Prompt:          kubecontext,
+		Prompt:          fmt.Sprintf("[\033[32m%s\033[0m]$ ", kubecontext),
 		HistoryFile:     "/tmp/readline.tmp",
 		InterruptPrompt: "^C",
-		EOFPrompt:       "exit",
 	})
 	if err != nil {
 		panic(err)
@@ -26,9 +26,7 @@ func main() {
 	defer func() {
 		_ = rl.Close()
 	}()
-
 	log.SetOutput(rl.Stderr())
-
 	for {
 		line, err := rl.Readline()
 		if err == readline.ErrInterrupt {
@@ -40,10 +38,9 @@ func main() {
 		} else if err == io.EOF {
 			break
 		}
-
 		line = strings.TrimSpace(line)
 		switch {
-		case line == "exit":
+		case line == "exit" || line == "quit":
 			goto exit
 		default:
 			fmt.Println("unknown command", strconv.Quote(line))
