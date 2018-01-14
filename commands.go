@@ -14,22 +14,20 @@ func launchfail(line, reason string) {
 func hlaunch(line string) {
 	// If a line doesn't start with one of the
 	// known environments, assume user wants to
-	// launch a binary, so try to find and copy this
-	// into the pod, then execute it:
-	l := strings.Split(line, " ")
+	// launch a binary:
 	switch {
 	case strings.HasPrefix(line, "python "):
-		err := launchpy(l[1])
+		err := launchpy(line)
 		if err != nil {
 			launchfail(line, err.Error())
 		}
 	case strings.HasPrefix(line, "node "):
-		err := launchjs(l[1])
+		err := launchjs(line)
 		if err != nil {
 			launchfail(line, err.Error())
 		}
 	case strings.HasPrefix(line, "ruby "):
-		err := launchrb(l[1])
+		err := launchrb(line)
 		if err != nil {
 			launchfail(line, err.Error())
 		}
