@@ -2,7 +2,25 @@
 
 Hello and welcome to `kubed-sh`, the Kubernetes distributed shell for the casual cluster user.
 If you have access to a [Kubernetes](https://kubernetes.io/) cluster, you can [install it](#install-it) now
-and then learn how to [use it](#use-it).
+and then learn how to [use it](#use-it). In a nutshell, with `kubed-sh` you can execute a program in a Kubernetes cluster
+without having to create a container image or learn anything new, for example:
+
+![Launching a simple binary in a Kubernetes cluster](img/launch-bin.png)
+
+Above you see the Linux ELF binary `tc` that you get when doing a `GOOS=linux go build` in the test case directory [tc/](tc/),
+executing in the Kubernetes cluster, producing the output `I'm a simple program that just prints this message and exits`.
+
+In addition to launching (Linux ELF) binaries, the following interpreted environments are currently supported:
+
+- When you enter `node script.js`, a Node.js (default version: 9.4) environment is provided and `script.js` is executed.
+- When you enter `python script.py`, a Python (default version: 3.6) environment is provided and the `script.py` is executed.
+- When you enter `ruby script.rb`, a Ruby (default version: 2.5) environment is provided and the `script.rb` is executed.
+
+Note that `kubed-sh` is a proper shell environment, that is, you can expect features such as auto-complete, history operations,
+or `CTRL+L` clearing the screen to work as per usual.
+
+
+## Install it
 
 Prerequisites (for now, this will likely change if this project gains any traction):
 
@@ -12,7 +30,6 @@ Prerequisites (for now, this will likely change if this project gains any tracti
   - Go 1.9 or above to build `kubed-sh`
   - `kubectl` installed and configured. If you do `kubectl config get-contexts | wc -l` you should see a number greater than `0`.
 
-## Install it
 
 Simply do:
 

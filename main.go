@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"io"
-	"strconv"
+	"os"
 	"strings"
 
 	log "github.com/Sirupsen/logrus"
@@ -14,9 +14,11 @@ var completer = readline.NewPrefixCompleter(
 	readline.PcItem("echo"),
 	readline.PcItem("help"),
 	readline.PcItem("ps"),
+	readline.PcItem("pwd"),
 )
 
 func main() {
+	checkruntime()
 	kubecontext, err := kubectl("config", "current-context")
 	if err != nil {
 		panic(err)
@@ -32,6 +34,7 @@ func main() {
 	}
 	defer func() {
 		_ = rl.Close()
+
 	}()
 	log.SetOutput(rl.Stderr())
 	for {
@@ -53,11 +56,17 @@ func main() {
 			hecho(line)
 		case strings.HasPrefix(line, "ps"):
 			fmt.Println("listing your distributed processes running in the cluster")
+		case strings.HasPrefix(line, "pwd"):
+			cwd, err := os.Getwd()
+			if err != nil {
+				fmt.Printf("Can't determine where I am due to:\n%s", err)
+			}
+			fmt.Println(cwd)
 		case line == "exit" || line == "quit":
 			goto exit
 		case line == "":
 		default:
-			fmt.Println("unknown command", strconv.Quote(line))
+			hlaunch(line)
 		}
 	}
 exit:
