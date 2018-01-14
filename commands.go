@@ -32,6 +32,14 @@ func hlaunch(line string) {
 	}
 }
 
+func hliterally(line string) {
+	l := strings.Split(line, " ")
+	_, err := kubectl(l[1], l[1:]...)
+	if err != nil {
+		fmt.Printf("\nFailed to execute kubectl command due to:\n%s\n\n", strconv.Quote(line), err)
+	}
+}
+
 func hecho(line string) {
 	l := strings.Split(line, " ")
 	fmt.Println(l[1])

@@ -54,6 +54,8 @@ func main() {
 			husage(line)
 		case strings.HasPrefix(line, "echo"):
 			hecho(line)
+		case strings.HasPrefix(line, "literally") || strings.HasPrefix(line, "`"):
+			hliterally(line)
 		case strings.HasPrefix(line, "ps"):
 			fmt.Println("listing your distributed processes running in the cluster")
 		case strings.HasPrefix(line, "pwd"):
