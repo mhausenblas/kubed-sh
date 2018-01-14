@@ -13,14 +13,22 @@ func genpodname() string {
 	return fmt.Sprintf("%s-%v", base, now.UnixNano())
 }
 
+func verify(file string) (string, error) {
+	fileloc, err := filepath.Abs(file)
+	if err != nil {
+		return "", err
+	}
+	_, err = os.Stat(fileloc)
+	if err != nil {
+		return "", err
+	}
+	return fileloc, nil
+}
+
 func launch(binary string) error {
 	hostpod := genpodname()
 	// Step 1. find and verify binary locally:
-	binloc, err := filepath.Abs(binary)
-	if err != nil {
-		return err
-	}
-	_, err = os.Stat(binloc)
+	binloc, err := verify(binary)
 	if err != nil {
 		return err
 	}
@@ -57,11 +65,7 @@ func launch(binary string) error {
 func launchpy(script string) error {
 	hostpod := genpodname()
 	// Step 1. find and verify Python script locally:
-	scriptloc, err := filepath.Abs(script)
-	if err != nil {
-		return err
-	}
-	_, err = os.Stat(scriptloc)
+	scriptloc, err := verify(script)
 	if err != nil {
 		return err
 	}
@@ -98,11 +102,7 @@ func launchpy(script string) error {
 func launchjs(script string) error {
 	hostpod := genpodname()
 	// Step 1. find and verify Node.js script locally:
-	scriptloc, err := filepath.Abs(script)
-	if err != nil {
-		return err
-	}
-	_, err = os.Stat(scriptloc)
+	scriptloc, err := verify(script)
 	if err != nil {
 		return err
 	}
@@ -124,6 +124,43 @@ func launchjs(script string) error {
 	_, scriptfile := filepath.Split(scriptloc)
 	execremotescript := fmt.Sprintf("/tmp/%s", scriptfile)
 	res, err = kubectl("exec", hostpod, "node", execremotescript)
+	if err != nil {
+		return err
+	}
+	output(res)
+	// Step 5. clean up:
+	_, err = kubectl("delete", "pod", hostpod)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func launchrb(script string) error {
+	hostpod := genpodname()
+	// Step 1. find and verify Ruby script locally:
+	scriptloc, err := verify(script)
+	if err != nil {
+		return err
+	}
+	// Step 2. launch Ruby pod:
+	res, err := kubectl("run", hostpod, "--image=ruby:2.5-alpine3.7", "--restart=Never", "--", "sh", "-c", "sleep 10000")
+	if err != nil {
+		return err
+	}
+	info(res)
+	time.Sleep(2 * time.Second) // this is a hack. need to do prefilght checks and warmup
+	// Step 3. copy script from step 1 into pod:
+	dest := fmt.Sprintf("%s:/tmp/", hostpod)
+	_, err = kubectl("cp", scriptloc, dest)
+	if err != nil {
+		return err
+	}
+	info(fmt.Sprintf("Uploaded %s to %s\n", scriptloc, hostpod))
+	// Step 4. launch script in pod:
+	_, scriptfile := filepath.Split(scriptloc)
+	execremotescript := fmt.Sprintf("/tmp/%s", scriptfile)
+	res, err = kubectl("exec", hostpod, "ruby", execremotescript)
 	if err != nil {
 		return err
 	}

@@ -29,7 +29,10 @@ func hlaunch(line string) {
 			launchfail(line, err.Error())
 		}
 	case strings.HasPrefix(line, "ruby "):
-		fmt.Printf("Launching a ruby:2.5-image based container and executing %s in it\n", l[1])
+		err := launchrb(l[1])
+		if err != nil {
+			launchfail(line, err.Error())
+		}
 	default:
 		err := launch(line)
 		if err != nil {

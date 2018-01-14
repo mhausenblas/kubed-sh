@@ -2,8 +2,8 @@
 
 Hello and welcome to `kubed-sh`, the Kubernetes distributed shell for the casual cluster user.
 If you have access to a [Kubernetes](https://kubernetes.io/) cluster, you can [install it](#install-it) now
-and then learn how to [use it](#use-it). In a nutshell, with `kubed-sh` you can execute a program in a Kubernetes cluster
-without having to create a container image or learn anything new, for example:
+and then learn how to [use it](#use-it). In a nutshell `kubed-sh` ([pronunciation](#faq)) lets you execute
+a program in a Kubernetes cluster without having to create a container image or learn new commands, for example:
 
 ![Launching a simple binary in a Kubernetes cluster](img/launch-bin.png)
 

@@ -1,4 +1,5 @@
-// content of index.js
+#!/usr/bin/env node
+
 const http = require('http')
 const port = 80
 
