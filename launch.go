@@ -95,7 +95,7 @@ func launchenv(line, image, interpreter string) error {
 	// set up service and hostpod, if necessary:
 	if strings.HasSuffix(line, "&") {
 		deployment, serr := kubectl("get", "deployment", "--selector=gen=kubed-sh,script="+scriptfile, "-o=custom-columns=:metadata.name", "--no-headers")
-		if err != nil {
+		if serr != nil {
 			return serr
 		}
 		svcname := scriptfile[0 : len(scriptfile)-len(filepath.Ext(scriptfile))]
@@ -116,15 +116,41 @@ func launchenv(line, image, interpreter string) error {
 		return err
 	}
 	info(fmt.Sprintf("Uploaded %s to %s\n", scriptloc, hostpod))
-	// Step 4. launch script in pod:
-	execremotescript := fmt.Sprintf("/tmp/%s", scriptfile)
-	res, err = kubectl("exec", hostpod, interpreter, execremotescript)
+	switch {
+	case strings.HasSuffix(line, "&"):
+		go func() error {
+			// Step 4. launch script in pod:
+			execremotescript := fmt.Sprintf("/tmp/%s", scriptfile)
+			err = kubectlbg("exec", hostpod, interpreter, execremotescript)
+			if err != nil {
+				return err
+			}
+			return nil
+		}()
+	default:
+		// Step 4. launch script in pod:
+		execremotescript := fmt.Sprintf("/tmp/%s", scriptfile)
+		res, err = kubectl("exec", hostpod, interpreter, execremotescript)
+		if err != nil {
+			return err
+		}
+		output(res)
+		// Step 5. clean up:
+		_, err = kubectl("delete", "pod", hostpod)
+		if err != nil {
+			return err
+		}
+
+	}
+	return nil
+}
+
+func cleanupenv(scriptfile string) error {
+	_, err := kubectl("scale", "--replicas=0", "deployment", "--selector=gen=kubed-sh,script="+scriptfile)
 	if err != nil {
 		return err
 	}
-	output(res)
-	// Step 5. clean up:
-	_, err = kubectl("delete", "pod", hostpod)
+	_, err = kubectl("delete", "deploy,svc", "--selector=gen=kubed-sh,script="+scriptfile)
 	if err != nil {
 		return err
 	}

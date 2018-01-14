@@ -14,6 +14,7 @@ var completer = readline.NewPrefixCompleter(
 	readline.PcItem("clusters"),
 	readline.PcItem("echo"),
 	readline.PcItem("help"),
+	readline.PcItem("kill"),
 	readline.PcItem("literally"),
 	readline.PcItem("pick"),
 	readline.PcItem("ps"),
@@ -59,6 +60,12 @@ func main() {
 			hecho(line)
 		case line == "help":
 			husage(line)
+		case strings.HasPrefix(line, "kill"):
+			script := strings.Split(line, " ")[1]
+			err = cleanupenv(script)
+			if err != nil {
+				info(err.Error())
+			}
 		case strings.HasPrefix(line, "literally") || strings.HasPrefix(line, "`"):
 			if strings.HasPrefix(line, "`") {
 				line = fmt.Sprintf("literally %s", strings.TrimPrefix(line, "`"))

@@ -46,6 +46,17 @@ func shellout(cmd string, args ...string) (string, error) {
 	return result, nil
 }
 
+func shelloutbg(cmd string, args ...string) error {
+	log.Debug(cmd, args)
+	c := exec.Command(cmd, args...)
+	c.Env = os.Environ()
+	err := c.Run()
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func kubectl(cmd string, args ...string) (string, error) {
 	kubectlbin, err := shellout("which", "kubectl")
 	if err != nil {
@@ -57,4 +68,17 @@ func kubectl(cmd string, args ...string) (string, error) {
 		return "", err
 	}
 	return result, nil
+}
+
+func kubectlbg(cmd string, args ...string) error {
+	kubectlbin, err := shellout("which", "kubectl")
+	if err != nil {
+		return err
+	}
+	all := append([]string{cmd}, args...)
+	err = shelloutbg(kubectlbin, all...)
+	if err != nil {
+		return err
+	}
+	return nil
 }
