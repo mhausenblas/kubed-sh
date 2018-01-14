@@ -14,7 +14,11 @@ func hlaunch(line string) {
 	l := strings.Split(line, " ")
 	switch {
 	case strings.HasPrefix(line, "python "):
-		fmt.Printf("Launching a python:3-image based container and executing %s in it\n", l[1])
+		err := launchpy(l[1])
+		if err != nil {
+			fmt.Printf("\nFailed to launch %s in the cluster due to:\n%s\n\n", strconv.Quote(line), err)
+			husage(line)
+		}
 	case strings.HasPrefix(line, "node "):
 		fmt.Printf("Launching a node:9-image based container and executing %s in it\n", l[1])
 	case strings.HasPrefix(line, "ruby "):
