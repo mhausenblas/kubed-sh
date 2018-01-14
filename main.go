@@ -11,8 +11,11 @@ import (
 )
 
 var completer = readline.NewPrefixCompleter(
+	readline.PcItem("clusters"),
 	readline.PcItem("echo"),
 	readline.PcItem("help"),
+	readline.PcItem("literally"),
+	readline.PcItem("pick"),
 	readline.PcItem("ps"),
 	readline.PcItem("pwd"),
 )
@@ -50,14 +53,21 @@ func main() {
 		}
 		line = strings.TrimSpace(line)
 		switch {
-		case line == "help":
-			husage(line)
+		case strings.HasPrefix(line, "clusters"):
+			fmt.Println("List available clusters from the config")
 		case strings.HasPrefix(line, "echo"):
 			hecho(line)
+		case line == "help":
+			husage(line)
 		case strings.HasPrefix(line, "literally") || strings.HasPrefix(line, "`"):
+			if strings.HasPrefix(line, "`") {
+				line = fmt.Sprintf("literally %s", strings.TrimPrefix(line, "`"))
+			}
 			hliterally(line)
+		case strings.HasPrefix(line, "pick"):
+			fmt.Println("Picks a cluster to work on")
 		case strings.HasPrefix(line, "ps"):
-			fmt.Println("listing your distributed processes running in the cluster")
+			fmt.Println("List your distributed processes running in the cluster")
 		case strings.HasPrefix(line, "pwd"):
 			cwd, err := os.Getwd()
 			if err != nil {

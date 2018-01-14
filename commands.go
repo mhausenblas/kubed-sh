@@ -6,6 +6,11 @@ import (
 	"strings"
 )
 
+func launchfail(line, reason string) {
+	fmt.Printf("\nFailed to launch %s in the cluster due to:\n%s\n\n", strconv.Quote(line), reason)
+	husage(line)
+}
+
 func hlaunch(line string) {
 	// If a line doesn't start with one of the
 	// known environments, assume user wants to
@@ -16,28 +21,30 @@ func hlaunch(line string) {
 	case strings.HasPrefix(line, "python "):
 		err := launchpy(l[1])
 		if err != nil {
-			fmt.Printf("\nFailed to launch %s in the cluster due to:\n%s\n\n", strconv.Quote(line), err)
-			husage(line)
+			launchfail(line, err.Error())
 		}
 	case strings.HasPrefix(line, "node "):
-		fmt.Printf("Launching a node:9-image based container and executing %s in it\n", l[1])
+		err := launchjs(l[1])
+		if err != nil {
+			launchfail(line, err.Error())
+		}
 	case strings.HasPrefix(line, "ruby "):
 		fmt.Printf("Launching a ruby:2.5-image based container and executing %s in it\n", l[1])
 	default:
 		err := launch(line)
 		if err != nil {
-			fmt.Printf("\nFailed to launch %s in the cluster due to:\n%s\n\n", strconv.Quote(line), err)
-			husage(line)
+			launchfail(line, err.Error())
 		}
 	}
 }
 
 func hliterally(line string) {
 	l := strings.Split(line, " ")
-	_, err := kubectl(l[1], l[1:]...)
+	res, err := kubectl(l[1], l[2:]...)
 	if err != nil {
-		fmt.Printf("\nFailed to execute kubectl command due to:\n%s\n\n", strconv.Quote(line), err)
+		fmt.Printf("\nFailed to execute kubectl %s command due to:\n%s\n\n", l[1:], err)
 	}
+	output(res)
 }
 
 func hecho(line string) {
