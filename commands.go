@@ -4,7 +4,32 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+
+	"github.com/chzyer/readline"
 )
+
+func huse(line string, rl *readline.Instance) {
+	if !strings.ContainsAny(line, " ") {
+		info("Need a target cluster")
+		return
+	}
+	targetcontext := strings.Split(line, " ")[1]
+	res, err := kubectl("config", "use-context", targetcontext)
+	if err != nil {
+		fmt.Printf("\nFailed to switch contexts due to:\n%s\n\n", err)
+		return
+	}
+	output(res)
+	rl.SetPrompt(fmt.Sprintf("[\033[32m%s\033[0m]$ ", targetcontext))
+}
+
+func hcontexts() {
+	res, err := kubectl("config", "get-contexts")
+	if err != nil {
+		fmt.Printf("\nFailed to list contexts due to:\n%s\n\n", err)
+	}
+	output(res)
+}
 
 func launchfail(line, reason string) {
 	fmt.Printf("\nFailed to launch %s in the cluster due to:\n%s\n\n", strconv.Quote(line), reason)
@@ -40,6 +65,10 @@ func hlaunch(line string) {
 }
 
 func hliterally(line string) {
+	if !strings.ContainsAny(line, " ") {
+		info("Not enough input for a valid kubectl command")
+		return
+	}
 	l := strings.Split(line, " ")
 	res, err := kubectl(l[1], l[2:]...)
 	if err != nil {
@@ -49,6 +78,10 @@ func hliterally(line string) {
 }
 
 func hecho(line string) {
+	if !strings.ContainsAny(line, " ") {
+		info("No value to echo given")
+		return
+	}
 	l := strings.Split(line, " ")
 	fmt.Println(l[1])
 }

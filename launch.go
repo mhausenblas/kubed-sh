@@ -39,7 +39,7 @@ func launch(binary string) error {
 		return err
 	}
 	info(res)
-	time.Sleep(2 * time.Second) // this is a hack. need to do prefilght checks and warmup
+	time.Sleep(5 * time.Second) // this is a hack. need to do prefilght checks and warmup
 	// Step 3. copy binary from step 1 into pod:
 	dest := fmt.Sprintf("%s:/tmp/", hostpod)
 	_, err = kubectl("cp", binloc, dest)
@@ -91,7 +91,7 @@ func launchenv(line, image, interpreter string) error {
 	}
 	info(res)
 	// this is a hack. need to do prefilght checks and warmup:
-	time.Sleep(2 * time.Second)
+	time.Sleep(5 * time.Second)
 	// set up service and hostpod, if necessary:
 	if strings.HasSuffix(line, "&") {
 		deployment, serr := kubectl("get", "deployment", "--selector=gen=kubed-sh,script="+scriptfile, "-o=custom-columns=:metadata.name", "--no-headers")

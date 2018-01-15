@@ -11,14 +11,14 @@ import (
 )
 
 var completer = readline.NewPrefixCompleter(
-	readline.PcItem("clusters"),
+	readline.PcItem("contexts"),
 	readline.PcItem("echo"),
 	readline.PcItem("help"),
 	readline.PcItem("kill"),
 	readline.PcItem("literally"),
-	readline.PcItem("pick"),
 	readline.PcItem("ps"),
 	readline.PcItem("pwd"),
+	readline.PcItem("use"),
 )
 
 func main() {
@@ -54,13 +54,17 @@ func main() {
 		}
 		line = strings.TrimSpace(line)
 		switch {
-		case strings.HasPrefix(line, "clusters"):
-			fmt.Println("List available clusters from the config")
+		case strings.HasPrefix(line, "contexts"):
+			hcontexts()
 		case strings.HasPrefix(line, "echo"):
 			hecho(line)
 		case line == "help":
 			husage(line)
 		case strings.HasPrefix(line, "kill"):
+			if !strings.ContainsAny(line, " ") {
+				info("Need a target distributed process to kill")
+				return
+			}
 			script := strings.Split(line, " ")[1]
 			err = cleanupenv(script)
 			if err != nil {
@@ -71,8 +75,6 @@ func main() {
 				line = fmt.Sprintf("literally %s", strings.TrimPrefix(line, "`"))
 			}
 			hliterally(line)
-		case strings.HasPrefix(line, "pick"):
-			fmt.Println("Picks a cluster to work on")
 		case strings.HasPrefix(line, "ps"):
 			fmt.Println("List your distributed processes running in the cluster")
 		case strings.HasPrefix(line, "pwd"):
@@ -81,6 +83,8 @@ func main() {
 				fmt.Printf("Can't determine where I am due to:\n%s", err)
 			}
 			fmt.Println(cwd)
+		case strings.HasPrefix(line, "use"):
+			huse(line, rl)
 		case line == "exit" || line == "quit":
 			goto exit
 		case line == "":
