@@ -16,12 +16,15 @@ var (
 	completer = readline.NewPrefixCompleter(
 		readline.PcItem("contexts"),
 		readline.PcItem("echo"),
+		readline.PcItem("env"),
+		readline.PcItem("exit"),
 		readline.PcItem("help"),
 		readline.PcItem("kill"),
 		readline.PcItem("literally"),
 		readline.PcItem("ps"),
 		readline.PcItem("pwd"),
 		readline.PcItem("use"),
+		readline.PcItem("quit"),
 	)
 )
 
