@@ -35,30 +35,37 @@ type DProcTable struct {
 }
 
 var (
-	// TERMINATING stands for a terminating distributed process
+	// DProcTerminating stands for a terminating distributed process
 	// (one-shot, batch) which will be launched via a pod
-	TERMINATING DProcType = "terminating"
-	// LONGRUNNING stands for a long-running distributed process
+	DProcTerminating DProcType = "terminating"
+	// DProcLongRunning stands for a long-running distributed process
 	// which will be launched via a deployment + service
-	LONGRUNNING DProcType = "longrunning"
+	DProcLongRunning DProcType = "longrunning"
 	// The global distributed process lookup table.
 	dpt *DProcTable
 )
 
 // BuildDPT adds a distributed process to the global table.
 func (dt *DProcTable) BuildDPT() error {
-	res, err := kubectl("get", "pods,deployments", "--selector=gen=kubed-sh",
-		"-o=custom-columns=:metadata.name", "--no-headers")
-	if err != nil {
-		return fmt.Errorf("Failed to gather distributed processes due to:\n%s", err)
-	}
 	kubecontext, err := kubectl("config", "current-context")
 	if err != nil {
 		return err
 	}
+	res, err := kubectl("get", "deployments", "--selector=gen=kubed-sh",
+		"-o=custom-columns=:metadata.name,:metadata.labels", "--no-headers")
+	if err != nil {
+		return fmt.Errorf("Failed to gather distributed processes due to:\n%s", err)
+	}
+	if res == "" {
+		return nil
+	}
 	info(res)
-	for _, id := range strings.Split(res, "\n") {
-		dt.addDProc(newDProc(id, LONGRUNNING, kubecontext, "source.example"))
+	for _, r := range strings.Split(res, "\n") {
+		// now r is something like 'kubed-sh-1516013421817997000   map[gen:kubed-sh script:test.js]'
+		id := strings.Split(r, "   ")[0]
+		labels := strings.Split(r, "   ")[1]
+		src := strings.TrimSuffix(strings.Split(labels, " ")[1], "]")
+		dt.addDProc(newDProc(id, DProcLongRunning, kubecontext, src))
 	}
 	return nil
 }
@@ -97,6 +104,15 @@ func (dt *DProcTable) addDProc(dproc DProc) {
 	k := fmt.Sprintf("%s@%s", dproc.ID, dproc.KubeContext)
 	dt.mux.Lock()
 	dt.lt[k] = dproc
+	dt.mux.Unlock()
+}
+
+// removeDProc removes a distributed process from the global table.
+func (dt *DProcTable) removeDProc(dproc DProc) {
+	// the lookup key is composed of the distributed process and the context
+	k := fmt.Sprintf("%s@%s", dproc.ID, dproc.KubeContext)
+	dt.mux.Lock()
+	delete(dt.lt, k)
 	dt.mux.Unlock()
 }
 

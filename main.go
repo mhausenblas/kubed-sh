@@ -73,15 +73,7 @@ func main() {
 		case line == "help":
 			husage(line)
 		case strings.HasPrefix(line, "kill"):
-			if !strings.ContainsAny(line, " ") {
-				info("Need a target distributed process to kill")
-				return
-			}
-			script := strings.Split(line, " ")[1]
-			err = cleanupenv(script)
-			if err != nil {
-				info(err.Error())
-			}
+			hkill(line)
 		case strings.HasPrefix(line, "literally") || strings.HasPrefix(line, "`"):
 			if strings.HasPrefix(line, "`") {
 				line = fmt.Sprintf("literally %s", strings.TrimPrefix(line, "`"))

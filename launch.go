@@ -14,6 +14,17 @@ func genpodname() string {
 	return fmt.Sprintf("%s-%v", base, now.UnixNano())
 }
 
+func extractsrc(line string) string {
+	line = strings.TrimSpace(line)
+	if !strings.ContainsAny(line, " ") {
+		_, binfile := filepath.Split(line)
+		return binfile
+	}
+	script := strings.Split(line, " ")[1]
+	_, scriptfile := filepath.Split(script)
+	return scriptfile
+}
+
 func verify(file string) (string, error) {
 	fileloc, err := filepath.Abs(file)
 	if err != nil {
@@ -26,17 +37,17 @@ func verify(file string) (string, error) {
 	return fileloc, nil
 }
 
-func launch(binary string) error {
+func launch(binary string) (string, error) {
 	hostpod := genpodname()
 	// Step 1. find and verify binary locally:
 	binloc, err := verify(binary)
 	if err != nil {
-		return err
+		return hostpod, err
 	}
 	// Step 2. launch generic pod:
 	res, err := kubectl("run", hostpod, "--image=alpine:3.7", "--restart=Never", "--", "sh", "-c", "sleep 10000")
 	if err != nil {
-		return err
+		return hostpod, err
 	}
 	info(res)
 	time.Sleep(5 * time.Second) // this is a hack. need to do prefilght checks and warmup
@@ -44,7 +55,7 @@ func launch(binary string) error {
 	dest := fmt.Sprintf("%s:/tmp/", hostpod)
 	_, err = kubectl("cp", binloc, dest)
 	if err != nil {
-		return err
+		return hostpod, err
 	}
 	info(fmt.Sprintf("Uploaded %s to %s\n", binloc, hostpod))
 	// Step 4. launch binary in pod:
@@ -52,25 +63,25 @@ func launch(binary string) error {
 	execremotebin := fmt.Sprintf("/tmp/%s", binfile)
 	res, err = kubectl("exec", hostpod, "--", "sh", "-c", execremotebin)
 	if err != nil {
-		return err
+		return hostpod, err
 	}
 	output(res)
 	// Step 5. clean up:
 	_, err = kubectl("delete", "pod", hostpod)
 	if err != nil {
-		return err
+		return hostpod, err
 	}
-	return nil
+	return hostpod, nil
 }
 
-func launchenv(line, image, interpreter string) error {
+func launchenv(line, image, interpreter string) (string, error) {
 	// line is something like 'interpreter script.ext args'
 	script := strings.Split(line, " ")[1]
 	hostpod := genpodname()
 	// Step 1. find and verify script locally:
 	scriptloc, err := verify(script)
 	if err != nil {
-		return err
+		return hostpod, err
 	}
 	_, scriptfile := filepath.Split(scriptloc)
 	// Step 2. launch interpreter pod:
@@ -87,7 +98,7 @@ func launchenv(line, image, interpreter string) error {
 		"--labels=gen=kubed-sh,script="+scriptfile,
 		"--", "sh", "-c", "sleep 10000")
 	if err != nil {
-		return err
+		return hostpod, err
 	}
 	info(res)
 	// this is a hack. need to do prefilght checks and warmup:
@@ -96,24 +107,24 @@ func launchenv(line, image, interpreter string) error {
 	if strings.HasSuffix(line, "&") {
 		deployment, serr := kubectl("get", "deployment", "--selector=gen=kubed-sh,script="+scriptfile, "-o=custom-columns=:metadata.name", "--no-headers")
 		if serr != nil {
-			return serr
+			return hostpod, serr
 		}
 		svcname := scriptfile[0 : len(scriptfile)-len(filepath.Ext(scriptfile))]
 		sres, serr := kubectl("expose", "deployment", deployment, "--name="+svcname, "--port=80", "--target-port=80")
 		if serr != nil {
-			return serr
+			return hostpod, serr
 		}
 		info(sres)
 		hostpod, serr = kubectl("get", "pods", "--selector=gen=kubed-sh,script="+scriptfile, "-o=custom-columns=:metadata.name", "--no-headers")
 		if err != nil {
-			return serr
+			return hostpod, serr
 		}
 	}
 	// Step 3. copy script from step 1 into pod:
 	dest := fmt.Sprintf("%s:/tmp/", hostpod)
 	_, err = kubectl("cp", scriptloc, dest)
 	if err != nil {
-		return err
+		return hostpod, err
 	}
 	info(fmt.Sprintf("Uploaded %s to %s\n", scriptloc, hostpod))
 	switch {
@@ -127,44 +138,33 @@ func launchenv(line, image, interpreter string) error {
 			}
 			return nil
 		}()
+		return hostpod, nil
 	default:
 		// Step 4. launch script in pod:
 		execremotescript := fmt.Sprintf("/tmp/%s", scriptfile)
 		res, err = kubectl("exec", hostpod, interpreter, execremotescript)
 		if err != nil {
-			return err
+			return hostpod, err
 		}
 		output(res)
 		// Step 5. clean up:
 		_, err = kubectl("delete", "pod", hostpod)
 		if err != nil {
-			return err
+			return hostpod, err
 		}
 
 	}
-	return nil
+	return hostpod, nil
 }
 
-func cleanupenv(scriptfile string) error {
-	_, err := kubectl("scale", "--replicas=0", "deployment", "--selector=gen=kubed-sh,script="+scriptfile)
-	if err != nil {
-		return err
-	}
-	_, err = kubectl("delete", "deploy,svc", "--selector=gen=kubed-sh,script="+scriptfile)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-func launchpy(line string) error {
+func launchpy(line string) (string, error) {
 	return launchenv(line, "python:3.6-alpine3.7", "python")
 }
 
-func launchjs(line string) error {
+func launchjs(line string) (string, error) {
 	return launchenv(line, "node:9.4-alpine", "node")
 }
 
-func launchrb(line string) error {
+func launchrb(line string) (string, error) {
 	return launchenv(line, "ruby:2.5-alpine3.7", "ruby")
 }
