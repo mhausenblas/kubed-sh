@@ -3,7 +3,7 @@
 Hello and welcome to `kubed-sh`, the Kubernetes distributed shell for the casual cluster user.
 If you have access to a [Kubernetes](https://kubernetes.io/) cluster, you can [install it](#install-it) now
 and then learn how to [use it](#use-it). In a nutshell `kubed-sh` ([pronunciation](#faq)) lets you execute
-a program in a Kubernetes cluster without having to create a container image or learn new commands, for example:
+a program in a Kubernetes cluster without having to create a container image or learn new commands. For example:
 
 ![Launching a simple binary in a Kubernetes cluster](img/launch-bin.png)
 
@@ -17,8 +17,7 @@ In addition to launching (Linux ELF) binaries, the following interpreted environ
 - When you enter `ruby script.rb`, a Ruby (default version: 2.5) environment is provided and the `script.rb` is executed.
 
 Note that `kubed-sh` is a proper shell environment, that is, you can expect features such as auto-complete, history operations,
-or `CTRL+L` clearing the screen to work as per usual.
-
+or `CTRL+L` clearing the screen to work as per usual. Also, you can read here [why](why.md) I wrote `kubed-sh`.
 
 ## Install it
 
