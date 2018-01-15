@@ -1,9 +1,15 @@
 # Test Cases
 
+## Observe
+
+```
+$ watch kubectl get po,svc,deploy
+```
+
 ## Clean up
 
 ```
-$ kubectl delete po,deploy,svc -l=gen=kubed-sh
+$ kubectl delete deploy,svc,po -l=gen=kubed-sh
 ```
 
 
@@ -19,12 +25,12 @@ $ ls -al tc
 
 ## Node.js
 
-TBD
+See `test.js` and `another.js` both long-running.
 
 ## Python
 
-TBD
+See `test.py`, one-shot.
 
 ## Ruby
 
-TBD
+See `test.rb`, one-shot.
