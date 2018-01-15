@@ -59,12 +59,22 @@ func (dt *DProcTable) BuildDPT() error {
 	if res == "" {
 		return nil
 	}
-	info(res)
+	debug(res)
 	for _, r := range strings.Split(res, "\n") {
 		// now r is something like 'kubed-sh-1516013421817997000   map[gen:kubed-sh script:test.js]'
 		id := strings.Split(r, "   ")[0]
 		labels := strings.Split(r, "   ")[1]
-		src := strings.TrimSuffix(strings.Split(labels, " ")[1], "]")
+		// now labels is something like map[gen:kubed-sh script:test.js]
+		labels = strings.TrimSuffix(labels[4:], "]")
+		// now labels is something like gen:kubed-sh script:test.js
+		src := ""
+		for _, s := range strings.Split(labels, " ") {
+			if strings.HasPrefix(s, "script") || strings.HasPrefix(s, "bin") {
+				src = s
+				break
+			}
+		}
+		debug("id: " + id + " source: " + src)
 		dt.addDProc(newDProc(id, DProcLongRunning, kubecontext, src))
 	}
 	return nil

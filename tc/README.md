@@ -1,5 +1,12 @@
 # Test Cases
 
+## Clean up
+
+```
+$ kubectl delete po,deploy,svc -l=gen=kubed-sh
+```
+
+
 ## Linux binary (ELF format)
 
 In `$GOPATH/src/github.com/mhausenblas/kubed-sh/tc`:

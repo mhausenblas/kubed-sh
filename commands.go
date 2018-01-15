@@ -14,25 +14,33 @@ func hkill(line string) {
 		info("Need a target distributed process to kill")
 		return
 	}
-	kubecontext, err := kubectl("config", "current-context")
+	// pre-flight check if dproc exists:
+	ID := strings.Split(line, " ")[1]
+	_, err := kubectl("get", "deployment", ID)
 	if err != nil {
-		launchfail(line, err.Error())
+		warn(fmt.Sprintf("A distributed process with the ID '%s' does not exist in current context. Try the ps command …", ID))
 		return
 	}
-	ID := strings.Split(line, " ")[1]
 	_, err = kubectl("scale", "--replicas=0", "deployment", ID)
 	if err != nil {
-		launchfail(line, err.Error())
+		killfail(line, err.Error())
 		return
 	}
 	_, err = kubectl("delete", "deployment", ID)
 	if err != nil {
-		launchfail(line, err.Error())
+		killfail(line, err.Error())
+		return
+	}
+
+	// gather info to remove from global DPT:
+	kubecontext, err := kubectl("config", "current-context")
+	if err != nil {
+		killfail(line, err.Error())
 		return
 	}
 	dproc, err := dpt.getDProc(ID, kubecontext)
 	if err != nil {
-		launchfail(line, err.Error())
+		killfail(line, err.Error())
 		return
 	}
 	// something like xxx:blah
@@ -41,12 +49,13 @@ func hkill(line string) {
 	svcname := src[0 : len(src)-len(filepath.Ext(src))]
 	_, err = kubectl("delete", "service", svcname)
 	if err != nil {
-		launchfail(line, err.Error())
+		killfail(line, err.Error())
 		return
 	}
 	if err != nil {
 		info(err.Error())
 	}
+	// finally, remove drpoc from global DPT:
 	dpt.removeDProc(dproc)
 }
 
@@ -85,7 +94,10 @@ func hcontexts() {
 
 func launchfail(line, reason string) {
 	fmt.Printf("\nFailed to launch %s in the cluster due to:\n%s\n\n", strconv.Quote(line), reason)
-	husage(line)
+}
+
+func killfail(line, reason string) {
+	fmt.Printf("\nFailed to kill %s due to:\n%s\n\n", strconv.Quote(line), reason)
 }
 
 func hlaunch(line string) {
@@ -93,6 +105,8 @@ func hlaunch(line string) {
 	// known environments, assume user wants to
 	// launch a binary:
 	dpid := ""
+	src := extractsrc(line)
+	src = "script:" + src
 	switch {
 	case strings.HasPrefix(line, "python "):
 		d, err := launchpy(line)
@@ -115,13 +129,14 @@ func hlaunch(line string) {
 			return
 		}
 		dpid = d
-	default:
+	default: // binary
 		d, err := launch(line)
 		if err != nil {
 			launchfail(line, err.Error())
 			return
 		}
 		dpid = d
+		src = "bin:" + extractsrc(line)
 	}
 	// update DPT
 	if strings.HasSuffix(line, "&") {
@@ -130,7 +145,6 @@ func hlaunch(line string) {
 			launchfail(line, err.Error())
 			return
 		}
-		src := extractsrc(line)
 		dpt.addDProc(newDProc(dpid, DProcLongRunning, kubecontext, src))
 	}
 }

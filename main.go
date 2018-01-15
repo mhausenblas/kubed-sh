@@ -11,18 +11,24 @@ import (
 	"github.com/chzyer/readline"
 )
 
-var completer = readline.NewPrefixCompleter(
-	readline.PcItem("contexts"),
-	readline.PcItem("echo"),
-	readline.PcItem("help"),
-	readline.PcItem("kill"),
-	readline.PcItem("literally"),
-	readline.PcItem("ps"),
-	readline.PcItem("pwd"),
-	readline.PcItem("use"),
+var (
+	DEBUG     bool
+	completer = readline.NewPrefixCompleter(
+		readline.PcItem("contexts"),
+		readline.PcItem("echo"),
+		readline.PcItem("help"),
+		readline.PcItem("kill"),
+		readline.PcItem("literally"),
+		readline.PcItem("ps"),
+		readline.PcItem("pwd"),
+		readline.PcItem("use"),
+	)
 )
 
 func init() {
+	if envd := os.Getenv("DEBUG"); envd != "" {
+		DEBUG = true
+	}
 	dpt = &DProcTable{
 		mux: new(sync.Mutex),
 		lt:  make(map[string]DProc),

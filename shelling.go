@@ -11,7 +11,7 @@ import (
 	log "github.com/Sirupsen/logrus"
 )
 
-// output prints primary, output infor to shell
+// output prints primary, output messages to shell
 func output(msg string) {
 	fmt.Println(msg)
 }
@@ -19,6 +19,18 @@ func output(msg string) {
 // info prints secondary, non-output info to shell
 func info(msg string) {
 	fmt.Printf("\033[34m%s\033[0m\n", msg)
+}
+
+// warn prints warning messages to shell
+func warn(msg string) {
+	fmt.Printf("\033[31m%s\033[0m\n", msg)
+}
+
+// debug prints debug messages to shell
+func debug(msg string) {
+	if DEBUG {
+		fmt.Printf("\033[33m%s\033[0m\n", msg)
+	}
 }
 
 func checkruntime() {
@@ -36,7 +48,9 @@ func shellout(cmd string, args ...string) (string, error) {
 	log.Debug(cmd, args)
 	c := exec.Command(cmd, args...)
 	c.Env = os.Environ()
-	c.Stderr = os.Stderr
+	if DEBUG {
+		c.Stderr = os.Stderr
+	}
 	c.Stdout = &out
 	err := c.Run()
 	if err != nil {
