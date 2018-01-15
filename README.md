@@ -60,7 +60,7 @@ Supported commands (see also `help`):
 - `exit` (or: `quit`, local) … leave shell
 - `help` (local) … list built-in commands
 - `kill` (distributed) … stop a distributed process
-- `literally` (or prefix with ``, local) … drop down to raw mode, literally execute as a kubectl command
+- `literally` (or prefix with `` ` ``, local) … drop down to raw mode, literally execute as a kubectl command
 - `ps` (distributed) … list all distributed (long-running) processes in current context
 - `pwd` (local) … print current working directory
 - `use` (local) … select a certain context to work with
@@ -70,10 +70,10 @@ Supported commands (see also `help`):
 **Q**: Why another Kubernetes shell? There's already [cloudnativelabs/kube-shell](https://github.com/cloudnativelabs/kube-shell) and [c-bata/kube-prompt](https://github.com/c-bata/kube-prompt). <br>
 **A**: True, there is previous art, though these shells more or less aim at making `kubectl` interactive, exposing the commands such as `get` or `apply` to the user.
 In a sense `kubed-sh` is more like [technosophos/kubeshell](https://github.com/technosophos/kubeshell), trying to provide an environment a typical *nix user is comfortable with.
-For example, rather than providing a `create` or `apply` command to run a program, the user would simply enter the name of the executable, as she would do, for example, in the bash shell.
+For example, rather than providing a `create` or `apply` command to run a program, the user would simply enter the name of the executable, as she would do, for example, in the bash shell. See also the [motivation](why.md).
 
 **Q**: How is `kubed-sh` pronounced? <br>
-**A**: I pronounce it /ku:bˈdæʃ/ as in 'kube dash'.
+**A**: Well, *I* pronounce it /ku:bˈdæʃ/ as in 'kube dash' ;)
 
 **Q**: How does this actually work? <br>
-**A**: See the [design](design.md) for details.
+**A**: Good question. Essentially a glorified `kubectl` wrapper on steriods. See also the [design](design.md).
