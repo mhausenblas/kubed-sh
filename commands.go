@@ -8,6 +8,16 @@ import (
 	"github.com/chzyer/readline"
 )
 
+func hps(line string) {
+	args := ""
+	if strings.ContainsAny(line, " ") {
+		args = strings.Split(line, " ")[1]
+	}
+	_ = args
+	res := dpt.DumpDPT()
+	output(res)
+}
+
 func huse(line string, rl *readline.Instance) {
 	if !strings.ContainsAny(line, " ") {
 		info("Need a target cluster")

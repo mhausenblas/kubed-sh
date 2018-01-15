@@ -5,6 +5,7 @@ import (
 	"io"
 	"os"
 	"strings"
+	"sync"
 
 	log "github.com/Sirupsen/logrus"
 	"github.com/chzyer/readline"
@@ -20,6 +21,17 @@ var completer = readline.NewPrefixCompleter(
 	readline.PcItem("pwd"),
 	readline.PcItem("use"),
 )
+
+func init() {
+	dpt = &DProcTable{
+		mux: new(sync.Mutex),
+		lt:  make(map[string]DProc),
+	}
+	err := dpt.BuildDPT()
+	if err != nil {
+		output(err.Error())
+	}
+}
 
 func main() {
 	checkruntime()
@@ -76,7 +88,7 @@ func main() {
 			}
 			hliterally(line)
 		case strings.HasPrefix(line, "ps"):
-			fmt.Println("List your distributed processes running in the cluster")
+			hps(line)
 		case strings.HasPrefix(line, "pwd"):
 			cwd, err := os.Getwd()
 			if err != nil {
