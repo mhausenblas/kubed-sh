@@ -42,7 +42,7 @@ Note that if your `$GOPATH/bin` is in your `$PATH` then now you can use `kubed-s
 
 ## Use it
 
-Once you've `kubed-sh` installed, launch it and you should find yourself in a interactive shell, that is, an [REPL](https://en.wikipedia.org/wiki/Read%E2%80%93eval%E2%80%93print_loop):
+Once you've `kubed-sh` installed, launch it and you should find yourself in an interactive shell, that is, a [REPL](https://en.wikipedia.org/wiki/Read%E2%80%93eval%E2%80%93print_loop) like so:
 
 ```
 $ kubed-sh
@@ -73,7 +73,7 @@ In a sense `kubed-sh` is more like [technosophos/kubeshell](https://github.com/t
 For example, rather than providing a `create` or `apply` command to run a program, the user would simply enter the name of the executable, as she would do, for example, in the bash shell. See also the [motivation](why.md).
 
 **Q**: How is `kubed-sh` pronounced? <br>
-**A**: Well, *I* pronounce it /ku:bˈdæʃ/ as in 'kube dash' ;)
+**A**: Well, I pronounce it /ku:bˈdæʃ/ as in 'kube dash' ;)
 
 **Q**: How does this actually work? <br>
 **A**: Good question. Essentially a glorified `kubectl` wrapper on steriods. See also the [design](design.md).
