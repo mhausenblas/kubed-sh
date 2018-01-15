@@ -9,6 +9,12 @@ import (
 	"github.com/chzyer/readline"
 )
 
+func henv() {
+	for k, v := range evt.et {
+		output(fmt.Sprintf("%s=%s", k, v))
+	}
+}
+
 func hkill(line string) {
 	if !strings.ContainsAny(line, " ") {
 		info("Need a target distributed process to kill")
@@ -104,7 +110,7 @@ func hlaunch(line string) {
 	// If a line doesn't start with one of the
 	// known environments, assume user wants to
 	// launch a binary:
-	dpid := ""
+	var dpid string
 	src := extractsrc(line)
 	src = "script:" + src
 	switch {
@@ -167,8 +173,15 @@ func hecho(line string) {
 		info("No value to echo given")
 		return
 	}
-	l := strings.Split(line, " ")
-	fmt.Println(l[1])
+	echo := strings.Split(line, " ")[1]
+	if strings.HasPrefix(echo, "$") {
+		v := evt.get(echo[1:])
+		if v != "" {
+			fmt.Println(v)
+			return
+		}
+	}
+	fmt.Println(echo)
 }
 
 func husage(line string) {

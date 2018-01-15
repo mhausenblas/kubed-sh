@@ -28,7 +28,7 @@ func warn(msg string) {
 
 // debug prints debug messages to shell
 func debug(msg string) {
-	if DEBUG {
+	if debugmode {
 		fmt.Printf("\033[33m%s\033[0m\n", msg)
 	}
 }
@@ -48,7 +48,7 @@ func shellout(cmd string, args ...string) (string, error) {
 	log.Debug(cmd, args)
 	c := exec.Command(cmd, args...)
 	c.Env = os.Environ()
-	if DEBUG {
+	if debugmode {
 		c.Stderr = os.Stderr
 	}
 	c.Stdout = &out

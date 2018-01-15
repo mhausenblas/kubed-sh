@@ -12,7 +12,7 @@ import (
 )
 
 var (
-	DEBUG     bool
+	debugmode bool
 	completer = readline.NewPrefixCompleter(
 		readline.PcItem("contexts"),
 		readline.PcItem("echo"),
@@ -27,7 +27,7 @@ var (
 
 func init() {
 	if envd := os.Getenv("DEBUG"); envd != "" {
-		DEBUG = true
+		debugmode = true
 	}
 	dpt = &DProcTable{
 		mux: new(sync.Mutex),
@@ -36,6 +36,10 @@ func init() {
 	err := dpt.BuildDPT()
 	if err != nil {
 		output(err.Error())
+	}
+	evt = &EnvVarTable{
+		mux: new(sync.Mutex),
+		et:  make(map[string]string),
 	}
 }
 
@@ -76,6 +80,8 @@ func main() {
 			hcontexts()
 		case strings.HasPrefix(line, "echo"):
 			hecho(line)
+		case strings.HasPrefix(line, "env"):
+			henv()
 		case line == "help":
 			husage(line)
 		case strings.HasPrefix(line, "kill"):
@@ -97,6 +103,10 @@ func main() {
 			huse(line, rl)
 		case line == "exit" || line == "quit":
 			goto exit
+		case strings.Contains(line, "="):
+			envar := strings.Split(line, "=")[0]
+			value := strings.Split(line, "=")[1]
+			evt.set(envar, value)
 		case line == "":
 		default:
 			hlaunch(line)
