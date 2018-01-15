@@ -81,13 +81,18 @@ func (dt *DProcTable) BuildDPT() error {
 }
 
 // DumpDPT lists all distributed processes.
-func (dt *DProcTable) DumpDPT() string {
+func (dt *DProcTable) DumpDPT(kubecontext string) string {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	tw := tabwriter.NewWriter(w, 0, 0, 2, ' ', 0)
 	fmt.Fprintln(tw, "DPID\tCONTEXT\tSOURCE\t")
 	for _, dproc := range dt.lt {
-		fmt.Fprintln(tw, fmt.Sprintf("%s\t%s\t%s\t", dproc.ID, dproc.KubeContext, dproc.Src))
+		switch kubecontext {
+		case "":
+			fmt.Fprintln(tw, fmt.Sprintf("%s\t%s\t%s\t", dproc.ID, dproc.KubeContext, dproc.Src))
+		case dproc.KubeContext:
+			fmt.Fprintln(tw, fmt.Sprintf("%s\t%s\t%s\t", dproc.ID, dproc.KubeContext, dproc.Src))
+		}
 	}
 	_ = tw.Flush()
 	_ = w.Flush()

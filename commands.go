@@ -70,8 +70,19 @@ func hps(line string) {
 	if strings.ContainsAny(line, " ") {
 		args = strings.Split(line, " ")[1]
 	}
-	_ = args
-	res := dpt.DumpDPT()
+	var kubecontext string
+	switch args {
+	case "all":
+		kubecontext = ""
+	default:
+		k, err := kubectl("config", "current-context")
+		if err != nil {
+			warn("Can't determine current context")
+			return
+		}
+		kubecontext = k
+	}
+	res := dpt.DumpDPT(kubecontext)
 	output(res)
 }
 
