@@ -21,31 +21,49 @@ or `CTRL+L` clearing the screen to work as per usual. Also, you can read here [w
 
 ## Install it
 
-Prerequisites (for now, this will likely change if this project gains any traction):
+Prerequisites:
 
-- There are no binaries, so you need Go installed in order to build it. I'm using `go1.9.2 darwin/amd64` on my machine.
-- In order to work you need a Kubernetes cluster configured. If you do `ls ~/.kube/config > /dev/null && echo $?` you should see a `0` as a result.
-- Currently, `kubed-sh` has the following dependencies (that is, must be installed on your local machine otherwise it won't work):
-  - Go 1.9 or above to build `kubed-sh`
-  - `kubectl` installed and configured. If you do `kubectl config get-contexts | wc -l` you should see a number greater than `0`.
+1. You need [Go](https://golang.org/dl/) in order to build it as there are no binaries, currently. I'm using `go1.9.2 darwin/amd64` on my machine.
+1. `kubectl` must be installed, I tested it with client version 1.9.1 so far.
+1. Access to a Kubernetes cluster must be configured:
+  - if you do `ls ~/.kube/config > /dev/null && echo $?` and you see a `0` as a result, you're good, and further
+  - if you do `kubectl config get-contexts | wc -l` and see a number greater than `0`, then that's super dope.
 
-
-Simply do:
+Now to install `kubed-sh` simply do the following (anywhere):
 
 ```
 $ go get github.com/mhausenblas/kubed-sh
 ```
 
-If your `$GOPATH/bin` is in your `$PATH` then now you can use `kubed-sh` from everywhere. Alternatively you can:
+Note that if your `$GOPATH/bin` is in your `$PATH` then now you can use `kubed-sh` from everywhere. If not, you can:
 
 - Do a `cd $GOPATH/src/github.com/mhausenblas/kubed-sh` followed by a `go build` and use it from this directory.
 - Run it like so: `$GOPATH/bin/kubed-sh`
 
 ## Use it
 
-Once you've `kubed-sh` installed, launch it and you should find yourself in a interactive shell, that is, an [REPL](https://en.wikipedia.org/wiki/Read%E2%80%93eval%E2%80%93print_loop).
+Once you've `kubed-sh` installed, launch it and you should find yourself in a interactive shell, that is, an [REPL](https://en.wikipedia.org/wiki/Read%E2%80%93eval%E2%80%93print_loop):
 
-TBD: example session
+```
+$ kubed-sh
+Note: It seems you're running kubed-sh in a non-Linux environment (detected: darwin),
+so make sure the binaries you launch are Linux binaries in ELF format.
+
+[minikube]$
+```
+
+Supported commands (see also `help`):
+
+- `contexts` (local) … list available Kubernetes contexts (cluster, namespace, user tuples)
+- `echo` (local) … print a value or environment variable
+- `env`(local) … list all environment variables currently defined
+- `exit` (or: `quit`, local) … leave shell
+- `help` (local) … list built-in commands
+- `kill` (distributed) … stop a distributed process
+- `literally` (or prefix with ``, local) … drop down to raw mode, literally execute as a kubectl command
+- `ps` (distributed) … list all distributed (long-running) processes in current context
+- `pwd` (local) … print current working directory
+- `use` (local) … select a certain context to work with
 
 ## FAQ
 
