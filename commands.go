@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"path/filepath"
+	"sort"
 	"strconv"
 	"strings"
 
@@ -10,8 +11,13 @@ import (
 )
 
 func henv() {
+	tmp := []string{}
 	for k, v := range evt.et {
-		output(fmt.Sprintf("%s=%s", k, v))
+		tmp = append(tmp, fmt.Sprintf("%s=%s", k, v))
+	}
+	sort.Strings(tmp)
+	for _, e := range tmp {
+		output(e)
 	}
 }
 

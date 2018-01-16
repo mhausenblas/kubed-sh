@@ -33,6 +33,15 @@ func debug(msg string) {
 	}
 }
 
+func preflight() (string, error) {
+	checkruntime()
+	kubecontext, err := kubectl("config", "current-context")
+	if err != nil {
+		return "", err
+	}
+	return kubecontext, nil
+}
+
 func checkruntime() {
 	switch runtime.GOOS {
 	case "linux":

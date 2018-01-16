@@ -51,8 +51,7 @@ func init() {
 }
 
 func main() {
-	checkruntime()
-	kubecontext, err := kubectl("config", "current-context")
+	kubecontext, err := preflight()
 	if err != nil {
 		panic(err)
 	}

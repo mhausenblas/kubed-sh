@@ -2,8 +2,8 @@
 
 - [x] add motivation to docs (`why.md`)
 - [x] implement context switch re DPT
-- [ ] init env vars
-- [ ] add pre-flight check (is kubectl available)
+- [x] init env vars
+- [x] init pre-flight check (is kubectl available)
 - [ ] implement help $cmd
 - [ ] binaries for Linux and macOS
 - [ ] create movie demo and also turn into GIF + blog post
