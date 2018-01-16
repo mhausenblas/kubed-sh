@@ -15,6 +15,7 @@ var (
 	releaseVersion string
 	debugmode      bool
 	completer      = readline.NewPrefixCompleter(
+		readline.PcItem("cat"),
 		readline.PcItem("contexts"),
 		readline.PcItem("echo"),
 		readline.PcItem("env"),
@@ -22,6 +23,7 @@ var (
 		readline.PcItem("help"),
 		readline.PcItem("kill"),
 		readline.PcItem("literally"),
+		readline.PcItem("ls"),
 		readline.PcItem("ps"),
 		readline.PcItem("pwd"),
 		readline.PcItem("use"),
@@ -98,14 +100,14 @@ func main() {
 				line = fmt.Sprintf("literally %s", strings.TrimPrefix(line, "`"))
 			}
 			hliterally(line)
+		case strings.HasPrefix(line, "cat"):
+			hlocalexec(line)
+		case strings.HasPrefix(line, "ls"):
+			hlocalexec(line)
 		case strings.HasPrefix(line, "ps"):
 			hps(line)
 		case strings.HasPrefix(line, "pwd"):
-			cwd, err := os.Getwd()
-			if err != nil {
-				fmt.Printf("Can't determine where I am due to:\n%s", err)
-			}
-			fmt.Println(cwd)
+			hlocalexec(line)
 		case strings.HasPrefix(line, "use"):
 			huse(line, rl)
 		case line == "exit" || line == "quit":

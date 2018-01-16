@@ -10,6 +10,20 @@ import (
 	"github.com/chzyer/readline"
 )
 
+func hlocalexec(line string) {
+	cmd := line
+	args := []string{}
+	if strings.ContainsAny(line, " ") {
+		cmd = strings.Split(line, " ")[0]
+		args = strings.Split(line, " ")[1:]
+	}
+	res, err := shellout(cmd, args...)
+	if err != nil {
+		fmt.Printf("Failed to execute %s locally due to: %s", cmd, err)
+	}
+	output(res)
+}
+
 func henv() {
 	tmp := []string{}
 	for k, v := range evt.et {
@@ -261,7 +275,7 @@ func helpall() {
 		case cmd == "use":
 			cmd += " (local):\n\t\tselect a certain context to work with"
 		default:
-			cmd += "TBD"
+			cmd += "\t to be done"
 		}
 		fmt.Println(cmd)
 	}
