@@ -88,7 +88,7 @@ func main() {
 			hecho(line)
 		case strings.HasPrefix(line, "env"):
 			henv()
-		case line == "help":
+		case strings.HasPrefix(line, "help"):
 			husage(line)
 		case strings.HasPrefix(line, "kill"):
 			hkill(line)

@@ -4,7 +4,7 @@
 - [x] implement context switch re DPT
 - [x] init env vars
 - [x] init pre-flight check (is kubectl available)
-- [ ] implement help $cmd
+- [x] implement help $cmd
 - [ ] binaries for Linux and macOS
 - [ ] create movie demo and also turn into GIF + blog post
 - [ ] v0.1 RELEASE
