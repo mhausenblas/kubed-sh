@@ -23,15 +23,41 @@ or `CTRL+L` clearing the screen to work as per usual. Also, you can read here [w
 
 ## Install it
 
-Prerequisites:
+Note that no matter if you're using the [binaries below](#download-binaries) or if you [build it from source](#build-from-source),
+the following two prerequisites must be met:
 
-1. You need [Go](https://golang.org/dl/) in order to build it as there are no binaries, currently. I'm using `go1.9.2 darwin/amd64` on my machine.
-1. `kubectl` must be installed, I tested it with client version 1.9.1 so far.
-1. Access to a Kubernetes cluster must be configured:
+1. `kubectl` must be installed, I tested it with client version `1.9.1`, so far.
+1. Access to a Kubernetes cluster must be configured. To verify this, you can use the following two steps:
   - if you do `ls ~/.kube/config > /dev/null && echo $?` and you see a `0` as a result, you're good, and further
   - if you do `kubectl config get-contexts | wc -l` and see a number greater than `0`, then that's super dope.
 
-Now to install `kubed-sh` simply do the following (anywhere):
+### Download binaries
+
+Currently, only binaries for [Linux](https://github.com/mhausenblas/kubed-sh/releases/download/0.1/kubed-sh-linux) and
+[macOS](https://github.com/mhausenblas/kubed-sh/releases/download/0.1/kubed-sh-macos) are provided. Do the following to installed
+`kubed-sh` on your machine.
+
+For Linux:
+
+```
+$ curl -s -L https://github.com/mhausenblas/kubed-sh/releases/download/0.1/kubed-sh-linux -o kubed-sh
+$ chmod +x /usr/local/bin/kubed-sh
+$ sudo mv kubed-sh /usr/local/bin
+```
+
+For macOS:
+
+```
+$ curl -s -L https://github.com/mhausenblas/kubed-sh/releases/download/0.1/kubed-sh-macos -o kubed-sh
+$ chmod +x /usr/local/bin/kubed-sh
+$ sudo mv kubed-sh /usr/local/bin
+```
+
+### Build from source
+
+You need [Go](https://golang.org/dl/) in order to build `kubed-sh`. I'm using `go1.9.2 darwin/amd64` on my machine.
+
+Now to install and build `kubed-sh` from source, do the following (anywhere):
 
 ```
 $ go get github.com/mhausenblas/kubed-sh
