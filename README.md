@@ -1,5 +1,7 @@
 # kubed-sh
 
+[![GitHub release](https://img.shields.io/github/release/mhausenblas/kubed-sh.svg)](https://github.com/mhausenblas/kubed-sh) ![GitHub release](https://img.shields.io/badge/cloud--native-enabled-blue.svg)
+
 Hello and welcome to `kubed-sh`, the Kubernetes distributed shell for the casual cluster user.
 If you have access to a [Kubernetes](https://kubernetes.io/) cluster, you can [install it](#install-it) now
 and then learn how to [use it](#use-it). In a nutshell `kubed-sh` ([pronunciation](#faq)) lets you execute
@@ -76,4 +78,4 @@ For example, rather than providing a `create` or `apply` command to run a progra
 **A**: Well, I pronounce it /ku:bˈdæʃ/ as in 'kube dash' ;)
 
 **Q**: How does this actually work? <br>
-**A**: Good question. Essentially a glorified `kubectl` wrapper on steriods. See also the [design](design.md).
+**A**: Good question. Essentially a glorified `kubectl` wrapper on steroids. See also the [design](design.md).
