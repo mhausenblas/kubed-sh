@@ -5,7 +5,7 @@
 - [x] init env vars
 - [x] init pre-flight check (is kubectl available)
 - [x] implement help $cmd
-- [ ] binaries for Linux and macOS
+- [x] binaries for Linux and macOS
 - [ ] create movie demo and also turn into GIF + blog post
 - [ ] v0.1 RELEASE
 - [ ] support custom `kubectl` via `$KUBECTL_BINARY` at startup
