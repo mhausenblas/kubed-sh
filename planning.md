@@ -6,11 +6,8 @@
 - [x] init pre-flight check (is kubectl available)
 - [x] implement help $cmd
 - [x] binaries for Linux and macOS
-- [ ] create movie demo and also turn into GIF + blog post
-- [ ] v0.1 RELEASE
-- [ ] support custom `kubectl` via `$KUBECTL_BINARY` at startup
-- [ ] add pre-pull images to pre-flight check
-- [ ] impl std I/O redirect for interactive processes
+- [ ] 0.1 RELEASE
+- [ ] create demo movie demo + blog post
 - [ ] create deck with  hurdles: image, paradigm, interactivity
-- [ ] binaries for Linux, macOS, and Windows
-- [ ] v0.2 RELEASE
+- [ ] implement [0.2 milestones](https://github.com/mhausenblas/kubed-sh/milestone/1)
+- [ ] 0.2 RELEASE
