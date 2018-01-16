@@ -1,6 +1,6 @@
 # kubed-sh
 
-[![GitHub release](https://img.shields.io/github/release/mhausenblas/kubed-sh.svg)](https://github.com/mhausenblas/kubed-sh/releases/) ![GitHub release](https://img.shields.io/badge/cloud--native-enabled-blue.svg)
+[![GitHub release](https://img.shields.io/github/release/mhausenblas/kubed-sh/all.svg)](https://github.com/mhausenblas/kubed-sh/releases/) ![GitHub release](https://img.shields.io/badge/cloud--native-enabled-blue.svg)
 
 Hello and welcome to `kubed-sh`, the Kubernetes distributed shell for the casual cluster user.
 If you have access to a [Kubernetes](https://kubernetes.io/) cluster, you can [install it](#install-it) now
