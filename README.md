@@ -41,7 +41,7 @@ For Linux:
 
 ```
 $ curl -s -L https://github.com/mhausenblas/kubed-sh/releases/download/0.1/kubed-sh-linux -o kubed-sh
-$ chmod +x /usr/local/bin/kubed-sh
+$ chmod +x kubed-sh
 $ sudo mv kubed-sh /usr/local/bin
 ```
 
@@ -49,7 +49,7 @@ For macOS:
 
 ```
 $ curl -s -L https://github.com/mhausenblas/kubed-sh/releases/download/0.1/kubed-sh-macos -o kubed-sh
-$ chmod +x /usr/local/bin/kubed-sh
+$ chmod +x kubed-sh
 $ sudo mv kubed-sh /usr/local/bin
 ```
 
