@@ -12,8 +12,9 @@ import (
 )
 
 var (
-	debugmode bool
-	completer = readline.NewPrefixCompleter(
+	releaseVersion string
+	debugmode      bool
+	completer      = readline.NewPrefixCompleter(
 		readline.PcItem("contexts"),
 		readline.PcItem("echo"),
 		readline.PcItem("env"),
@@ -109,6 +110,8 @@ func main() {
 			huse(line, rl)
 		case line == "exit" || line == "quit":
 			goto exit
+		case line == "version":
+			output(releaseVersion)
 		case strings.Contains(line, "="):
 			envar := strings.Split(line, "=")[0]
 			value := strings.Split(line, "=")[1]
