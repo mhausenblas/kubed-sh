@@ -32,6 +32,7 @@ func init() {
 	if envd := os.Getenv("DEBUG"); envd != "" {
 		debugmode = true
 	}
+	// set up the global distributed process table:
 	dpt = &DProcTable{
 		mux: new(sync.Mutex),
 		lt:  make(map[string]DProc),
@@ -40,10 +41,13 @@ func init() {
 	if err != nil {
 		output(err.Error())
 	}
+	// set up the environment variables table:
 	evt = &EnvVarTable{
 		mux: new(sync.Mutex),
 		et:  make(map[string]string),
 	}
+	// load and/or set default environment variables:
+	evt.init()
 }
 
 func main() {

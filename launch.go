@@ -63,8 +63,9 @@ func launch(line string) (string, error) {
 	if strings.HasSuffix(line, "&") {
 		strategy = "Always"
 	}
+	img := evt.get("BINARY_IMAGE")
 	res, err := kubectl("run", hostpod,
-		"--image=alpine:3.7", "--restart="+strategy,
+		"--image="+img, "--restart="+strategy,
 		"--labels=gen=kubed-sh,bin="+binfile,
 		"--", "sh", "-c", "sleep 10000")
 	if err != nil {
@@ -211,13 +212,16 @@ func launchenv(line, image, interpreter string) (string, error) {
 }
 
 func launchpy(line string) (string, error) {
-	return launchenv(line, "python:3.6-alpine3.7", "python")
+	img := evt.get("PYTHON_IMAGE")
+	return launchenv(line, img, "python")
 }
 
 func launchjs(line string) (string, error) {
-	return launchenv(line, "node:9.4-alpine", "node")
+	img := evt.get("NODE_IMAGE")
+	return launchenv(line, img, "node")
 }
 
 func launchrb(line string) (string, error) {
-	return launchenv(line, "ruby:2.5-alpine3.7", "ruby")
+	img := evt.get("RUBY_IMAGE")
+	return launchenv(line, img, "ruby")
 }
