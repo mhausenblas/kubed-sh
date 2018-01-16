@@ -54,18 +54,47 @@ so make sure the binaries you launch are Linux binaries in ELF format.
 [minikube]$
 ```
 
-Supported commands (see also `help`):
+### Built-in commands
 
-- `contexts` (local) … list available Kubernetes contexts (cluster, namespace, user tuples)
-- `echo` (local) … print a value or environment variable
-- `env`(local) … list all environment variables currently defined
-- `exit` (or: `quit`, local) … leave shell
-- `help` (local) … list built-in commands
-- `kill` (distributed) … stop a distributed process
-- `literally` (or prefix with `` ` ``, local) … drop down to raw mode, literally execute as a kubectl command
-- `ps` (distributed) … list all distributed (long-running) processes in current context
-- `pwd` (local) … print current working directory
-- `use` (local) … select a certain context to work with
+Supported built-in commands (see also `help`) are as follows:
+
+```
+contexts (local):
+                list available Kubernetes contexts (cluster, namespace, user tuples)
+echo (local):
+                print a value or environment variable
+env (local):
+                list all environment variables currently defined
+exit (local):
+                leave shell
+help (local):
+                list built-in commands; use help command for more details
+kill (cluster):
+                stop a distributed process
+literally (local):
+                execute what follows as a kubectl command
+                note that you can also prefix a line with ` to achieve the same
+ps (cluster):
+                list all distributed (long-running) processes in current context
+pwd (local):
+                print current working directory
+use (local):
+                select a certain context to work with
+quit (local):
+                leave shell
+```
+
+### Environment variables
+
+The `kubed-sh` supports environment variables (to a certain extend) like your local shell. There are some pre-defined environment variables which influence the creation of the distributed processes:
+
+- `BINARY_IMAGE` (default: `alpine:3.7`) … used for executing binaries
+- `NODE_IMAGE` (default: `node:9.4-alpine`) … used for executing Node.js scripts
+- `PYTHON_IMAGE` (default: `python:3.6-alpine3.7`) … used for executing Python scripts
+- `RUBY_IMAGE` (default: `ruby:2.5-alpine3.7`) … used for executing Ruby scripts
+- `SERVICE_PORT` (default: `80`) … used to expose long-running processes within the cluster
+
+Note (for advanced users): you can overwrite at any time any of the above environment variables to change the runtime behaviour of the distributed processes you create. All changes are valid for the runtime of `kubed-sh`, that is, when you quit `kubed-sh` all pre-defined environment variables are reset to their default values.
 
 ## FAQ
 
