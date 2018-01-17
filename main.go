@@ -17,6 +17,7 @@ var (
 	noprepull      bool
 	completer      = readline.NewPrefixCompleter(
 		readline.PcItem("cat"),
+		readline.PcItem("curl"),
 		readline.PcItem("contexts"),
 		readline.PcItem("echo"),
 		readline.PcItem("env"),
@@ -28,7 +29,6 @@ var (
 		readline.PcItem("ps"),
 		readline.PcItem("pwd"),
 		readline.PcItem("use"),
-		readline.PcItem("quit"),
 	)
 )
 
@@ -91,6 +91,8 @@ func main() {
 		switch {
 		case strings.HasPrefix(line, "contexts"):
 			hcontexts()
+		case strings.HasPrefix(line, "curl"):
+			hcurl(line)
 		case strings.HasPrefix(line, "echo"):
 			hecho(line)
 		case strings.HasPrefix(line, "env"):
@@ -114,7 +116,7 @@ func main() {
 			hlocalexec(line)
 		case strings.HasPrefix(line, "use"):
 			huse(line, rl)
-		case line == "exit" || line == "quit":
+		case line == "exit":
 			goto exit
 		case line == "version":
 			output(releaseVersion)

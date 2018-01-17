@@ -10,6 +10,21 @@ import (
 	"github.com/chzyer/readline"
 )
 
+func hcurl(line string) {
+	if !strings.ContainsAny(line, " ") {
+		info("Need a target URL, for example `curl someservice` in the cluster or `curl http://example.com`")
+		return
+	}
+	url := strings.Split(line, " ")[1]
+	res, err := kubectl("run", "-i", "-t", "--rm", "curljump", "--restart=Never",
+		"--image=quay.io/mhausenblas/jump:v0.1", "--", "curl", url)
+	if err != nil {
+		warn(fmt.Sprintf("Can't curl %s due to: %s", url, err.Error()))
+		return
+	}
+	output(res)
+}
+
 func hlocalexec(line string) {
 	cmd := line
 	args := []string{}
@@ -224,11 +239,13 @@ func husage(line string) {
 	switch {
 	case cmd == "contexts":
 		cmd += "\n\nThis is a local command that lists all currently available Kubernetes contexts you can work with.\nA context is a (cluster, namespace, user) tuple, see also https://kubernetes.io/docs/tasks/access-application-cluster/configure-access-multiple-clusters/"
+	case cmd == "curl":
+		cmd += " $URL\n\nThis is a cluster command that executes curl against the URL 'URL'."
 	case cmd == "echo":
 		cmd += " val\n\nThis is a local command that prints the literal value 'val' or an environment variable if prefixed with an '$'."
 	case cmd == "env":
 		cmd += "\n\nThis is a local command that lists all environment variables currently defined."
-	case cmd == "exit" || cmd == "quit":
+	case cmd == "exit":
 		cmd += "\n\nThis is a local command that you can use to leave the kubed-sh shell."
 	case cmd == "help":
 		cmd += "\n\nThis is a local command that lists all built-in commands. You can use 'help command' for more details on a certain command."
@@ -256,11 +273,13 @@ func helpall() {
 		switch {
 		case cmd == "contexts":
 			cmd += " (local):\n\t\tlist available Kubernetes contexts (cluster, namespace, user tuples)"
+		case cmd == "curl":
+			cmd += " (cluster):\n\t\texecutes a curl operation in the cluster"
 		case cmd == "echo":
 			cmd += " (local):\n\t\tprint a value or environment variable"
 		case cmd == "env":
 			cmd += " (local):\n\t\tlist all environment variables currently defined"
-		case cmd == "exit" || cmd == "quit":
+		case cmd == "exit":
 			cmd += " (local):\n\t\tleave shell"
 		case cmd == "help":
 			cmd += " (local):\n\t\tlist built-in commands; use help command for more details"
