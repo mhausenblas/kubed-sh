@@ -6,8 +6,10 @@
 - [x] init pre-flight check (is kubectl available)
 - [x] implement help $cmd
 - [x] binaries for Linux and macOS
-- [ ] 0.1 RELEASE
-- [ ] create demo movie demo + blog post
-- [ ] create deck with  hurdles: image, paradigm, interactivity
-- [ ] implement [0.2 milestones](https://github.com/mhausenblas/kubed-sh/milestone/1)
+- [x] 0.1 RELEASE
+- [x] create demo movie
+- [ ] pre-pull support
 - [ ] 0.2 RELEASE
+- [ ] implement [0.3 milestones](https://github.com/mhausenblas/kubed-sh/milestone/2)
+- [ ] 0.3 RELEASE
+- [ ] create blog post incl. hurdles: image, paradigm, interactivity
