@@ -3,12 +3,46 @@ package main
 import (
 	"bytes"
 	"fmt"
+	"io/ioutil"
 	"os"
 	"os/exec"
 	"runtime"
 	"strings"
 
 	log "github.com/Sirupsen/logrus"
+)
+
+const (
+	prePullImgDS = `apiVersion: APIVERSION
+kind: DaemonSet
+metadata:
+  name: prepull
+  annotations:
+    source: "https://gist.github.com/itaysk/7bc3e56d69c4d72a549286d98fd557dd"
+spec:
+  selector:
+    matchLabels:
+      name: prepull
+  template:
+    metadata:
+      labels:
+        name: prepull
+    spec:
+      initContainers:
+      - name: prepull
+        image: docker
+        command: ["docker", "pull", "IMG"]
+        volumeMounts:
+        - name: docker
+          mountPath: /var/run
+      volumes:
+      - name: docker
+        hostPath:
+          path: /var/run
+      containers:
+      - name: pause
+        image: gcr.io/google_containers/pause
+`
 )
 
 // output prints primary, output messages to shell
@@ -35,6 +69,10 @@ func debug(msg string) {
 
 func preflight() (string, error) {
 	checkruntime()
+	err := prepullimgs()
+	if err != nil {
+		return "", err
+	}
 	kubecontext, err := kubectl("config", "current-context")
 	if err != nil {
 		return "", err
@@ -49,6 +87,48 @@ func checkruntime() {
 	default:
 		fmt.Printf("Note: It seems you're running kubed-sh in a non-Linux environment (detected: %s),\nso make sure the binaries you launch are Linux binaries in ELF format.\n\n", runtime.GOOS)
 	}
+}
+
+func whatversion() (string, string, error) {
+	res, err := kubectl("version", "--short")
+	if err != nil {
+		return "", "", err
+	}
+	// the following is something like 'Client Version: v1.9.1':
+	clientv := strings.Split(res, "\n")[0]
+	clientv = strings.Split(clientv, " ")[2]
+	// the following is something like 'Server Version: v1.7.2':
+	serverv := strings.Split(res, "\n")[1]
+	serverv = strings.Split(serverv, " ")[2]
+	return clientv, serverv, nil
+}
+
+func prepullimgs() error {
+	// based on https://codefresh.io/blog/single-use-daemonset-pattern-pre-pulling-images-kubernetes/
+	cversion, sversion, err := whatversion()
+	if err != nil {
+		return err
+	}
+	info(fmt.Sprintf("Detected Kubernetes client in version %s and server in version %s", cversion, sversion))
+	var ds string
+	switch {
+	case strings.HasPrefix(sversion, "v1.5") || strings.HasPrefix(sversion, "v1.6") || strings.HasPrefix(sversion, "v1.7"):
+		ds = strings.Replace(prePullImgDS, "APIVERSION", "extensions/v1beta1", -1)
+	default:
+		ds = strings.Replace(prePullImgDS, "APIVERSION", "apps/v1beta2", -1)
+	}
+
+	ds = strings.Replace(ds, "IMG", evt.get("BINARY_IMAGE"), -1)
+	err = ioutil.WriteFile("/tmp/kubed-sh_ds_binary.yaml", []byte(ds), 0644)
+	if err != nil {
+		return err
+	}
+	res, err := kubectl("create", "-f", "/tmp/kubed-sh_ds_binary.yaml")
+	if err != nil {
+		return err
+	}
+	debug(res)
+	return nil
 }
 
 func shellout(cmd string, args ...string) (string, error) {
