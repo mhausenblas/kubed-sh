@@ -8,6 +8,7 @@ import (
 	"os/exec"
 	"runtime"
 	"strings"
+	"time"
 
 	log "github.com/Sirupsen/logrus"
 )
@@ -16,9 +17,12 @@ const (
 	prePullImgDS = `apiVersion: APIVERSION
 kind: DaemonSet
 metadata:
-  name: prepull
+  name: PREPULLID
   annotations:
     source: "https://gist.github.com/itaysk/7bc3e56d69c4d72a549286d98fd557dd"
+  labels:
+    gen: kubed-sh
+    scope: pre-flight
 spec:
   selector:
     matchLabels:
@@ -73,11 +77,8 @@ func preflight() (string, error) {
 	if err != nil {
 		return "", err
 	}
-	info(fmt.Sprintf("Detected Kubernetes client in version %s and server in version %s", cversion, sversion))
-	err = prepullimgs(sversion)
-	if err != nil {
-		return "", err
-	}
+	info(fmt.Sprintf("Detected Kubernetes client in version %s and server in version %s\n", cversion, sversion))
+	prepullimgs(sversion)
 	kubecontext, err := kubectl("config", "current-context")
 	if err != nil {
 		return "", err
@@ -108,18 +109,49 @@ func whatversion() (string, string, error) {
 	return clientv, serverv, nil
 }
 
-func prepullimgs(serverversion string) error {
-	if noprepull {
-		return nil
+func prepullimgs(serverversion string) {
+	if noprepull { // user told us not to pre-pull images
+		return
 	}
-	err := prepullimg(serverversion, evt.get("BINARY_IMAGE"), "/tmp/kubed-sh_ds_binary.yaml")
+	ppdaemonsets, _ := kubectl("get", "daemonset",
+		"--selector=gen=kubed-sh,scope=pre-flight",
+		"-o=custom-columns=:metadata.name", "--no-headers")
+	if ppdaemonsets != "" { // the Daemonset is already active
+		return
+	}
+	img := evt.get("BINARY_IMAGE")
+	err := prepullimg(serverversion, "prepullbin", img, "/tmp/kubed-sh_ds_binary.yaml")
 	if err != nil {
-		return err
+		info("Wasn't able to pre-pull container image " + img)
 	}
-	return nil
+	img = evt.get("NODE_IMAGE")
+	err = prepullimg(serverversion, "prepulljs", img, "/tmp/kubed-sh_ds_node.yaml")
+	if err != nil {
+		info("Wasn't able to pre-pull container image " + img)
+	}
+	img = evt.get("PYTHON_IMAGE")
+	err = prepullimg(serverversion, "prepullpy", img, "/tmp/kubed-sh_ds_python.yaml")
+	if err != nil {
+		info("Wasn't able to pre-pull container image " + img)
+	}
+	img = evt.get("RUBY_IMAGE")
+	err = prepullimg(serverversion, "prepullrb", img, "/tmp/kubed-sh_ds_ruby.yaml")
+	if err != nil {
+		info("Wasn't able to pre-pull container image " + img)
+	}
+	output("Pre-pulling images, this may take up to 30 seconds to complete, please stand by.\nDon't worry, this is a one-time only operation ;)")
+	ticker := time.NewTicker(1 * time.Second)
+	go func() {
+		for t := range ticker.C {
+			_ = t
+			fmt.Printf(".")
+		}
+	}()
+	time.Sleep(30 * time.Second)
+	ticker.Stop()
 }
 
-func prepullimg(serverversion, targetimg, targetmanifest string) error {
+func prepullimg(serverversion, targetid, targetimg, targetmanifest string) error {
 	// based on https://codefresh.io/blog/single-use-daemonset-pattern-pre-pulling-images-kubernetes/
 	var ds string
 	switch {
@@ -129,6 +161,7 @@ func prepullimg(serverversion, targetimg, targetmanifest string) error {
 		ds = strings.Replace(prePullImgDS, "APIVERSION", "apps/v1beta2", -1)
 	}
 	ds = strings.Replace(ds, "IMG", targetimg, -1)
+	ds = strings.Replace(ds, "PREPULLID", targetid, -1)
 	err := ioutil.WriteFile(targetmanifest, []byte(ds), 0644)
 	if err != nil {
 		return err
