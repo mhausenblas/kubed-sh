@@ -33,8 +33,8 @@ the following two prerequisites must be met:
 
 ### Download binaries
 
-Currently, only binaries for [Linux](https://github.com/mhausenblas/kubed-sh/releases/download/0.1/kubed-sh-linux) and
-[macOS](https://github.com/mhausenblas/kubed-sh/releases/download/0.1/kubed-sh-macos) are provided. Do the following to install `kubed-sh` on your machine.
+Currently, only binaries for [Linux](https://github.com/mhausenblas/kubed-sh/releases/download/0.2/kubed-sh-linux) and
+[macOS](https://github.com/mhausenblas/kubed-sh/releases/download/0.2/kubed-sh-macos) are provided. Do the following to install `kubed-sh` on your machine.
 
 For Linux:
 
