@@ -132,13 +132,16 @@ Currently, `kubed-sh` knows about the following environment variables (in the pa
 
 ## FAQ
 
+**Q**: For whom is `kubed-sh`? When to use it? <br>
+**A**: I suppose it's mainly useful in a prototyping, development, or testing phase, although for low-level interactions you might find it handy in prod environments as well since it provides an interactive, context-aware version of `kubectl`.
+
+**Q**: How is `kubed-sh` pronounced? <br>
+**A**: Glad you asked. Well, I pronounce it /ku:bˈdæʃ/ as in 'kube dash' ;)
+
 **Q**: Why another Kubernetes shell? There's already [cloudnativelabs/kube-shell](https://github.com/cloudnativelabs/kube-shell) and [c-bata/kube-prompt](https://github.com/c-bata/kube-prompt). <br>
 **A**: True, there is previous art, though these shells more or less aim at making `kubectl` interactive, exposing the commands such as `get` or `apply` to the user.
 In a sense `kubed-sh` is more like [technosophos/kubeshell](https://github.com/technosophos/kubeshell), trying to provide an environment a typical *nix user is comfortable with.
 For example, rather than providing a `create` or `apply` command to run a program, the user would simply enter the name of the executable, as she would do, for example, in the bash shell. See also the [motivation](why.md).
-
-**Q**: How is `kubed-sh` pronounced? <br>
-**A**: Well, I pronounce it /ku:bˈdæʃ/ as in 'kube dash' ;)
 
 **Q**: How does this actually work? <br>
 **A**: Good question. Essentially a glorified `kubectl` wrapper on steroids. See also the [design](design.md).
