@@ -39,7 +39,7 @@ Currently, only binaries for [Linux](https://github.com/mhausenblas/kubed-sh/rel
 For Linux:
 
 ```
-$ curl -s -L https://github.com/mhausenblas/kubed-sh/releases/download/0.1/kubed-sh-linux -o kubed-sh
+$ curl -s -L https://github.com/mhausenblas/kubed-sh/releases/download/0.2/kubed-sh-linux -o kubed-sh
 $ chmod +x kubed-sh
 $ sudo mv kubed-sh /usr/local/bin
 ```
@@ -47,7 +47,7 @@ $ sudo mv kubed-sh /usr/local/bin
 For macOS:
 
 ```
-$ curl -s -L https://github.com/mhausenblas/kubed-sh/releases/download/0.1/kubed-sh-macos -o kubed-sh
+$ curl -s -L https://github.com/mhausenblas/kubed-sh/releases/download/0.2/kubed-sh-macos -o kubed-sh
 $ chmod +x kubed-sh
 $ sudo mv kubed-sh /usr/local/bin
 ```
