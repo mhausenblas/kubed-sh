@@ -34,8 +34,7 @@ the following two prerequisites must be met:
 ### Download binaries
 
 Currently, only binaries for [Linux](https://github.com/mhausenblas/kubed-sh/releases/download/0.1/kubed-sh-linux) and
-[macOS](https://github.com/mhausenblas/kubed-sh/releases/download/0.1/kubed-sh-macos) are provided. Do the following to installed
-`kubed-sh` on your machine.
+[macOS](https://github.com/mhausenblas/kubed-sh/releases/download/0.1/kubed-sh-macos) are provided. Do the following to install `kubed-sh` on your machine.
 
 For Linux:
 
@@ -112,7 +111,7 @@ quit (local):
 
 ### Environment variables
 
-The `kubed-sh` supports environment variables (to a certain extend) like your local shell. There are some pre-defined environment variables which influence the creation of the distributed processes:
+`kubed-sh` supports environment variables (to a certain extent), just like your local shell does. There are some pre-defined environment variables which influence the creation of the distributed processes:
 
 - `BINARY_IMAGE` (default: `alpine:3.7`) … used for executing binaries
 - `NODE_IMAGE` (default: `node:9.4-alpine`) … used for executing Node.js scripts
@@ -121,6 +120,15 @@ The `kubed-sh` supports environment variables (to a certain extend) like your lo
 - `SERVICE_PORT` (default: `80`) … used to expose long-running processes within the cluster
 
 Note (for advanced users): you can overwrite at any time any of the above environment variables to change the runtime behaviour of the distributed processes you create. All changes are valid for the runtime of `kubed-sh`, that is, when you quit `kubed-sh` all pre-defined environment variables are reset to their default values.
+
+### Configuration
+
+Currently, `kubed-sh` knows about the following environment variables (in the parent shell such as bash) which influence the runtime behavior:
+
+| env var   | set for |
+| ---------:| ------- |
+| `DEBUG`   | print detailed messages for debug purposes, default: false |
+| `KUBEDSH_NOPREPULL`   | disable image pre-pull, default: false  |
 
 ## FAQ
 

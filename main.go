@@ -14,6 +14,7 @@ import (
 var (
 	releaseVersion string
 	debugmode      bool
+	noprepull      bool
 	completer      = readline.NewPrefixCompleter(
 		readline.PcItem("cat"),
 		readline.PcItem("contexts"),
@@ -34,6 +35,9 @@ var (
 func init() {
 	if envd := os.Getenv("DEBUG"); envd != "" {
 		debugmode = true
+	}
+	if envp := os.Getenv("KUBEDSH_NOPREPULL"); envp != "" {
+		noprepull = true
 	}
 	// set up the global distributed process table:
 	dpt = &DProcTable{

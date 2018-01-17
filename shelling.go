@@ -69,7 +69,12 @@ func debug(msg string) {
 
 func preflight() (string, error) {
 	checkruntime()
-	err := prepullimgs()
+	cversion, sversion, err := whatversion()
+	if err != nil {
+		return "", err
+	}
+	info(fmt.Sprintf("Detected Kubernetes client in version %s and server in version %s", cversion, sversion))
+	err = prepullimgs(sversion)
 	if err != nil {
 		return "", err
 	}
@@ -103,27 +108,32 @@ func whatversion() (string, string, error) {
 	return clientv, serverv, nil
 }
 
-func prepullimgs() error {
-	// based on https://codefresh.io/blog/single-use-daemonset-pattern-pre-pulling-images-kubernetes/
-	cversion, sversion, err := whatversion()
+func prepullimgs(serverversion string) error {
+	if noprepull {
+		return nil
+	}
+	err := prepullimg(serverversion, evt.get("BINARY_IMAGE"), "/tmp/kubed-sh_ds_binary.yaml")
 	if err != nil {
 		return err
 	}
-	info(fmt.Sprintf("Detected Kubernetes client in version %s and server in version %s", cversion, sversion))
+	return nil
+}
+
+func prepullimg(serverversion, targetimg, targetmanifest string) error {
+	// based on https://codefresh.io/blog/single-use-daemonset-pattern-pre-pulling-images-kubernetes/
 	var ds string
 	switch {
-	case strings.HasPrefix(sversion, "v1.5") || strings.HasPrefix(sversion, "v1.6") || strings.HasPrefix(sversion, "v1.7"):
+	case strings.HasPrefix(serverversion, "v1.5") || strings.HasPrefix(serverversion, "v1.6") || strings.HasPrefix(serverversion, "v1.7"):
 		ds = strings.Replace(prePullImgDS, "APIVERSION", "extensions/v1beta1", -1)
 	default:
 		ds = strings.Replace(prePullImgDS, "APIVERSION", "apps/v1beta2", -1)
 	}
-
-	ds = strings.Replace(ds, "IMG", evt.get("BINARY_IMAGE"), -1)
-	err = ioutil.WriteFile("/tmp/kubed-sh_ds_binary.yaml", []byte(ds), 0644)
+	ds = strings.Replace(ds, "IMG", targetimg, -1)
+	err := ioutil.WriteFile(targetmanifest, []byte(ds), 0644)
 	if err != nil {
 		return err
 	}
-	res, err := kubectl("create", "-f", "/tmp/kubed-sh_ds_binary.yaml")
+	res, err := kubectl("create", "-f", targetmanifest)
 	if err != nil {
 		return err
 	}
