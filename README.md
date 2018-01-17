@@ -7,9 +7,7 @@ If you have access to a [Kubernetes](https://kubernetes.io/) cluster, you can [i
 and then learn how to [use it](#use-it). In a nutshell `kubed-sh` ([pronunciation](#faq)) lets you execute
 a program in a Kubernetes cluster without having to create a container image or learn new commands. For example:
 
-<a href="http://www.youtube.com/watch?feature=player_embedded&v=gqi1-XLiq-o" target="_new">
- <img src="http://img.youtube.com/vi/gqi1-XLiq-o/0.jpg" alt="kubed-sh walkthrough" width="560" height="315" border="5" />
-</a>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/gqi1-XLiq-o" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
 
 Above you see the Linux ELF binary `tc` that you get when doing a `GOOS=linux go build` in the test case directory [tc/](tc/),
 executing in the Kubernetes cluster, producing the output `I'm a simple program that just prints this message and exits`.
