@@ -180,9 +180,7 @@ func shellout(cmd string, args ...string) (string, error) {
 	log.Debug(cmd, args)
 	c := exec.Command(cmd, args...)
 	c.Env = os.Environ()
-	if debugmode {
-		c.Stderr = os.Stderr
-	}
+	c.Stderr = os.Stderr
 	c.Stdout = &out
 	err := c.Run()
 	if err != nil {
