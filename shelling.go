@@ -1,13 +1,16 @@
 package main
 
 import (
+	"bufio"
 	"bytes"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"os"
 	"os/exec"
 	"runtime"
 	"strings"
+	"sync"
 	"time"
 
 	log "github.com/Sirupsen/logrus"
@@ -225,4 +228,66 @@ func kubectlbg(cmd string, args ...string) error {
 		return err
 	}
 	return nil
+}
+
+func kubectli(cmd string, args ...string) (string, error) {
+	kubectlbin, err := shellout("which", "kubectl")
+	if err != nil {
+		return "", err
+	}
+	all := append([]string{cmd}, args...)
+	go shellouti(kubectlbin, all...)
+	return "", nil
+}
+
+func shellouti(cmd string, args ...string) {
+	r := bufio.NewReader(os.Stdin)
+	in := make(chan string)
+	go func(i chan string) {
+		for {
+			tmp, _ := r.ReadString('\n')
+			i <- tmp
+		}
+	}(in)
+	runi(cpstd(in), cmd, args...)
+
+}
+
+func cpstd(input <-chan string) func(io.WriteCloser) {
+	return func(stdin io.WriteCloser) {
+		defer stdin.Close()
+		str := <-input
+		io.Copy(stdin, bytes.NewBufferString(str))
+	}
+}
+
+func runi(cpstd func(io.WriteCloser), cmd string, args ...string) {
+	c := exec.Command(cmd, args...)
+	stdin, err := c.StdinPipe()
+	if err != nil {
+		log.Panic(err)
+	}
+	stdout, err := c.StdoutPipe()
+	if err != nil {
+		log.Panic(err)
+	}
+	err = c.Start()
+	if err != nil {
+		log.Panic(err)
+	}
+	var wg sync.WaitGroup
+	wg.Add(2)
+	go func() {
+		defer wg.Done()
+		cpstd(stdin)
+	}()
+	go func() {
+		defer wg.Done()
+		io.Copy(os.Stdout, stdout)
+	}()
+	wg.Wait()
+	err = c.Wait()
+	if err != nil {
+		log.Panic(err)
+	}
 }
