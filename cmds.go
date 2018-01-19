@@ -133,7 +133,7 @@ func huse(line string, rl *readline.Instance) {
 		return
 	}
 	output(res)
-	rl.SetPrompt(fmt.Sprintf("[\033[32m%s\033[0m]$ ", targetcontext))
+	setprompt(rl, targetcontext)
 }
 
 func hcontexts() {

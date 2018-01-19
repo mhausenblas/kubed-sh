@@ -64,7 +64,6 @@ func main() {
 	}
 	rl, err := readline.NewEx(&readline.Config{
 		AutoComplete:    completer,
-		Prompt:          fmt.Sprintf("[\033[32m%s\033[0m]$ ", kubecontext),
 		HistoryFile:     "/tmp/readline.tmp",
 		InterruptPrompt: "^C",
 	})
@@ -73,8 +72,8 @@ func main() {
 	}
 	defer func() {
 		_ = rl.Close()
-
 	}()
+	setprompt(rl, kubecontext)
 	log.SetOutput(rl.Stderr())
 	for {
 		line, err := rl.Readline()

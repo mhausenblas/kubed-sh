@@ -1,8 +1,11 @@
 package main
 
 import (
+	"fmt"
 	"os"
 	"sync"
+
+	"github.com/chzyer/readline"
 )
 
 // EnvVarTable is the global environment variable table.
@@ -62,4 +65,9 @@ func (et *EnvVarTable) init() {
 	if ok {
 		et.set("HOME", val)
 	}
+}
+
+func setprompt(rl *readline.Instance, context string) {
+	namespace := "default"
+	rl.SetPrompt(fmt.Sprintf("[\033[32m%s\033[0m::\033[36m%s\033[0m]$ ", context, namespace))
 }
