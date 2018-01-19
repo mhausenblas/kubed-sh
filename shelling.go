@@ -82,7 +82,7 @@ func preflight() (string, error) {
 	}
 	info(fmt.Sprintf("Detected Kubernetes client in version %s and server in version %s\n", cversion, sversion))
 	prepullimgs(sversion)
-	kubecontext, err := kubectl("config", "current-context")
+	kubecontext, err := kubectl(true, "config", "current-context")
 	if err != nil {
 		return "", err
 	}
@@ -99,15 +99,26 @@ func checkruntime() {
 }
 
 func whatversion() (string, string, error) {
-	res, err := kubectl("version", "--short")
-	if err != nil {
-		return "", "", err
+	var clientv, serverv string
+	res, err := kubectl(false, "version", "--short")
+	if err != nil { // this is a custom kubectl binary, try without the --short argument
+		res, err = kubectl(false, "version")
+		if err != nil {
+			return "", "", err
+		}
+		// assume it is something like 'kubernetes v1.7.6+a08f5eeb62':
+		clientv = strings.Split(res, "\n")[1]
+		clientv = strings.Split(clientv, " ")[1]
+		// assume it is something like 'kubernetes v1.7.2':
+		serverv = strings.Split(res, "\n")[5]
+		serverv = strings.Split(serverv, " ")[1]
+		return clientv, serverv, nil
 	}
 	// the following is something like 'Client Version: v1.9.1':
-	clientv := strings.Split(res, "\n")[0]
+	clientv = strings.Split(res, "\n")[0]
 	clientv = strings.Split(clientv, " ")[2]
 	// the following is something like 'Server Version: v1.7.2':
-	serverv := strings.Split(res, "\n")[1]
+	serverv = strings.Split(res, "\n")[1]
 	serverv = strings.Split(serverv, " ")[2]
 	return clientv, serverv, nil
 }
@@ -116,7 +127,7 @@ func prepullimgs(serverversion string) {
 	if noprepull { // user told us not to pre-pull images
 		return
 	}
-	ppdaemonsets, _ := kubectl("get", "daemonset",
+	ppdaemonsets, _ := kubectl(true, "get", "daemonset",
 		"--selector=gen=kubed-sh,scope=pre-flight",
 		"-o=custom-columns=:metadata.name", "--no-headers")
 	if ppdaemonsets != "" { // the Daemonset is already active
@@ -169,7 +180,7 @@ func prepullimg(serverversion, targetid, targetimg, targetmanifest string) error
 	if err != nil {
 		return err
 	}
-	res, err := kubectl("create", "-f", targetmanifest)
+	res, err := kubectl(true, "create", "-f", targetmanifest)
 	if err != nil {
 		return err
 	}
@@ -177,13 +188,15 @@ func prepullimg(serverversion, targetid, targetimg, targetmanifest string) error
 	return nil
 }
 
-func shellout(cmd string, args ...string) (string, error) {
+func shellout(withstderr bool, cmd string, args ...string) (string, error) {
 	result := ""
 	var out bytes.Buffer
 	log.Debug(cmd, args)
 	c := exec.Command(cmd, args...)
 	c.Env = os.Environ()
-	c.Stderr = os.Stderr
+	if withstderr {
+		c.Stderr = os.Stderr
+	}
 	c.Stdout = &out
 	err := c.Run()
 	if err != nil {
@@ -204,13 +217,17 @@ func shelloutbg(cmd string, args ...string) error {
 	return nil
 }
 
-func kubectl(cmd string, args ...string) (string, error) {
-	kubectlbin, err := shellout("which", "kubectl")
-	if err != nil {
-		return "", err
+func kubectl(withstderr bool, cmd string, args ...string) (string, error) {
+	kubectlbin := customkubectl
+	if kubectlbin == "" {
+		bin, err := shellout(withstderr, "which", "kubectl")
+		if err != nil {
+			return "", err
+		}
+		kubectlbin = bin
 	}
 	all := append([]string{cmd}, args...)
-	result, err := shellout(kubectlbin, all...)
+	result, err := shellout(withstderr, kubectlbin, all...)
 	if err != nil {
 		return "", err
 	}
@@ -218,12 +235,16 @@ func kubectl(cmd string, args ...string) (string, error) {
 }
 
 func kubectlbg(cmd string, args ...string) error {
-	kubectlbin, err := shellout("which", "kubectl")
-	if err != nil {
-		return err
+	kubectlbin := customkubectl
+	if kubectlbin == "" {
+		bin, err := shellout(false, "which", "kubectl")
+		if err != nil {
+			return err
+		}
+		kubectlbin = bin
 	}
 	all := append([]string{cmd}, args...)
-	err = shelloutbg(kubectlbin, all...)
+	err := shelloutbg(kubectlbin, all...)
 	if err != nil {
 		return err
 	}
@@ -231,9 +252,13 @@ func kubectlbg(cmd string, args ...string) error {
 }
 
 func kubectli(cmd string, args ...string) (string, error) {
-	kubectlbin, err := shellout("which", "kubectl")
-	if err != nil {
-		return "", err
+	kubectlbin := customkubectl
+	if kubectlbin == "" {
+		bin, err := shellout(false, "which", "kubectl")
+		if err != nil {
+			return "", err
+		}
+		kubectlbin = bin
 	}
 	all := append([]string{cmd}, args...)
 	go shellouti(kubectlbin, all...)

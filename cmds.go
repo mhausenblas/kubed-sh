@@ -16,7 +16,7 @@ func hcurl(line string) {
 		return
 	}
 	url := strings.Split(line, " ")[1]
-	res, err := kubectl("run", "-i", "-t", "--rm", "curljump", "--restart=Never",
+	res, err := kubectl(true, "run", "-i", "-t", "--rm", "curljump", "--restart=Never",
 		"--image=quay.io/mhausenblas/jump:v0.1", "--", "curl", url)
 	if err != nil {
 		warn(fmt.Sprintf("Can't curl %s due to: %s", url, err.Error()))
@@ -32,7 +32,7 @@ func hlocalexec(line string) {
 		cmd = strings.Split(line, " ")[0]
 		args = strings.Split(line, " ")[1:]
 	}
-	res, err := shellout(cmd, args...)
+	res, err := shellout(true, cmd, args...)
 	if err != nil {
 		fmt.Printf("Failed to execute %s locally due to: %s", cmd, err)
 	}
@@ -57,24 +57,24 @@ func hkill(line string) {
 	}
 	// pre-flight check if dproc exists:
 	ID := strings.Split(line, " ")[1]
-	_, err := kubectl("get", "deployment", ID)
+	_, err := kubectl(true, "get", "deployment", ID)
 	if err != nil {
 		warn(fmt.Sprintf("A distributed process with the ID '%s' does not exist in current context. Try the ps command …", ID))
 		return
 	}
-	_, err = kubectl("scale", "--replicas=0", "deployment", ID)
+	_, err = kubectl(true, "scale", "--replicas=0", "deployment", ID)
 	if err != nil {
 		killfail(line, err.Error())
 		return
 	}
-	_, err = kubectl("delete", "deployment", ID)
+	_, err = kubectl(true, "delete", "deployment", ID)
 	if err != nil {
 		killfail(line, err.Error())
 		return
 	}
 
 	// gather info to remove from global DPT:
-	kubecontext, err := kubectl("config", "current-context")
+	kubecontext, err := kubectl(true, "config", "current-context")
 	if err != nil {
 		killfail(line, err.Error())
 		return
@@ -88,7 +88,7 @@ func hkill(line string) {
 	src := strings.Split(dproc.Src, ":")[1]
 	// now get rid of the extension:
 	svcname := src[0 : len(src)-len(filepath.Ext(src))]
-	_, err = kubectl("delete", "service", svcname)
+	_, err = kubectl(true, "delete", "service", svcname)
 	if err != nil {
 		killfail(line, err.Error())
 		return
@@ -110,7 +110,7 @@ func hps(line string) {
 	case "all":
 		kubecontext = ""
 	default:
-		k, err := kubectl("config", "current-context")
+		k, err := kubectl(true, "config", "current-context")
 		if err != nil {
 			warn("Can't determine current context")
 			return
@@ -127,7 +127,7 @@ func huse(line string, rl *readline.Instance) {
 		return
 	}
 	targetcontext := strings.Split(line, " ")[1]
-	res, err := kubectl("config", "use-context", targetcontext)
+	res, err := kubectl(true, "config", "use-context", targetcontext)
 	if err != nil {
 		fmt.Printf("\nFailed to switch contexts due to:\n%s\n\n", err)
 		return
@@ -137,7 +137,7 @@ func huse(line string, rl *readline.Instance) {
 }
 
 func hcontexts() {
-	res, err := kubectl("config", "get-contexts")
+	res, err := kubectl(true, "config", "get-contexts")
 	if err != nil {
 		fmt.Printf("\nFailed to list contexts due to:\n%s\n\n", err)
 	}
@@ -192,7 +192,7 @@ func hlaunch(line string) {
 	}
 	// update DPT
 	if strings.HasSuffix(line, "&") {
-		kubecontext, err := kubectl("config", "current-context")
+		kubecontext, err := kubectl(true, "config", "current-context")
 		if err != nil {
 			launchfail(line, err.Error())
 			return
@@ -207,7 +207,7 @@ func hliterally(line string) {
 		return
 	}
 	l := strings.Split(line, " ")
-	res, _ := kubectl(l[1], l[2:]...)
+	res, _ := kubectl(true, l[1], l[2:]...)
 	output(res)
 }
 

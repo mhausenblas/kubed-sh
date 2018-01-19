@@ -15,6 +15,7 @@ var (
 	releaseVersion string
 	debugmode      bool
 	noprepull      bool
+	customkubectl  string
 	completer      = readline.NewPrefixCompleter(
 		readline.PcItem("cat"),
 		readline.PcItem("curl"),
@@ -33,11 +34,14 @@ var (
 )
 
 func init() {
-	if envd := os.Getenv("DEBUG"); envd != "" {
+	if env := os.Getenv("DEBUG"); env != "" {
 		debugmode = true
 	}
-	if envp := os.Getenv("KUBEDSH_NOPREPULL"); envp != "" {
+	if env := os.Getenv("KUBEDSH_NOPREPULL"); env != "" {
 		noprepull = true
+	}
+	if env := os.Getenv("KUBECTL_BINARY"); env != "" {
+		customkubectl = env
 	}
 	// set up the global distributed process table:
 	dpt = &DProcTable{

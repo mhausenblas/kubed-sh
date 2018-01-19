@@ -69,5 +69,9 @@ func (et *EnvVarTable) init() {
 
 func setprompt(rl *readline.Instance, context string) {
 	namespace := "default"
+	// res, err := kubectl("run", )
+	// if err != nil {
+	// 	warn("Can't determine namespace")
+	// }
 	rl.SetPrompt(fmt.Sprintf("[\033[32m%s\033[0m::\033[36m%s\033[0m]$ ", context, namespace))
 }

@@ -47,11 +47,11 @@ var (
 
 // BuildDPT adds a distributed process to the global table.
 func (dt *DProcTable) BuildDPT() error {
-	kubecontext, err := kubectl("config", "current-context")
+	kubecontext, err := kubectl(true, "config", "current-context")
 	if err != nil {
 		return err
 	}
-	res, err := kubectl("get", "deployments", "--selector=gen=kubed-sh",
+	res, err := kubectl(true, "get", "deployments", "--selector=gen=kubed-sh",
 		"-o=custom-columns=:metadata.name,:metadata.labels", "--no-headers")
 	if err != nil {
 		return fmt.Errorf("Failed to gather distributed processes due to:\n%s", err)

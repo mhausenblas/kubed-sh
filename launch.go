@@ -64,7 +64,7 @@ func launch(line string) (string, error) {
 		strategy = "Always"
 	}
 	img := evt.get("BINARY_IMAGE")
-	res, err := kubectl("run", hostpod,
+	res, err := kubectl(true, "run", hostpod,
 		"--image="+img, "--restart="+strategy,
 		"--labels=gen=kubed-sh,bin="+binfile,
 		"--", "sh", "-c", "sleep 10000")
@@ -75,24 +75,24 @@ func launch(line string) (string, error) {
 	time.Sleep(5 * time.Second) // this is a hack. need to do prefilght checks and warmup
 	// set up service and hostpod, if necessary:
 	if strings.HasSuffix(line, "&") {
-		deployment, err = kubectl("get", "deployment", "--selector=gen=kubed-sh,bin="+binfile, "-o=custom-columns=:metadata.name", "--no-headers")
+		deployment, err = kubectl(true, "get", "deployment", "--selector=gen=kubed-sh,bin="+binfile, "-o=custom-columns=:metadata.name", "--no-headers")
 		if err != nil {
 			return hostpod, err
 		}
 		svcname := binfile[0 : len(binfile)-len(filepath.Ext(binfile))]
-		sres, serr := kubectl("expose", "deployment", deployment, "--name="+svcname, "--port=80", "--target-port=80")
+		sres, serr := kubectl(true, "expose", "deployment", deployment, "--name="+svcname, "--port=80", "--target-port=80")
 		if serr != nil {
 			return hostpod, serr
 		}
 		info(sres)
-		hostpod, serr = kubectl("get", "pods", "--selector=gen=kubed-sh,bin="+binfile, "-o=custom-columns=:metadata.name", "--no-headers")
+		hostpod, serr = kubectl(true, "get", "pods", "--selector=gen=kubed-sh,bin="+binfile, "-o=custom-columns=:metadata.name", "--no-headers")
 		if err != nil {
 			return hostpod, serr
 		}
 	}
 	// Step 3. copy binary from step 1 into pod:
 	dest := fmt.Sprintf("%s:/tmp/", hostpod)
-	_, err = kubectl("cp", binloc, dest)
+	_, err = kubectl(true, "cp", binloc, dest)
 	if err != nil {
 		return hostpod, err
 	}
@@ -103,7 +103,7 @@ func launch(line string) (string, error) {
 		go func() error {
 			// Step 4. launch script in pod:
 			execremotebin := fmt.Sprintf("/tmp/%s", binfile)
-			res, err = kubectl("exec", hostpod, "--", "sh", "-c", execremotebin)
+			res, err = kubectl(true, "exec", hostpod, "--", "sh", "-c", execremotebin)
 			if err != nil {
 				return err
 			}
@@ -114,13 +114,13 @@ func launch(line string) (string, error) {
 	default:
 		// Step 4. launch script in pod:
 		execremotebin := fmt.Sprintf("/tmp/%s", binfile)
-		res, err = kubectl("exec", hostpod, "--", "sh", "-c", execremotebin)
+		res, err = kubectl(true, "exec", hostpod, "--", "sh", "-c", execremotebin)
 		if err != nil {
 			return hostpod, err
 		}
 		output(res)
 		// Step 5. clean up:
-		_, err = kubectl("delete", "pod", hostpod)
+		_, err = kubectl(true, "delete", "pod", hostpod)
 		if err != nil {
 			return hostpod, err
 		}
@@ -148,7 +148,7 @@ func launchenv(line, image, interpreter string) (string, error) {
 	if strings.HasSuffix(line, "&") {
 		strategy = "Always"
 	}
-	res, err := kubectl("run", hostpod,
+	res, err := kubectl(true, "run", hostpod,
 		"--image="+image, "--restart="+strategy,
 		"--labels=gen=kubed-sh,script="+scriptfile,
 		"--", "sh", "-c", "sleep 10000")
@@ -160,24 +160,24 @@ func launchenv(line, image, interpreter string) (string, error) {
 	time.Sleep(5 * time.Second)
 	// set up service and hostpod, if necessary:
 	if strings.HasSuffix(line, "&") {
-		deployment, err = kubectl("get", "deployment", "--selector=gen=kubed-sh,script="+scriptfile, "-o=custom-columns=:metadata.name", "--no-headers")
+		deployment, err = kubectl(true, "get", "deployment", "--selector=gen=kubed-sh,script="+scriptfile, "-o=custom-columns=:metadata.name", "--no-headers")
 		if err != nil {
 			return hostpod, err
 		}
 		svcname := scriptfile[0 : len(scriptfile)-len(filepath.Ext(scriptfile))]
-		sres, serr := kubectl("expose", "deployment", deployment, "--name="+svcname, "--port=80", "--target-port=80")
+		sres, serr := kubectl(true, "expose", "deployment", deployment, "--name="+svcname, "--port=80", "--target-port=80")
 		if serr != nil {
 			return hostpod, serr
 		}
 		info(sres)
-		hostpod, serr = kubectl("get", "pods", "--selector=gen=kubed-sh,script="+scriptfile, "-o=custom-columns=:metadata.name", "--no-headers")
+		hostpod, serr = kubectl(true, "get", "pods", "--selector=gen=kubed-sh,script="+scriptfile, "-o=custom-columns=:metadata.name", "--no-headers")
 		if err != nil {
 			return hostpod, serr
 		}
 	}
 	// Step 3. copy script from step 1 into pod:
 	dest := fmt.Sprintf("%s:/tmp/", hostpod)
-	_, err = kubectl("cp", scriptloc, dest)
+	_, err = kubectl(true, "cp", scriptloc, dest)
 	if err != nil {
 		return hostpod, err
 	}
@@ -187,7 +187,7 @@ func launchenv(line, image, interpreter string) (string, error) {
 		go func() error {
 			// Step 4. launch script in pod:
 			execremotescript := fmt.Sprintf("/tmp/%s", scriptfile)
-			err = kubectlbg("exec", hostpod, interpreter, execremotescript)
+			err = kubectlbg("exec", "-i", "-t", hostpod, interpreter, execremotescript)
 			if err != nil {
 				return err
 			}
@@ -197,13 +197,13 @@ func launchenv(line, image, interpreter string) (string, error) {
 	default:
 		// Step 4. launch script in pod:
 		execremotescript := fmt.Sprintf("/tmp/%s", scriptfile)
-		res, err = kubectl("exec", hostpod, interpreter, execremotescript)
+		res, err = kubectl(true, "exec", hostpod, interpreter, execremotescript)
 		if err != nil {
 			return hostpod, err
 		}
 		output(res)
 		// Step 5. clean up:
-		_, err = kubectl("delete", "pod", hostpod)
+		_, err = kubectl(true, "delete", "pod", hostpod)
 		if err != nil {
 			return hostpod, err
 		}
