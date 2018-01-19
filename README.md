@@ -129,6 +129,12 @@ Currently, `kubed-sh` knows about the following environment variables (in the pa
 | ---------:| ------- |
 | `DEBUG`   | print detailed messages for debug purposes, default: false |
 | `KUBEDSH_NOPREPULL`   | disable image pre-pull, default: false  |
+| `KUBECTL_BINARY`   | do not auto-discover the `kubectl` binary but use this one provided here, default: the `which kubectl` command is used to determine the binary used to interact with Kubernetes |
+
+Some usage example for the configuration see below:
+
+- If you are on OpenShift Online you can't create a DaemonSet and want to launch `kubed-sh` like so: `$ KUBEDSH_NOPREPULL=true kubed-sh`
+- If you, want to use the OpenShift CLI tool [oc](https://docs.openshift.org/latest/cli_reference/get_started_cli.html) launch it with `KUBECTL_BINARY=$(which oc) kubed-sh`
 
 ## FAQ
 
