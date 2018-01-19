@@ -127,7 +127,7 @@ func prepullimgs(serverversion string) {
 	if noprepull { // user told us not to pre-pull images
 		return
 	}
-	ppdaemonsets, _ := kubectl(true, "get", "daemonset",
+	ppdaemonsets, _ := kubectl(false, "get", "daemonset",
 		"--selector=gen=kubed-sh,scope=pre-flight",
 		"-o=custom-columns=:metadata.name", "--no-headers")
 	if ppdaemonsets != "" { // the Daemonset is already active
@@ -180,7 +180,7 @@ func prepullimg(serverversion, targetid, targetimg, targetmanifest string) error
 	if err != nil {
 		return err
 	}
-	res, err := kubectl(true, "create", "-f", targetmanifest)
+	res, err := kubectl(false, "create", "-f", targetmanifest)
 	if err != nil {
 		return err
 	}
