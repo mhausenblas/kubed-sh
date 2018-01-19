@@ -84,6 +84,8 @@ so make sure the binaries you launch are Linux binaries in ELF format.
 Supported built-in commands (see also `help`) are as follows:
 
 ```
+curl (cluster):
+                executes a curl operation in the cluster
 contexts (local):
                 list available Kubernetes contexts (cluster, namespace, user tuples)
 echo (local):
@@ -105,8 +107,6 @@ pwd (local):
                 print current working directory
 use (local):
                 select a certain context to work with
-quit (local):
-                leave shell
 ```
 
 ### Environment variables
