@@ -20,7 +20,7 @@ class S(BaseHTTPRequestHandler):
         self._set_headers()
         self.wfile.write("<html><body><p>Hello from Python!</p></body></html>")
 
-def run(server_class=HTTPServer, handler_class=S, port=80):
+def run(server_class=HTTPServer, handler_class=S):
     server_address = ('', 80)
     httpd = server_class(server_address, handler_class)
     print('Starting simple Python server...')

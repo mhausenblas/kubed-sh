@@ -80,7 +80,8 @@ func launch(line string) (string, error) {
 			return hostpod, err
 		}
 		svcname := binfile[0 : len(binfile)-len(filepath.Ext(binfile))]
-		sres, serr := kubectl(true, "expose", "deployment", deployment, "--name="+svcname, "--port=80", "--target-port=80")
+		port := evt.get("SERVICE_PORT")
+		sres, serr := kubectl(true, "expose", "deployment", deployment, "--name="+svcname, "--port="+port, "--target-port="+port)
 		if serr != nil {
 			return hostpod, serr
 		}
@@ -165,7 +166,8 @@ func launchenv(line, image, interpreter string) (string, error) {
 			return hostpod, err
 		}
 		svcname := scriptfile[0 : len(scriptfile)-len(filepath.Ext(scriptfile))]
-		sres, serr := kubectl(true, "expose", "deployment", deployment, "--name="+svcname, "--port=80", "--target-port=80")
+		port := evt.get("SERVICE_PORT")
+		sres, serr := kubectl(true, "expose", "deployment", deployment, "--name="+svcname, "--port="+port, "--target-port="+port)
 		if serr != nil {
 			return hostpod, serr
 		}
