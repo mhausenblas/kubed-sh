@@ -64,7 +64,7 @@ func init() {
 func main() {
 	kubecontext, err := preflight()
 	if err != nil {
-		panic(err)
+		warn("Encountered issues during startup: " + err.Error())
 	}
 	rl, err := readline.NewEx(&readline.Config{
 		AutoComplete:    completer,
