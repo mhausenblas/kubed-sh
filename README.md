@@ -4,15 +4,16 @@
 
 Hello and welcome to `kubed-sh`, the Kubernetes distributed shell for the casual cluster user.
 If you have access to a [Kubernetes](https://kubernetes.io/) cluster, you can [install it](#install-it) now
-and then learn how to [use it](#use-it). In a nutshell `kubed-sh` ([pronunciation](#faq)) lets you execute
-a program in a Kubernetes cluster without having to create a container image or learn new commands. For example:
+and then learn how to [use it](#use-it).
+
+In a nutshell, `kubed-sh` ([pronunciation](#faq)) lets you execute a program in a Kubernetes cluster without having to
+create a container image or learn new commands.
+
+See it in action:
 
 <iframe width="560" height="315" src="https://www.youtube.com/embed/gqi1-XLiq-o" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
 
-Above you see the Linux ELF binary `tc` that you get when doing a `GOOS=linux go build` in the test case directory [tc/](tc/),
-executing in the Kubernetes cluster, producing the output `I'm a simple program that just prints this message and exits`.
-
-In addition to launching (Linux ELF) binaries, the following interpreted environments are currently supported:
+In addition to launching (Linux ELF) binaries directly, the following interpreted environments are currently supported:
 
 - When you enter `node script.js`, a Node.js (default version: 9.4) environment is provided and `script.js` is executed.
 - When you enter `python script.py`, a Python (default version: 3.6) environment is provided and the `script.py` is executed.
