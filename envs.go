@@ -52,6 +52,7 @@ func (et *EnvVarTable) init() {
 	et.set("NODE_IMAGE", "node:9.4-alpine")
 	et.set("PYTHON_IMAGE", "python:3.6-alpine3.7")
 	et.set("RUBY_IMAGE", "ruby:2.5-alpine3.7")
+	et.set("HOTRELOAD", "false")
 	// load from parent shell, if present:
 	val, ok := os.LookupEnv("KUBECTL_BINARY")
 	if ok {

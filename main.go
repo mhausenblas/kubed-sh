@@ -59,6 +59,9 @@ func init() {
 	}
 	// load and/or set default environment variables:
 	evt.init()
+	// set up hotreload watchdog:
+	rwatch = &ReloadWatchdog{}
+	rwatch.init(evt)
 }
 
 func main() {
@@ -79,6 +82,7 @@ func main() {
 	}()
 	setprompt(rl, kubecontext)
 	log.SetOutput(rl.Stderr())
+	go rwatch.run()
 	for {
 		line, err := rl.Readline()
 		if err == readline.ErrInterrupt {
