@@ -134,8 +134,8 @@ Currently, `kubed-sh` knows about the following environment variables (in the pa
 
 Some usage example for the configuration see below:
 
-- If you are on OpenShift Online you can't create a DaemonSet and want to launch `kubed-sh` like so: `$ KUBEDSH_NOPREPULL=true kubed-sh`
-- If you, want to use the OpenShift CLI tool [oc](https://docs.openshift.org/latest/cli_reference/get_started_cli.html) launch it with `KUBECTL_BINARY=$(which oc) kubed-sh`
+- If you are in an environment (such as OpenShift Online) where you can't create a DaemonSet, launch `kubed-sh` like so: `$ KUBEDSH_NOPREPULL=true kubed-sh`
+- If you want to use the OpenShift CLI tool [oc](https://docs.openshift.org/latest/cli_reference/get_started_cli.html) launch it with `KUBECTL_BINARY=$(which oc) kubed-sh`
 
 ## FAQ
 
