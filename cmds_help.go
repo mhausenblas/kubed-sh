@@ -14,6 +14,8 @@ func husage(line string) {
 	switch {
 	case cmd == "contexts":
 		cmd += "\n\nThis is a local command that lists all currently available Kubernetes contexts you can work with.\nA context is a (cluster, namespace, user) tuple, see also https://kubernetes.io/docs/tasks/access-application-cluster/configure-access-multiple-clusters/"
+	case cmd == "cd":
+		cmd += " $dir\n\nThis is a local command that changes the current directory to 'dir'."
 	case cmd == "curl":
 		cmd += " $URL\n\nThis is a cluster command that executes curl against the URL 'URL'."
 	case cmd == "echo":
@@ -48,6 +50,8 @@ func helpall() {
 		switch {
 		case cmd == "contexts":
 			cmd += " (local):\n\t\tlist available Kubernetes contexts (cluster, namespace, user tuples)"
+		case cmd == "cd":
+			cmd += " (local):\n\t\tchanges working directory"
 		case cmd == "curl":
 			cmd += " (cluster):\n\t\texecutes a curl operation in the cluster"
 		case cmd == "echo":
@@ -69,7 +73,7 @@ func helpall() {
 		case cmd == "use":
 			cmd += " (local):\n\t\tselect a certain context to work with"
 		default:
-			cmd += "\t to be done"
+			cmd += "\t\tto be done"
 		}
 		fmt.Println(cmd)
 	}

@@ -16,8 +16,10 @@ var (
 	debugmode      bool
 	noprepull      bool
 	customkubectl  string
+	prevdir        string
 	completer      = readline.NewPrefixCompleter(
 		readline.PcItem("cat"),
+		readline.PcItem("cd"),
 		readline.PcItem("curl"),
 		readline.PcItem("contexts"),
 		readline.PcItem("echo"),
@@ -43,6 +45,7 @@ func init() {
 	if env := os.Getenv("KUBECTL_BINARY"); env != "" {
 		customkubectl = env
 	}
+	prevdir, _ = os.Getwd()
 	// set up the global distributed process table:
 	dpt = &DProcTable{
 		mux: new(sync.Mutex),
@@ -98,6 +101,8 @@ func main() {
 		switch {
 		case strings.HasPrefix(line, "contexts"):
 			hcontexts()
+		case strings.HasPrefix(line, "cd"):
+			hcd(line)
 		case strings.HasPrefix(line, "curl"):
 			hcurl(line)
 		case strings.HasPrefix(line, "echo"):

@@ -2,6 +2,8 @@ package main
 
 import (
 	"fmt"
+	"os"
+	"os/user"
 	"path/filepath"
 	"sort"
 	"strconv"
@@ -9,6 +11,27 @@ import (
 
 	"github.com/chzyer/readline"
 )
+
+func hcd(line string) {
+	var targetdir string
+	switch {
+	case !strings.ContainsAny(line, " "):
+		usr, err := user.Current()
+		if err != nil {
+			warn(err.Error())
+		}
+		targetdir = usr.HomeDir
+	case strings.ContainsAny(line, " ") && strings.Split(line, " ")[1] == "-":
+		targetdir = prevdir
+	default:
+		targetdir = strings.Split(line, " ")[1]
+	}
+	prevdir, _ = os.Getwd()
+	err := os.Chdir(targetdir)
+	if err != nil {
+		warn(err.Error())
+	}
+}
 
 func hcurl(line string) {
 	if !strings.ContainsAny(line, " ") {
