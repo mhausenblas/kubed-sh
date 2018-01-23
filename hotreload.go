@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/fsnotify/fsnotify"
 )
@@ -45,17 +46,16 @@ func (rw *ReloadWatchdog) run() {
 		_ = rw.watcher.Close()
 	}()
 	done := make(chan bool)
-	fileq := make(chan string)
-	go rw.queue(fileq)
-	go rw.update(fileq)
+	go rw.watch()
 	err = rw.watcher.Add(".")
 	if err != nil {
 		warn(err.Error())
 	}
 	<-done
+	debug("RUN DONE")
 }
 
-func (rw *ReloadWatchdog) queue(fileq chan string) {
+func (rw *ReloadWatchdog) watch() {
 	for {
 		rw.checkstatus()
 		if rw.isactive() {
@@ -64,7 +64,7 @@ func (rw *ReloadWatchdog) queue(fileq chan string) {
 				if event.Op&fsnotify.Write == fsnotify.Write {
 					debug("detected modify operation on " + event.String())
 					f := strings.Split(event.Name, "!")[len(strings.Split(event.Name, "!"))-1]
-					fileq <- f
+					go rw.update(f)
 				}
 			case errw := <-rw.watcher.Errors:
 				warn(errw.Error())
@@ -73,40 +73,38 @@ func (rw *ReloadWatchdog) queue(fileq chan string) {
 	}
 }
 
-func (rw *ReloadWatchdog) update(fileq chan string) {
-	for {
-		targetfile := <-fileq
-		debug("Restarting: " + targetfile)
-		// find target pod and original file
-		po, err := kubectl(true, "get", "po",
-			"--selector=script="+targetfile, "-o=custom-columns=:metadata.name", "--no-headers")
-		if err != nil {
-			debug(err.Error())
-		}
-		debug("updating pod " + po)
-		res, err := kubectl(true, "get", "po", po,
-			"-o=custom-columns=:metadata.annotations.original,:metadata.annotations.interpreter", "--no-headers")
-		if err != nil {
-			debug(err.Error())
-		}
-		original, interpreter := strings.Split(res, " ")[0], strings.Split(res, " ")[3]
-		original = strings.TrimSpace(original)
-		interpreter = strings.TrimSpace(interpreter)
-		debug("original: " + original + " interpreter: " + interpreter)
-		// copy changed file
-		dest := fmt.Sprintf("%s:/tmp/", po)
-		_, err = kubectl(false, "cp", original, dest)
-		if err != nil {
-			debug(err.Error())
-		}
-		// kill in container
-		_, _ = kubectl(false, "exec", po, "--", "killall", interpreter)
-		// start in container
-		execremotescript := fmt.Sprintf("/tmp/%s", targetfile)
-		_, err = kubectl(false, "exec", po, "--", interpreter, execremotescript)
-		if err != nil {
-			debug(err.Error())
-		}
-		info(targetfile + " updated in " + po)
+func (rw *ReloadWatchdog) update(targetfile string) {
+	debug("Restarting: " + targetfile)
+	// find target pod and original file:
+	po, err := kubectl(true, "get", "po",
+		"--selector=script="+targetfile, "-o=custom-columns=:metadata.name", "--no-headers")
+	if err != nil {
+		debug(err.Error())
 	}
+	debug("updating pod " + po)
+	res, err := kubectl(true, "get", "po", po,
+		"-o=custom-columns=:metadata.annotations.original,:metadata.annotations.interpreter", "--no-headers")
+	if err != nil {
+		debug(err.Error())
+	}
+	original, interpreter := strings.Split(res, " ")[0], strings.Split(res, " ")[3]
+	original = strings.TrimSpace(original)
+	interpreter = strings.TrimSpace(interpreter)
+	debug("original: " + original + " interpreter: " + interpreter)
+	// copy changed file
+	dest := fmt.Sprintf("%s:/tmp/", po)
+	_, err = kubectl(false, "cp", original, dest)
+	if err != nil {
+		debug(err.Error())
+	}
+	// // kill in container
+	_, _ = kubectl(false, "exec", po, "killall", interpreter)
+	time.Sleep(5 * time.Second) // hack, right!?
+	// start in container
+	execremotescript := fmt.Sprintf("/tmp/%s", targetfile)
+	_, err = kubectl(false, "exec", po, interpreter, execremotescript)
+	if err != nil {
+		debug(err.Error())
+	}
+	debug(targetfile + " updated in " + po)
 }
