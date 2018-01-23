@@ -128,7 +128,7 @@ Currently, `kubed-sh` knows about the following environment variables (in the pa
 
 | env var   | set for |
 | ---------:| ------- |
-| `DEBUG`   | print detailed messages for debug purposes, default: false |
+| `KUBEDSH_DEBUG`   | print detailed messages for debug purposes, default: false |
 | `KUBEDSH_NOPREPULL`   | disable image pre-pull, default: false  |
 | `KUBECTL_BINARY`   | do not auto-discover the `kubectl` binary but use this one provided here, default: the `which kubectl` command is used to determine the binary used to interact with Kubernetes |
 

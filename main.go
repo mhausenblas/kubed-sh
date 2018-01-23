@@ -36,7 +36,7 @@ var (
 )
 
 func init() {
-	if env := os.Getenv("DEBUG"); env != "" {
+	if env := os.Getenv("KUBEDSH_DEBUG"); env != "" {
 		debugmode = true
 	}
 	if env := os.Getenv("KUBEDSH_NOPREPULL"); env != "" {
