@@ -85,6 +85,8 @@ so make sure the binaries you launch are Linux binaries in ELF format.
 Supported built-in commands (see also `help`) are as follows:
 
 ```
+cd (local):
+                changes working directory
 curl (cluster):
                 executes a curl operation in the cluster
 contexts (local):
