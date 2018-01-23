@@ -61,8 +61,10 @@ func (rw *ReloadWatchdog) queue(fileq chan string) {
 		if rw.isactive() {
 			select {
 			case event := <-rw.watcher.Events:
-				if event.Op&fsnotify.Chmod == fsnotify.Chmod {
-					fileq <- event.Name
+				if event.Op&fsnotify.Write == fsnotify.Write {
+					debug("detected modify operation on " + event.String())
+					f := strings.Split(event.Name, "!")[len(strings.Split(event.Name, "!"))-1]
+					fileq <- f
 				}
 			case errw := <-rw.watcher.Errors:
 				warn(errw.Error())
@@ -74,45 +76,37 @@ func (rw *ReloadWatchdog) queue(fileq chan string) {
 func (rw *ReloadWatchdog) update(fileq chan string) {
 	for {
 		targetfile := <-fileq
-		info("Restarting: " + targetfile)
+		debug("Restarting: " + targetfile)
 		// find target pod and original file
 		po, err := kubectl(true, "get", "po",
 			"--selector=script="+targetfile, "-o=custom-columns=:metadata.name", "--no-headers")
 		if err != nil {
 			debug(err.Error())
-			return
 		}
 		debug("updating pod " + po)
 		res, err := kubectl(true, "get", "po", po,
 			"-o=custom-columns=:metadata.annotations.original,:metadata.annotations.interpreter", "--no-headers")
 		if err != nil {
 			debug(err.Error())
-			return
 		}
-		debug("result of annotations query: " + res)
-		original, interpreter := strings.Split(res, " ")[0], strings.Split(res, " ")[1]
+		original, interpreter := strings.Split(res, " ")[0], strings.Split(res, " ")[3]
 		original = strings.TrimSpace(original)
 		interpreter = strings.TrimSpace(interpreter)
+		debug("original: " + original + " interpreter: " + interpreter)
 		// copy changed file
 		dest := fmt.Sprintf("%s:/tmp/", po)
-		_, err = kubectl(true, "cp", original, dest)
+		_, err = kubectl(false, "cp", original, dest)
 		if err != nil {
 			debug(err.Error())
-			return
 		}
 		// kill in container
-		_, _ = kubectl(true, "exec", po, "--", "killall", "-9", interpreter)
-		if err != nil {
-			debug(err.Error())
-			return
-		}
+		_, _ = kubectl(false, "exec", po, "--", "killall", interpreter)
 		// start in container
 		execremotescript := fmt.Sprintf("/tmp/%s", targetfile)
-		res, err = kubectl(true, "exec", po, "--", interpreter, execremotescript)
+		_, err = kubectl(false, "exec", po, "--", interpreter, execremotescript)
 		if err != nil {
 			debug(err.Error())
-			return
 		}
-		debug("result of launching new file: " + res)
+		info(targetfile + " updated in " + po)
 	}
 }

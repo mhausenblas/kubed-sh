@@ -227,6 +227,7 @@ func kubectl(withstderr bool, cmd string, args ...string) (string, error) {
 		kubectlbin = bin
 	}
 	all := append([]string{cmd}, args...)
+	debug("kubectl " + strings.Join(all, " "))
 	result, err := shellout(withstderr, kubectlbin, all...)
 	if err != nil {
 		return "", err

@@ -28,8 +28,7 @@ $ kubectl delete ds --selector=gen=kubed-sh,scope=pre-flight
 ---
 
 $ cd tc
-# on macOS:
-$ sed -i '' 's/Hello from Node.js/Hello from Node.js NOW/' test.js
+$ vi test.js
 ```
 
 ## Linux binary (ELF format)

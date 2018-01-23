@@ -128,6 +128,13 @@ func main() {
 			hlocalexec(line)
 		case strings.HasPrefix(line, "use"):
 			huse(line, rl)
+		case line == "debug":
+			switch debugmode {
+			case true:
+				debugmode = false
+			case false:
+				debugmode = true
+			}
 		case line == "exit":
 			goto exit
 		case line == "version":
