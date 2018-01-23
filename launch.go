@@ -91,9 +91,13 @@ func launch(line string) (string, error) {
 			return hostpod, serr
 		}
 	}
-	// Step 3. copy binary from step 1 into pod:
+	// Step 3. copy binary from step 1 into pod and annotate it:
 	dest := fmt.Sprintf("%s:/tmp/", hostpod)
 	_, err = kubectl(true, "cp", binloc, dest)
+	if err != nil {
+		return hostpod, err
+	}
+	_, err = kubectl(true, "annotate", "pods", hostpod, "original="+binloc)
 	if err != nil {
 		return hostpod, err
 	}
@@ -177,13 +181,17 @@ func launchenv(line, image, interpreter string) (string, error) {
 			return hostpod, serr
 		}
 	}
-	// Step 3. copy script from step 1 into pod:
+	// Step 3. copy script from step 1 into pod and annotate it:
 	dest := fmt.Sprintf("%s:/tmp/", hostpod)
 	_, err = kubectl(true, "cp", scriptloc, dest)
 	if err != nil {
 		return hostpod, err
 	}
-	info(fmt.Sprintf("Uploaded %s to %s\n", scriptloc, hostpod))
+	_, err = kubectl(true, "annotate", "pods", hostpod, "original="+scriptloc, "interpreter="+interpreter)
+	if err != nil {
+		return hostpod, err
+	}
+	info(fmt.Sprintf("uploaded %s to %s\n", scriptloc, hostpod))
 	switch {
 	case strings.HasSuffix(line, "&"):
 		go func() error {
