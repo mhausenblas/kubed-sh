@@ -8,10 +8,29 @@ $ watch kubectl get po,svc,deploy
 
 ## Clean up
 
+All processes:
+
 ```
-$ kubectl delete deploy,svc,po -l=gen=kubed-sh
+$ kubectl delete deploy,svc,po --selector=gen=kubed-sh
 ```
 
+Pre-pull only:
+
+```
+$ kubectl delete ds --selector=gen=kubed-sh,scope=pre-flight
+```
+
+## Hot-reload
+
+```
+[minikube::default] HOTRELOAD=true
+
+---
+
+$ cd tc
+# on macOS:
+$ sed -i '' 's/Hello from Node.js/Hello from Node.js NOW/' test.js
+```
 
 ## Linux binary (ELF format)
 
