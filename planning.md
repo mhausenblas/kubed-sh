@@ -1,12 +1,17 @@
 # To do
 
-## 0.4 release
+## 0.5 release
 
-- [ ] re-write docs (header, use cases, katacoda scenario?)
 - [ ] create microservices demo
 - [ ] architecture diagram
-- [ ] implement [0.4 milestones](https://github.com/mhausenblas/kubed-sh/milestone/3)
+- [ ] re-write docs (header, use cases, katacoda scenario?)
+- [ ] implement [0.5 milestones](https://github.com/mhausenblas/kubed-sh/milestone/4)
 - [ ] write blog post incl. hurdles: image, paradigm, interactivity and demo recording via Loom
+
+## 0.4 release
+
+- [ ] Loom demo
+- [x] intro experimental support for [hot-reload](https://github.com/mhausenblas/kubed-sh/issues/12)
 
 ## 0.3 release
 
