@@ -8,7 +8,7 @@ import (
 	"github.com/chzyer/readline"
 )
 
-// EnvVarTable is the global environment variable table.
+// EnvVarTable is an environment variable table.
 type EnvVarTable struct {
 	mux *sync.Mutex
 	et  map[string]string
