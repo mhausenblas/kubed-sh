@@ -2,7 +2,7 @@
 
 ## 0.5 release
 
-- [ ] create architecture diagram, advance design doc
+- [x] create architecture diagram, advance design doc
 - [ ] create katacoda scenario and record via Loom
 - [ ] create microservices demo
 - [ ] re-write docs (header, use cases)
