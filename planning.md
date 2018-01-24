@@ -2,15 +2,17 @@
 
 ## 0.5 release
 
+- [ ] create architecture diagram, advance design doc
+- [ ] create katacoda scenario and record via Loom
 - [ ] create microservices demo
-- [ ] architecture diagram
-- [ ] re-write docs (header, use cases, katacoda scenario?)
+- [ ] re-write docs (header, use cases)
+- [ ] write blog post incl. motivation and new demo recording (microservices demo)
 - [ ] implement [0.5 milestones](https://github.com/mhausenblas/kubed-sh/milestone/4)
-- [ ] write blog post incl. hurdles: image, paradigm, interactivity and demo recording via Loom
+
 
 ## 0.4 release
 
-- [ ] Loom demo
+- [x] [Loom demo](https://www.useloom.com/share/441a97fd48ae46da8d786194f93968f6)
 - [x] intro experimental support for [hot-reload](https://github.com/mhausenblas/kubed-sh/issues/12)
 
 ## 0.3 release
