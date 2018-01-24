@@ -143,7 +143,7 @@ func main() {
 			envar := strings.Split(line, "=")[0]
 			value := strings.Split(line, "=")[1]
 			evt.set(envar, value)
-		case line == "":
+		case line == "" || strings.HasPrefix(line, "#"):
 		default:
 			hlaunch(line)
 		}
