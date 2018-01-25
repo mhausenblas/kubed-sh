@@ -3,11 +3,18 @@
 [![GitHub release](https://img.shields.io/github/release/mhausenblas/kubed-sh/all.svg)](https://github.com/mhausenblas/kubed-sh/releases/) [![GitHub issues](https://img.shields.io/github/issues/mhausenblas/kubed-sh.svg)](https://github.com/mhausenblas/kubed-sh/issues) ![GitHub release](https://img.shields.io/badge/cloud--native-enabled-blue.svg)
 
 Hello and welcome to `kubed-sh`, the Kubernetes distributed shell for the casual cluster user.
-If you have access to a [Kubernetes](https://kubernetes.io/) cluster, you can [install it](#install-it) now
-and then learn how to [use it](#use-it).
-
 In a nutshell, `kubed-sh` ([pronunciation](#faq)) lets you execute a program in a Kubernetes cluster without having to
-create a container image or learn new commands.
+create a container image and learn new concepts or commands.
+
+- [Use cases](#use-cases)
+- [Installation](#install-it)
+  - [Download binaries](#download-binaries)
+  - [Build from source](#build-from-source)
+- [Usage](#use-it)
+  - [Built-in commands](#built-in-commands)
+  - [Environment variables](#environment-variables)
+  - [Configuration](#configuration)
+- [FAQ](#faq)
 
 See it in action:
 
@@ -20,15 +27,26 @@ In addition to launching (Linux ELF) binaries directly, the following interprete
 - When you enter `ruby script.rb`, a Ruby (default version: 2.5) environment is provided and the `script.rb` is executed.
 
 Note that `kubed-sh` is a proper shell environment, that is, you can expect features such as auto-complete, history operations,
-or `CTRL+L` clearing the screen to work as per usual. Also, you can read here [why](why.md) I wrote `kubed-sh`.
+or `CTRL+L` clearing the screen to work as per usual.
+
+## Use cases
+
+If you have access to a [Kubernetes](https://kubernetes.io/) cluster and you have [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/) installed you're good to go and might want to consider using `kubed-sh`, for example for:
+
+- **Prototyping**—Let's say you quickly want to try out a Python script or see how a Go program and a Node.js script play together, in the context of microservices.
+- **Learning Kubernetes**—You're new to Kubernetes and want to learn how to interact with it. Tip: if you issue the `debug` command you can see which `kubectl` commands `kubed-sh` launches in the background.
+- **Developing**—Imagine you're developing a program in Ruby and want to launch it in a Kubernetes cluster, without having to build an image and/or pushing it to a registry.
+In this case the experimental hot-reload feature (using `HOTRELOAD=true`) is useful for you: whenever you save the file locally, it gets updated in the Kubernetes cluster.
+
+Also, you might be interested in [my motivation](why.md) for writing `kubed-sh`.
 
 ## Install it
 
-Note that no matter if you're using the [binaries below](#download-binaries) or if you [build it from source](#build-from-source),
+No matter if you're using the [binaries below](#download-binaries) or if you [build it from source](#build-from-source),
 the following two prerequisites must be met:
 
-1. `kubectl` must be installed, I tested it with client version `1.9.1`, so far.
-1. Access to a Kubernetes cluster must be configured. To verify this, you can use the following two steps:
+1. `kubectl` must be [installed](https://kubernetes.io/docs/tasks/tools/install-kubectl/), tested with client version `1.9.1` so far.
+1. Access to a Kubernetes cluster must be configured (tested with 1.7 and 1.8 clusters so far). To verify this, you can use the following two steps:
   - if you do `ls ~/.kube/config > /dev/null && echo $?` and you see a `0` as a result, you're good, and further
   - if you do `kubectl config get-contexts | wc -l` and see a number greater than `0`, then that's super dope.
 
@@ -121,8 +139,10 @@ use (local):
 - `PYTHON_IMAGE` (default: `python:3.6-alpine3.7`) … used for executing Python scripts
 - `RUBY_IMAGE` (default: `ruby:2.5-alpine3.7`) … used for executing Ruby scripts
 - `SERVICE_PORT` (default: `80`) … used to expose long-running processes within the cluster
+- `SERVICE_NAME` (default: `""`) … used to overwrite the URL for long-running processes within the cluster
+- `HOTRELOAD` (default: `false`) … used for enabling a watch on local files to trigger automatic updates on modification (EXPERIMENTAL)
 
-Note (for advanced users): you can overwrite at any time any of the above environment variables to change the runtime behaviour of the distributed processes you create. All changes are valid for the runtime of `kubed-sh`, that is, when you quit `kubed-sh` all pre-defined environment variables are reset to their default values.
+A note for advanced users: you can overwrite at any time any of the above environment variables to change the runtime behaviour of the distributed processes you create. All changes are valid for the runtime of `kubed-sh`, that is, when you quit `kubed-sh` all pre-defined environment variables are reset to their default values.
 
 ### Configuration
 
