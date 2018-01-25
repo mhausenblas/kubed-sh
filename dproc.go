@@ -92,13 +92,18 @@ func (dt *DProcTable) DumpDPT(kubecontext string) string {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	tw := tabwriter.NewWriter(w, 0, 0, 2, ' ', 0)
-	fmt.Fprintln(tw, "DPID\tCONTEXT\tSOURCE\tURL")
-	for _, dproc := range dt.lt {
-		switch kubecontext {
-		case "":
-			// fmt.Fprintln(tw, fmt.Sprintf("%s\t%s\t%s\t", dproc.ID, dproc.KubeContext, dproc.Src))
-		case dproc.KubeContext:
+	switch kubecontext {
+	case "":
+		fmt.Fprintln(tw, "DPID\tCONTEXT\tSOURCE\tURL")
+		for _, dproc := range dt.lt {
 			fmt.Fprintln(tw, fmt.Sprintf("%s\t%s\t%s\t%s\t", dproc.ID, dproc.KubeContext, dproc.Src, dproc.ServiceName))
+		}
+	default:
+		fmt.Fprintln(tw, "DPID\tSOURCE\tURL")
+		for _, dproc := range dt.lt {
+			if dproc.KubeContext == kubecontext {
+				fmt.Fprintln(tw, fmt.Sprintf("%s\t%s\t%s\t", dproc.ID, dproc.Src, dproc.ServiceName))
+			}
 		}
 	}
 	_ = tw.Flush()
