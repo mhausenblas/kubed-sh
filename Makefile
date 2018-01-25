@@ -6,7 +6,7 @@ build :
   # macOS binaries:
 	GOOS=darwin go build -ldflags "-X main.releaseVersion=$(kubedsh_version)" -o ./kubed-sh-macos .
 	# Linux binaries:
-	GOOS=linux GOARCH=amd64 go build -ldflags "-X main.releaseVersion=$(kubedsh_version))" -o ./kubed-sh-linux .
+	GOOS=linux GOARCH=amd64 go build -ldflags "-X main.releaseVersion=$(kubedsh_version)" -o ./kubed-sh-linux .
 	# Windows binaries:
 	# TBD
 
