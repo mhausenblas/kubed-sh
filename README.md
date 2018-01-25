@@ -148,11 +148,11 @@ A note for advanced users: you can overwrite at any time any of the above enviro
 
 Currently, `kubed-sh` knows about the following environment variables (in the parent shell such as bash) which influence the runtime behavior:
 
-| env var   | set for |
-| ---------:| ------- |
-| `KUBEDSH_DEBUG`   | print detailed messages for debug purposes, default: false |
-| `KUBEDSH_NOPREPULL`   | disable image pre-pull, default: false  |
-| `KUBECTL_BINARY`   | do not auto-discover the `kubectl` binary but use this one provided here, default: the `which kubectl` command is used to determine the binary used to interact with Kubernetes |
+| env var             | default | set for |
+| -------------------:| ------- | ------- |
+| `KUBEDSH_DEBUG`     | `false` | print detailed messages for debug purposes |
+| `KUBEDSH_NOPREPULL` | `false` | disable image pre-pull |
+| `KUBECTL_BINARY`    | `which kubectl` is used to determine the binary | if set, rather than using auto-discovery, use this binary for `kubectl` commands |
 
 Some usage example for the configuration see below:
 
@@ -162,12 +162,14 @@ Some usage example for the configuration see below:
 ## FAQ
 
 **Q**: For whom is `kubed-sh`? When to use it? <br>
-**A**: I suppose it's mainly useful in a prototyping, development, or testing phase, although for low-level interactions you might find it handy in prod environments as well since it provides an interactive, context-aware version of `kubectl`.
+**A**: I suppose it's mainly useful in a prototyping, development, or testing phase,
+although for low-level interactions you might find it handy in prod environments as well since
+it provides an interactive, context-aware version of `kubectl`. See also [use cases](#use-cases).
 
 **Q**: How is `kubed-sh` pronounced? <br>
 **A**: Glad you asked. Well, I pronounce it /ku:bˈdæʃ/ as in 'kube dash' ;)
 
-**Q**: Why another Kubernetes shell? There's already [cloudnativelabs/kube-shell](https://github.com/cloudnativelabs/kube-shell),
+**Q**: Why another Kubernetes shell? There are already some, such as [cloudnativelabs/kube-shell](https://github.com/cloudnativelabs/kube-shell),
 [errordeveloper/kubeplay](https://github.com/errordeveloper/kubeplay), and [c-bata/kube-prompt](https://github.com/c-bata/kube-prompt). <br>
 **A**: True, there is previous art, though these shells more or less aim at making `kubectl` interactive, exposing the commands such as `get` or `apply` to the user.
 In a sense `kubed-sh` is more like [technosophos/kubeshell](https://github.com/technosophos/kubeshell), trying to provide an environment a typical *nix user is comfortable with.
