@@ -10,7 +10,7 @@ Learn more about:
 
 - [Concepts](#concepts)
   - [Environments](#environments)
-  - [Launching binaries and scripts](#launching-binaries-and scripts)
+  - [Launching binaries and scripts](#launching-binaries-and-scripts)
 - [Components](#components)
 
 ## Concepts

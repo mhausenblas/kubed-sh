@@ -48,6 +48,7 @@ func (et *EnvVarTable) unset(envar string) {
 func (et *EnvVarTable) init() {
 	// set defaults:
 	et.set("SERVICE_PORT", "80")
+	et.set("SERVICE_NAME", "")
 	et.set("BINARY_IMAGE", "alpine:3.7")
 	et.set("NODE_IMAGE", "node:9.4-alpine")
 	et.set("PYTHON_IMAGE", "python:3.6-alpine3.7")
