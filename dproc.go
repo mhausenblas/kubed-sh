@@ -25,6 +25,7 @@ type DProc struct {
 	Type        DProcType
 	KubeContext string
 	Src         string
+	ServiceName string
 }
 
 // DProcTable is the distributed process lookup table,
@@ -75,7 +76,13 @@ func (dt *DProcTable) BuildDPT() error {
 			}
 		}
 		debug("id: " + id + " source: " + src)
-		dt.addDProc(newDProc(id, DProcLongRunning, kubecontext, src))
+		src = strings.Replace(src, ":", "=", -1)
+		svcname, err := kubectl(true, "get", "services", "--selector=gen=kubed-sh,"+src,
+			"-o=custom-columns=:metadata.name", "--no-headers")
+		if err != nil {
+			return fmt.Errorf("Failed to gather distributed processes due to:\n%s", err)
+		}
+		dt.addDProc(newDProc(id, DProcLongRunning, kubecontext, src, svcname))
 	}
 	return nil
 }
@@ -85,13 +92,13 @@ func (dt *DProcTable) DumpDPT(kubecontext string) string {
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 	tw := tabwriter.NewWriter(w, 0, 0, 2, ' ', 0)
-	fmt.Fprintln(tw, "DPID\tCONTEXT\tSOURCE\t")
+	fmt.Fprintln(tw, "DPID\tCONTEXT\tSOURCE\tURL")
 	for _, dproc := range dt.lt {
 		switch kubecontext {
 		case "":
-			fmt.Fprintln(tw, fmt.Sprintf("%s\t%s\t%s\t", dproc.ID, dproc.KubeContext, dproc.Src))
+			// fmt.Fprintln(tw, fmt.Sprintf("%s\t%s\t%s\t", dproc.ID, dproc.KubeContext, dproc.Src))
 		case dproc.KubeContext:
-			fmt.Fprintln(tw, fmt.Sprintf("%s\t%s\t%s\t", dproc.ID, dproc.KubeContext, dproc.Src))
+			fmt.Fprintln(tw, fmt.Sprintf("%s\t%s\t%s\t%s\t", dproc.ID, dproc.KubeContext, dproc.Src, dproc.ServiceName))
 		}
 	}
 	_ = tw.Flush()
@@ -100,12 +107,13 @@ func (dt *DProcTable) DumpDPT(kubecontext string) string {
 }
 
 // newDProc creates a distributed process entry.
-func newDProc(dpid string, dptype DProcType, context, source string) DProc {
+func newDProc(dpid string, dptype DProcType, context, source, svcname string) DProc {
 	return DProc{
 		ID:          dpid,
 		Type:        dptype,
 		KubeContext: context,
 		Src:         source,
+		ServiceName: svcname,
 	}
 }
 

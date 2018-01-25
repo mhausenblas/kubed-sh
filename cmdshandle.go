@@ -179,38 +179,42 @@ func hlaunch(line string) {
 	// If a line doesn't start with one of the
 	// known environments, assume user wants to
 	// launch a binary:
-	var dpid string
+	var dpid, svcname string
 	src := extractsrc(line)
 	src = "script:" + src
 	switch {
 	case strings.HasPrefix(line, "python "):
-		d, err := launchpy(line)
+		d, s, err := launchpy(line)
 		if err != nil {
 			launchfail(line, err.Error())
 			return
 		}
 		dpid = d
+		svcname = s
 	case strings.HasPrefix(line, "node "):
-		d, err := launchjs(line)
+		d, s, err := launchjs(line)
 		if err != nil {
 			launchfail(line, err.Error())
 			return
 		}
 		dpid = d
+		svcname = s
 	case strings.HasPrefix(line, "ruby "):
-		d, err := launchrb(line)
+		d, s, err := launchrb(line)
 		if err != nil {
 			launchfail(line, err.Error())
 			return
 		}
 		dpid = d
+		svcname = s
 	default: // binary
-		d, err := launch(line)
+		d, s, err := launch(line)
 		if err != nil {
 			launchfail(line, err.Error())
 			return
 		}
 		dpid = d
+		svcname = s
 		src = "bin:" + extractsrc(line)
 	}
 	// update DPT
@@ -220,7 +224,7 @@ func hlaunch(line string) {
 			launchfail(line, err.Error())
 			return
 		}
-		dpt.addDProc(newDProc(dpid, DProcLongRunning, kubecontext, src))
+		dpt.addDProc(newDProc(dpid, DProcLongRunning, kubecontext, src, svcname))
 	}
 }
 
