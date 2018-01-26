@@ -2,9 +2,10 @@
 
 ## 0.5 release
 
-- [x] create architecture diagram, advance design doc
-- [ ] create katacoda scenario and record via Loom
-- [ ] create microservices demo
+- [x] create architecture diagram and complete design doc
+- [x] create katacoda scenario
+- [ ] add and update help on `version` and `debug`
+- [ ] create microservices demo, for example using [this](https://github.com/nathanpeck/nodejs-aws-workshop)
 - [ ] re-write docs (header, use cases)
 - [ ] write blog post incl. motivation and new demo recording (microservices demo)
 - [ ] implement [0.5 milestones](https://github.com/mhausenblas/kubed-sh/milestone/4)

@@ -55,8 +55,10 @@ func interpret(rl *readline.Instance) {
 			switch debugmode {
 			case true:
 				debugmode = false
+				info("DEBUG mode is now off.")
 			case false:
 				debugmode = true
+				info("DEBUG mode is now on.")
 			}
 		case line == "exit":
 			return
