@@ -140,6 +140,7 @@ func hps(line string) {
 		}
 		kubecontext = k
 	}
+	debug("in context " + kubecontext)
 	res := dpt.DumpDPT(kubecontext)
 	output(res)
 }
