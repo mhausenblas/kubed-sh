@@ -1,6 +1,9 @@
 # kubed-sh
 
-[![GitHub release](https://img.shields.io/github/release/mhausenblas/kubed-sh/all.svg)](https://github.com/mhausenblas/kubed-sh/releases/) [![GitHub issues](https://img.shields.io/github/issues/mhausenblas/kubed-sh.svg)](https://github.com/mhausenblas/kubed-sh/issues) ![GitHub release](https://img.shields.io/badge/cloud--native-enabled-blue.svg)
+[![GitHub release](https://img.shields.io/github/release/mhausenblas/kubed-sh/all.svg)](https://github.com/mhausenblas/kubed-sh/releases/)
+[![GitHub issues](https://img.shields.io/github/issues/mhausenblas/kubed-sh.svg)](https://github.com/mhausenblas/kubed-sh/issues)
+[![Go Report Card](https://goreportcard.com/badge/github.com/mhausenblas/kubed-sh)](https://goreportcard.com/report/github.com/mhausenblas/kubed-sh)
+
 
 Hello and welcome to `kubed-sh`, the Kubernetes distributed shell for the casual cluster user.
 In a nutshell, `kubed-sh` ([pronunciation](#faq)) lets you execute a program in a Kubernetes cluster without having to
