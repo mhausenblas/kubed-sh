@@ -5,9 +5,7 @@
 [![Go Report Card](https://goreportcard.com/badge/github.com/mhausenblas/kubed-sh)](https://goreportcard.com/report/github.com/mhausenblas/kubed-sh)
 
 
-Hello and welcome to `kubed-sh`, the Kubernetes distributed shell for the casual cluster user.
-In a nutshell, `kubed-sh` ([pronunciation](#faq)) lets you execute a program in a Kubernetes cluster without having to
-create a container image and learn new concepts or commands.
+Welcome to `kubed-sh`, the Kubernetes distributed shell for the casual cluster user. In a nutshell, `kubed-sh` lets you execute a program in a Kubernetes cluster without having to create a container image or learn new concepts.
 
 - [Use cases](#use-cases)
 - [Installation](#install-it)
@@ -22,8 +20,8 @@ create a container image and learn new concepts or commands.
 See it in action, below or try it out in your browser using this [Katacoda scenario](https://www.katacoda.com/mhausenblas/scenarios/10):
 
 | [![Introducing kubed-sh](img/introducing-kubed-sh.png)](https://www.youtube.com/watch?v=gqi1-XLiq-o) | [![kubed-sh hot-reload feature demo](img/hotreload.png)](https://www.useloom.com/share/441a97fd48ae46da8d786194f93968f6) |
-|:----------------------------:|:----------------------------------:|
-| Introducing kubed-sh (5min)  | kubed-sh hot-reload feature demo   |
+|:--------------------------------:|:------------------------------------------:|
+| *Introducing kubed-sh (5 min)*   | *kubed-sh hot-reload feature demo (3 min)* |
 
 In addition to launching (Linux ELF) binaries directly, the following interpreted environments are currently supported:
 
