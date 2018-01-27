@@ -19,9 +19,11 @@ create a container image and learn new concepts or commands.
   - [Configuration](#configuration)
 - [FAQ](#faq)
 
-See it in action:
+See it in action, below or try it out in your browser using this [Katacoda scenario](https://www.katacoda.com/mhausenblas/scenarios/10):
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/gqi1-XLiq-o" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+| [![Introducing kubed-sh](img/introducing-kubed-sh.png)](https://www.youtube.com/watch?v=gqi1-XLiq-o) | [![kubed-sh hot-reload feature demo](img/hotreload.png)](https://www.useloom.com/share/441a97fd48ae46da8d786194f93968f6) |
+|:----------------------------:|:----------------------------------:|
+| Introducing kubed-sh (5min)  | kubed-sh hot-reload feature demo   |
 
 In addition to launching (Linux ELF) binaries directly, the following interpreted environments are currently supported:
 
