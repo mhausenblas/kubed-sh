@@ -4,7 +4,6 @@
 [![GitHub issues](https://img.shields.io/github/issues/mhausenblas/kubed-sh.svg)](https://github.com/mhausenblas/kubed-sh/issues)
 [![Go Report Card](https://goreportcard.com/badge/github.com/mhausenblas/kubed-sh)](https://goreportcard.com/report/github.com/mhausenblas/kubed-sh)
 
-
 Welcome to `kubed-sh`, the Kubernetes distributed shell for the casual cluster user. In a nutshell, `kubed-sh` lets you execute a program in a Kubernetes cluster without having to create a container image or learn new concepts.
 
 - [Use cases](#use-cases)
@@ -29,19 +28,17 @@ In addition to launching (Linux ELF) binaries directly, the following interprete
 - When you enter `python script.py`, a Python (default version: 3.6) environment is provided and the `script.py` is executed.
 - When you enter `ruby script.rb`, a Ruby (default version: 2.5) environment is provided and the `script.rb` is executed.
 
-Note that `kubed-sh` is a proper shell environment, that is, you can expect features such as auto-complete, history operations,
-or `CTRL+L` clearing the screen to work as per usual.
+Note that `kubed-sh` is a proper shell environment. This means you can expect features such as auto-complete of built-in commands, history operations (`CTRL+R`), or clearing the screen (`CTRL+L`) to work as per usual.
 
 ## Use cases
 
-If you have access to a [Kubernetes](https://kubernetes.io/) cluster and you have [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/) installed you're good to go and might want to consider using `kubed-sh`, for example for:
+If you have access to a [Kubernetes](https://kubernetes.io/) cluster and you have [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/) installed, you're good to go. You might want to consider using `kubed-sh`, for example for:
 
-- **Prototyping**—Let's say you quickly want to try out a Python script or see how a Go program and a Node.js script play together, in the context of microservices.
-- **Learning Kubernetes**—You're new to Kubernetes and want to learn how to interact with it. Tip: if you issue the `debug` command you can see which `kubectl` commands `kubed-sh` launches in the background.
-- **Developing**—Imagine you're developing a program in Ruby and want to launch it in a Kubernetes cluster, without having to build an image and/or pushing it to a registry.
-In this case the experimental hot-reload feature (using `HOTRELOAD=true`) is useful for you: whenever you save the file locally, it gets updated in the Kubernetes cluster.
+- **Prototyping**—Let's say you quickly want to try out a Python script or, in the context of microservices, see how a Go program and a Node.js script play together.
+- **Developing**—Imagine you're developing a program in Ruby and want to launch it in a Kubernetes cluster, without having to build an image and pushing it to a registry. In this case, the experimental hot-reload feature (using `HOTRELOAD=true`) is useful for you. Whenever you save the file locally, it gets updated in the Kubernetes cluster, if hot-reload is enabled.
+- **Learning Kubernetes**—You're new to Kubernetes and want to learn how to interact with it? Tip: if you issue the `debug` command you can see which `kubectl` commands `kubed-sh` launches in the background.
 
-Also, you might be interested in [my motivation](why.md) for writing `kubed-sh`.
+Also, you may be interested in [my motivation](why.md) for writing `kubed-sh`?
 
 ## Install it
 
