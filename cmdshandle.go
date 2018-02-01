@@ -155,7 +155,9 @@ func huse(line string) {
 		return
 	}
 	output(res)
-	setprompt(targetcontext)
+	if rl != nil {
+		setprompt(targetcontext)
+	}
 }
 
 func hcontexts() {
