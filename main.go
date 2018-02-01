@@ -1,6 +1,8 @@
 package main
 
 import (
+	"bufio"
+	"io/ioutil"
 	"os"
 	"sync"
 
@@ -66,6 +68,33 @@ func init() {
 }
 
 func main() {
+	var script string
+	// first, check if we've got a script filename
+	// passed in via command line argument:
+	if len(os.Args) == 2 {
+		scriptfile := os.Args[1]
+		b, err := ioutil.ReadFile(scriptfile)
+		if err != nil {
+			warn("Error executing script: " + err.Error())
+		}
+		script = string(b)
+		interprets(script)
+		return
+	}
+	// now let's see if we maybe have a script via stdin:
+	stat, _ := os.Stdin.Stat()
+	if (stat.Mode() & os.ModeCharDevice) == 0 {
+		scanner := bufio.NewScanner(os.Stdin)
+		for scanner.Scan() {
+			script += scanner.Text() + "\n"
+		}
+		if scanner.Err() != nil {
+			warn("Error reading from stdin: " + scanner.Err().Error())
+		}
+		interprets(script)
+		return
+	}
+	// well seems we're gonna be running interactive:
 	kubecontext, err := preflight()
 	if err != nil {
 		warn("Encountered issues during startup: " + err.Error())
@@ -84,5 +113,5 @@ func main() {
 	setprompt(kubecontext)
 	log.SetOutput(rl.Stderr())
 	go rwatch.run()
-	interpret(rl)
+	interpreti(rl)
 }

@@ -8,7 +8,8 @@ import (
 	"github.com/chzyer/readline"
 )
 
-func interpret(rl *readline.Instance) {
+// interpret interactively interprets commands
+func interpreti(rl *readline.Instance) {
 	for {
 		line, err := rl.Readline()
 		if err == readline.ErrInterrupt {
@@ -28,6 +29,20 @@ func interpret(rl *readline.Instance) {
 	}
 }
 
+// interprets interprets a script,
+// line by line
+func interprets(script string) {
+	lines := strings.Split(script, "\n")
+	for _, line := range lines {
+		done := interpretl(line)
+		if done {
+			return
+		}
+	}
+}
+
+// interpretl interprets a single line,
+// used both in interactive and scripting mode.
 func interpretl(line string) bool {
 	switch {
 	case strings.HasPrefix(line, "contexts"):
