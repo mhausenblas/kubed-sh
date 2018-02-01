@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"os"
 	"sync"
-
-	"github.com/chzyer/readline"
 )
 
 // EnvVarTable is an environment variable table.
@@ -69,7 +67,7 @@ func (et *EnvVarTable) init() {
 	}
 }
 
-func setprompt(rl *readline.Instance, context string) {
+func setprompt(context string) {
 	var namespace string
 	namespace, err := kubectl(false, "run", "ns", "--rm", "-i", "-t", "--restart=Never", "--image=alpine:3.7", "--", "cat", "/var/run/secrets/kubernetes.io/serviceaccount/namespace")
 	if err != nil {

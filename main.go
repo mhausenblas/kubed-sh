@@ -14,6 +14,7 @@ var (
 	noprepull      bool
 	customkubectl  string
 	prevdir        string
+	rl             *readline.Instance
 	completer      = readline.NewPrefixCompleter(
 		readline.PcItem("cat"),
 		readline.PcItem("cd"),
@@ -69,7 +70,7 @@ func main() {
 	if err != nil {
 		warn("Encountered issues during startup: " + err.Error())
 	}
-	rl, err := readline.NewEx(&readline.Config{
+	rl, err = readline.NewEx(&readline.Config{
 		AutoComplete:    completer,
 		HistoryFile:     "/tmp/readline.tmp",
 		InterruptPrompt: "^C",
@@ -80,7 +81,7 @@ func main() {
 	defer func() {
 		_ = rl.Close()
 	}()
-	setprompt(rl, kubecontext)
+	setprompt(kubecontext)
 	log.SetOutput(rl.Stderr())
 	go rwatch.run()
 	interpret(rl)

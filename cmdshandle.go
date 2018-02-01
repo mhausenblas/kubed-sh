@@ -8,8 +8,6 @@ import (
 	"sort"
 	"strconv"
 	"strings"
-
-	"github.com/chzyer/readline"
 )
 
 func hcd(line string) {
@@ -145,7 +143,7 @@ func hps(line string) {
 	output(res)
 }
 
-func huse(line string, rl *readline.Instance) {
+func huse(line string) {
 	if !strings.ContainsAny(line, " ") {
 		info("Need a target cluster")
 		return
@@ -157,7 +155,7 @@ func huse(line string, rl *readline.Instance) {
 		return
 	}
 	output(res)
-	setprompt(rl, targetcontext)
+	setprompt(targetcontext)
 }
 
 func hcontexts() {
