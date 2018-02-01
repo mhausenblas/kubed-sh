@@ -4,10 +4,11 @@
 
 - [x] create architecture diagram and complete design doc
 - [x] create katacoda scenario
-- [ ] re-write docs (header, use cases)
+- [x] re-write docs (header, use cases)
 - [ ] create microservices demo, for example using [this](https://github.com/nathanpeck/nodejs-aws-workshop)
 - [ ] write blog post incl. motivation and new demo recording (microservices demo)
 - [ ] add and update help on `version` and `debug`
+- [ ] updated docs re scripting
 - [ ] implement [0.5 milestones](https://github.com/mhausenblas/kubed-sh/milestone/4)
 
 ## 0.4 release
