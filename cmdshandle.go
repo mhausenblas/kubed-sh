@@ -61,6 +61,7 @@ func hlocalexec(line string) {
 }
 
 func henv(line string) {
+	// user asked to list variables in the currently selected environment:
 	if !strings.ContainsAny(line, " ") {
 		tmp := []string{}
 		for k, v := range currentenv().evt.et {
@@ -72,6 +73,21 @@ func henv(line string) {
 		}
 		return
 	}
+	// maybe it's a list command?
+	if line == "env list" {
+		tmp := []string{}
+		for k := range environments {
+			if k != globalEnv {
+				tmp = append(tmp, fmt.Sprintf("%s", k))
+			}
+		}
+		sort.Strings(tmp)
+		for _, e := range tmp {
+			output(e)
+		}
+		return
+	}
+	// so check for a CRUD command?
 	if (len(strings.Split(line, " "))) != 3 {
 		warn("Unknown env command. Must follow 'env create|select|delete ENV_NAME' pattern.")
 		return
