@@ -270,7 +270,7 @@ func hlaunch(line string) {
 			launchfail(line, err.Error())
 			return
 		}
-		dpt.addDProc(newDProc(dpid, DProcLongRunning, kubecontext, src, svcname))
+		dpt.addDProc(newDProc(dpid, DProcLongRunning, kubecontext, src, svcname, currentenv().name))
 	}
 }
 
