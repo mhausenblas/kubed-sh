@@ -73,5 +73,12 @@ func setprompt(context string) {
 	if err != nil {
 		warn("Can't determine namespace")
 	}
-	rl.SetPrompt(fmt.Sprintf("[\033[32m%s\033[0m::\033[36m%s\033[0m]$ ", context, namespace))
+	env := "test"
+	switch env {
+	case "":
+		rl.SetPrompt(fmt.Sprintf("[\033[32m%s\033[0m::\033[36m%s\033[0m]$ ", context, namespace))
+	default:
+		rl.SetPrompt(fmt.Sprintf("[\033[95m%s\033[0m@\033[32m%s\033[0m::\033[36m%s\033[0m]$ ", env, context, namespace))
+	}
+
 }
