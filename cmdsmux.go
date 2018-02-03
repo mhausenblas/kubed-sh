@@ -53,7 +53,7 @@ func interpretl(line string) bool {
 	case strings.HasPrefix(line, "echo"):
 		hecho(line)
 	case strings.HasPrefix(line, "env"):
-		henv()
+		henv(line)
 	case strings.HasPrefix(line, "help"):
 		husage(line)
 	case strings.HasPrefix(line, "kill"):

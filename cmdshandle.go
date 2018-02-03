@@ -60,14 +60,33 @@ func hlocalexec(line string) {
 	output(res)
 }
 
-func henv() {
-	tmp := []string{}
-	for k, v := range evt.et {
-		tmp = append(tmp, fmt.Sprintf("%s=%s", k, v))
+func henv(line string) {
+	if !strings.ContainsAny(line, " ") {
+		tmp := []string{}
+		for k, v := range evt.et {
+			tmp = append(tmp, fmt.Sprintf("%s=%s", k, v))
+		}
+		sort.Strings(tmp)
+		for _, e := range tmp {
+			output(e)
+		}
+		return
 	}
-	sort.Strings(tmp)
-	for _, e := range tmp {
-		output(e)
+	if (len(strings.Split(line, " "))) != 3 {
+		warn("Unknown env command. Must follow 'env create|select|delete ENV_NAME' pattern.")
+		return
+	}
+	cmd := strings.Split(line, " ")[1]
+	targetenv := strings.Split(line, " ")[2]
+	switch cmd {
+	case "create":
+		debug("creating new environment '" + targetenv + "'")
+	case "select":
+		debug("switching to environment '" + targetenv + "'")
+	case "delete":
+		debug("deleting environment '" + targetenv + "'")
+	default:
+		warn("Unknown command. Must follow 'env create|select|delete ENV_NAME' pattern.")
 	}
 }
 
