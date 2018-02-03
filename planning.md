@@ -1,14 +1,19 @@
 # To do
 
+## 0.6 release
+
+- [ ] create microservices demo, for example using [this](https://github.com/nathanpeck/nodejs-aws-workshop)
+- [ ] write blog post incl. motivation and new demo recording (microservices demo)
+- [ ] add and update help on `version` and `debug`
+- [ ] implement [0.6 milestones](https://github.com/mhausenblas/kubed-sh/milestone/5)
+
 ## 0.5 release
 
 - [x] create architecture diagram and complete design doc
 - [x] create katacoda scenario
 - [x] re-write docs (header, use cases)
-- [ ] create microservices demo, for example using [this](https://github.com/nathanpeck/nodejs-aws-workshop)
-- [ ] write blog post incl. motivation and new demo recording (microservices demo)
-- [ ] add and update help on `version` and `debug`
 - [ ] updated docs re scripting
+- [ ] create long-running Python 3 TC and rename existing to 2
 - [ ] implement [0.5 milestones](https://github.com/mhausenblas/kubed-sh/milestone/4)
 
 ## 0.4 release
