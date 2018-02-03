@@ -74,19 +74,15 @@ func debug(msg string) {
 	}
 }
 
-func preflight() (string, error) {
+func preflight() error {
 	checkruntime()
 	cversion, sversion, err := whatversion()
 	if err != nil {
-		return "", err
+		return err
 	}
 	info(fmt.Sprintf("Detected Kubernetes client in version %s and server in version %s\n", cversion, sversion))
 	prepullimgs(sversion)
-	kubecontext, err := kubectl(true, "config", "current-context")
-	if err != nil {
-		return "", err
-	}
-	return kubecontext, nil
+	return nil
 }
 
 func checkruntime() {
@@ -133,22 +129,22 @@ func prepullimgs(serverversion string) {
 	if ppdaemonsets != "" { // the Daemonset is already active
 		return
 	}
-	img := evt.get("BINARY_IMAGE")
+	img := currentenv().evt.get("BINARY_IMAGE")
 	err := prepullimg(serverversion, "prepullbin", img, "/tmp/kubed-sh_ds_binary.yaml")
 	if err != nil {
 		info("Wasn't able to pre-pull container image " + img)
 	}
-	img = evt.get("NODE_IMAGE")
+	img = currentenv().evt.get("NODE_IMAGE")
 	err = prepullimg(serverversion, "prepulljs", img, "/tmp/kubed-sh_ds_node.yaml")
 	if err != nil {
 		info("Wasn't able to pre-pull container image " + img)
 	}
-	img = evt.get("PYTHON_IMAGE")
+	img = currentenv().evt.get("PYTHON_IMAGE")
 	err = prepullimg(serverversion, "prepullpy", img, "/tmp/kubed-sh_ds_python.yaml")
 	if err != nil {
 		info("Wasn't able to pre-pull container image " + img)
 	}
-	img = evt.get("RUBY_IMAGE")
+	img = currentenv().evt.get("RUBY_IMAGE")
 	err = prepullimg(serverversion, "prepullrb", img, "/tmp/kubed-sh_ds_ruby.yaml")
 	if err != nil {
 		info("Wasn't able to pre-pull container image " + img)

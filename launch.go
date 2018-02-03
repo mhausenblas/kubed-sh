@@ -63,7 +63,7 @@ func launch(line string) (string, string, error) {
 	if strings.HasSuffix(line, "&") {
 		strategy = "Always"
 	}
-	img := evt.get("BINARY_IMAGE")
+	img := currentenv().evt.get("BINARY_IMAGE")
 	res, err := kubectl(true, "run", hostpod,
 		"--image="+img, "--restart="+strategy,
 		"--labels=gen=kubed-sh,bin="+binfile,
@@ -80,11 +80,11 @@ func launch(line string) (string, string, error) {
 			return hostpod, "", err
 		}
 		svcname := binfile[0 : len(binfile)-len(filepath.Ext(binfile))]
-		userdefsvcname := evt.get("SERVICE_NAME")
+		userdefsvcname := currentenv().evt.get("SERVICE_NAME")
 		if userdefsvcname != "" {
 			svcname = userdefsvcname
 		}
-		port := evt.get("SERVICE_PORT")
+		port := currentenv().evt.get("SERVICE_PORT")
 		sres, serr := kubectl(true, "expose", "deployment", deployment, "--name="+svcname, "--port="+port, "--target-port="+port)
 		if serr != nil {
 			return hostpod, "", serr
@@ -175,11 +175,11 @@ func launchenv(line, image, interpreter string) (string, string, error) {
 			return hostpod, "", err
 		}
 		svcname = scriptfile[0 : len(scriptfile)-len(filepath.Ext(scriptfile))]
-		userdefsvcname := evt.get("SERVICE_NAME")
+		userdefsvcname := currentenv().evt.get("SERVICE_NAME")
 		if userdefsvcname != "" {
 			svcname = userdefsvcname
 		}
-		port := evt.get("SERVICE_PORT")
+		port := currentenv().evt.get("SERVICE_PORT")
 		sres, serr := kubectl(true, "expose", "deployment", deployment, "--name="+svcname, "--port="+port, "--target-port="+port)
 		if serr != nil {
 			return hostpod, "", serr
@@ -231,16 +231,16 @@ func launchenv(line, image, interpreter string) (string, string, error) {
 }
 
 func launchpy(line string) (string, string, error) {
-	img := evt.get("PYTHON_IMAGE")
+	img := currentenv().evt.get("PYTHON_IMAGE")
 	return launchenv(line, img, "python")
 }
 
 func launchjs(line string) (string, string, error) {
-	img := evt.get("NODE_IMAGE")
+	img := currentenv().evt.get("NODE_IMAGE")
 	return launchenv(line, img, "node")
 }
 
 func launchrb(line string) (string, string, error) {
-	img := evt.get("RUBY_IMAGE")
+	img := currentenv().evt.get("RUBY_IMAGE")
 	return launchenv(line, img, "ruby")
 }

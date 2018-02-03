@@ -12,9 +12,56 @@ type EnvVarTable struct {
 	et  map[string]string
 }
 
+// Environment represents an environment.
+type Environment struct {
+	name string
+	evt  *EnvVarTable
+}
+
 var (
-	evt *EnvVarTable
+	globalEnv    = "KUBED-SH_GLOBAL_ENVIRONMENT"
+	currentEnv   *Environment
+	environments = make(map[string]Environment)
 )
+
+func currentenv() *Environment {
+	return currentEnv
+}
+
+func createenv(name string) {
+	// set up the environment variables table for our new environment:
+	evt := &EnvVarTable{
+		mux: new(sync.Mutex),
+		et:  make(map[string]string),
+	}
+	// load and/or set default environment variables for the environment variables table:
+	evt.init()
+	env := Environment{
+		name: name,
+		evt:  evt,
+	}
+	environments[name] = env
+}
+
+func selectenv(name string) error {
+	env, ok := environments[name]
+	if !ok {
+		return fmt.Errorf("provided environment doesn't seem to exist")
+	}
+	currentEnv = &env
+	setprompt()
+	return nil
+}
+
+func deleteenv(name string) error {
+	_, ok := environments[name]
+	if !ok {
+		return fmt.Errorf("provided environment doesn't seem to exist")
+	}
+	_ = selectenv(globalEnv)
+	delete(environments, name)
+	return nil
+}
 
 // set sets an environment variable
 func (et *EnvVarTable) set(envar, value string) {
@@ -67,15 +114,18 @@ func (et *EnvVarTable) init() {
 	}
 }
 
-func setprompt(context string) {
-	var namespace string
+func setprompt() {
+	context, err := kubectl(false, "config", "current-context")
+	if err != nil {
+		warn("Can't determine current context")
+	}
 	namespace, err := kubectl(false, "run", "ns", "--rm", "-i", "-t", "--restart=Never", "--image=alpine:3.7", "--", "cat", "/var/run/secrets/kubernetes.io/serviceaccount/namespace")
 	if err != nil {
 		warn("Can't determine namespace")
 	}
-	env := "test"
+	env := currentenv().name
 	switch env {
-	case "":
+	case globalEnv:
 		rl.SetPrompt(fmt.Sprintf("[\033[32m%s\033[0m::\033[36m%s\033[0m]$ ", context, namespace))
 	default:
 		rl.SetPrompt(fmt.Sprintf("[\033[95m%s\033[0m@\033[32m%s\033[0m::\033[36m%s\033[0m]$ ", env, context, namespace))

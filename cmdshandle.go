@@ -63,7 +63,7 @@ func hlocalexec(line string) {
 func henv(line string) {
 	if !strings.ContainsAny(line, " ") {
 		tmp := []string{}
-		for k, v := range evt.et {
+		for k, v := range currentenv().evt.et {
 			tmp = append(tmp, fmt.Sprintf("%s=%s", k, v))
 		}
 		sort.Strings(tmp)
@@ -81,10 +81,19 @@ func henv(line string) {
 	switch cmd {
 	case "create":
 		debug("creating new environment '" + targetenv + "'")
+		createenv(targetenv)
 	case "select":
 		debug("switching to environment '" + targetenv + "'")
+		err := selectenv(targetenv)
+		if err != nil {
+			warn(err.Error())
+		}
 	case "delete":
 		debug("deleting environment '" + targetenv + "'")
+		err := deleteenv(targetenv)
+		if err != nil {
+			warn(err.Error())
+		}
 	default:
 		warn("Unknown command. Must follow 'env create|select|delete ENV_NAME' pattern.")
 	}
@@ -176,7 +185,7 @@ func huse(line string) {
 	}
 	output(res)
 	if rl != nil {
-		setprompt(targetcontext)
+		setprompt()
 	}
 }
 
@@ -266,7 +275,7 @@ func hecho(line string) {
 	}
 	echo := strings.Split(line, " ")[1]
 	if strings.HasPrefix(echo, "$") {
-		v := evt.get(echo[1:])
+		v := currentenv().evt.get(echo[1:])
 		if v != "" {
 			fmt.Println(v)
 			return

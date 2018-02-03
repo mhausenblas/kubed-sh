@@ -55,16 +55,6 @@ func init() {
 	if err != nil {
 		output(err.Error())
 	}
-	// set up the environment variables table:
-	evt = &EnvVarTable{
-		mux: new(sync.Mutex),
-		et:  make(map[string]string),
-	}
-	// load and/or set default environment variables:
-	evt.init()
-	// set up hotreload watchdog:
-	rwatch = &ReloadWatchdog{}
-	rwatch.init(evt)
 }
 
 func main() {
@@ -95,7 +85,7 @@ func main() {
 		return
 	}
 	// well seems we're gonna be running interactive:
-	kubecontext, err := preflight()
+	err := preflight()
 	if err != nil {
 		warn("Encountered issues during startup: " + err.Error())
 	}
@@ -110,9 +100,14 @@ func main() {
 	defer func() {
 		_ = rl.Close()
 	}()
-	setprompt(kubecontext)
+	// create and select global environment
+	createenv(globalEnv)
+	selectenv(globalEnv)
 	log.SetOutput(rl.Stderr())
 	output("Type 'help' to learn about available built-in commands.")
+	// set up hotreload watchdog:
+	rwatch = &ReloadWatchdog{}
+	rwatch.init(currentenv().evt)
 	go rwatch.run()
 	interpreti(rl)
 }

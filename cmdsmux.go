@@ -89,7 +89,7 @@ func interpretl(line string) bool {
 	case strings.Contains(line, "="):
 		envar := strings.Split(line, "=")[0]
 		value := strings.Split(line, "=")[1]
-		evt.set(envar, value)
+		currentenv().evt.set(envar, value)
 	case line == "" || strings.HasPrefix(line, "#"):
 	default:
 		hlaunch(line)
