@@ -112,6 +112,7 @@ func main() {
 	}()
 	setprompt(kubecontext)
 	log.SetOutput(rl.Stderr())
+	output("Type 'help' to learn about available built-in commands.")
 	go rwatch.run()
 	interpreti(rl)
 }
