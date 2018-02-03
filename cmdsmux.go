@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"io"
 	"strings"
 
 	"github.com/chzyer/readline"
@@ -11,16 +10,16 @@ import (
 // interpret interactively interprets commands
 func interpreti(rl *readline.Instance) {
 	for {
-		line, err := rl.Readline()
-		if err == readline.ErrInterrupt {
-			if len(line) == 0 {
-				break
-			} else {
-				continue
-			}
-		} else if err == io.EOF {
-			break
-		}
+		line, _ := rl.Readline()
+		// if err == readline.ErrInterrupt {
+		// 	if len(line) == 0 {
+		// 		break
+		// 	} else {
+		// 		continue
+		// 	}
+		// } else if err == io.EOF {
+		// 	break
+		// }
 		line = strings.TrimSpace(line)
 		done := interpretl(line)
 		if done {
