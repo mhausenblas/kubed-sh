@@ -89,7 +89,7 @@ func henv(line string) {
 	}
 	// so check for a CRUD command?
 	if (len(strings.Split(line, " "))) != 3 {
-		warn("Unknown env command. Must follow 'env create|select|delete ENV_NAME' pattern.")
+		warn("Unknown command. Must follow 'env list' or 'env create|select|delete ENV_NAME' pattern.")
 		return
 	}
 	cmd := strings.Split(line, " ")[1]
@@ -111,7 +111,7 @@ func henv(line string) {
 			warn(err.Error())
 		}
 	default:
-		warn("Unknown command. Must follow 'env create|select|delete ENV_NAME' pattern.")
+		warn("Unknown command. Must follow 'env list' or 'env create|select|delete ENV_NAME' pattern.")
 	}
 }
 

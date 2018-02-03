@@ -66,7 +66,7 @@ func launch(line string) (string, string, error) {
 	img := currentenv().evt.get("BINARY_IMAGE")
 	res, err := kubectl(true, "run", hostpod,
 		"--image="+img, "--restart="+strategy,
-		"--labels=gen=kubed-sh,bin="+binfile,
+		"--labels=gen=kubed-sh,bin="+binfile+",env="+currentenv().name,
 		"--", "sh", "-c", "sleep 10000")
 	if err != nil {
 		return hostpod, "", err
@@ -79,7 +79,7 @@ func launch(line string) (string, string, error) {
 		if err != nil {
 			return hostpod, "", err
 		}
-		svcname := binfile[0 : len(binfile)-len(filepath.Ext(binfile))]
+		svcname = binfile[0 : len(binfile)-len(filepath.Ext(binfile))]
 		userdefsvcname := currentenv().evt.get("SERVICE_NAME")
 		if userdefsvcname != "" {
 			svcname = userdefsvcname
@@ -160,7 +160,7 @@ func launchenv(line, image, interpreter string) (string, string, error) {
 	}
 	res, err := kubectl(true, "run", hostpod,
 		"--image="+image, "--restart="+strategy,
-		"--labels=gen=kubed-sh,script="+scriptfile,
+		"--labels=gen=kubed-sh,script="+scriptfile+",env="+currentenv().name,
 		"--", "sh", "-c", "sleep 10000")
 	if err != nil {
 		return hostpod, "", err
