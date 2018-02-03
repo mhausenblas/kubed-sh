@@ -106,7 +106,8 @@ func hkill(line string) {
 		return
 	}
 	// something like xxx:blah
-	src := strings.Split(dproc.Src, ":")[1]
+	debug(dproc.Src)
+	src := strings.Split(dproc.Src, "=")[1]
 	// now get rid of the extension:
 	svcname := src[0 : len(src)-len(filepath.Ext(src))]
 	_, err = kubectl(true, "delete", "service", svcname)
