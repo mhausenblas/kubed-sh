@@ -42,7 +42,7 @@ func createenv(name string, showhint bool) {
 	}
 	environments[name] = env
 	if showhint {
-		info("Created environment " + name)
+		info("Created environment [" + name + "]")
 		info("To activate it, use env select " + name)
 	}
 }
@@ -54,8 +54,8 @@ func selectenv(name string, showhint bool) error {
 	}
 	currentEnv = &env
 	setprompt()
-	if showhint {
-		info("Selected environment " + name)
+	if showhint && currentenv().name != globalEnv {
+		info("Selected environment [" + name + "]")
 	}
 	return nil
 }
@@ -73,12 +73,12 @@ func deleteenv(name string, showhint bool) error {
 		}
 	}
 	// re-label the resources to global env:
-	_, err := kubectl(false, "label", "deploy,svc,po", "--selector=env="+name, "--overwrite", "env="+globalEnv)
+	_, err := kubectl(false, "label", "deploy,rs,svc,po", "--selector=env="+name, "--overwrite", "env="+globalEnv)
 	if err != nil {
 		warn("Can't move processes from " + name + " to global environment")
 	}
 	if showhint {
-		info("Deleted environment " + name + "and now all processes are in the global environment")
+		info("Deleted environment [" + name + "], now all processes are in the global environment")
 	}
 	// set current env to global env and get rid of env
 	_ = selectenv(globalEnv, true)
