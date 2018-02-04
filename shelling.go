@@ -149,7 +149,7 @@ func prepullimgs(serverversion string) {
 	if err != nil {
 		info("Wasn't able to pre-pull container image " + img)
 	}
-	output("Pre-pulling images, this may take up to 30 seconds to complete, please stand by.\nDon't worry, this is a one-time only operation ;)")
+	output("Pre-pulling four Alpine images for binaries and the supported interpreted languages via DaemonSets. This may take up to 30 seconds to complete, please stand by.\nDon't worry, this is a one-time only operation which you can disable by starting kubed-sh with KUBEDSH_NOPREPULL=true")
 	ticker := time.NewTicker(1 * time.Second)
 	go func() {
 		for t := range ticker.C {
