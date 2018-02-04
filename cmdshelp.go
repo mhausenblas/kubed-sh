@@ -22,7 +22,7 @@ func helpall() {
 			cmd += " (local):\n\t\t\tprint a value or environment variable"
 		case cmd == "env":
 			cmd += " (local):\n\t\t\tlist all environment variables currently defined"
-		case cmd == "exit":
+		case cmd == exitcmd:
 			cmd += " (local):\n\t\t\tleave shell"
 		case cmd == "help":
 			cmd += " (local):\n\t\t\tlist built-in commands; use help command for more details"
@@ -74,7 +74,7 @@ func husage(line string) {
 		cmd += " val\n\nThis is a local command that prints the literal value 'val' or an environment variable if prefixed with an '$'."
 	case cmd == "env":
 		cmd += "\n\nThis is a local command that lists all environment variables currently defined."
-	case cmd == "exit":
+	case cmd == exitcmd:
 		cmd += "\n\nThis is a local command that you can use to leave the kubed-sh shell."
 	case cmd == "help":
 		cmd += "\n\nThis is a local command that lists all built-in commands. You can use 'help command' for more details on a certain command."

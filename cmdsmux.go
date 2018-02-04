@@ -75,7 +75,7 @@ func interpretl(line string) bool {
 			debugmode = true
 			info("DEBUG mode is now on.")
 		}
-	case line == "exit":
+	case line == exitcmd:
 		return true
 	case line == "version":
 		output(releaseVersion)

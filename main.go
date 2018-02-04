@@ -10,6 +10,8 @@ import (
 	"github.com/chzyer/readline"
 )
 
+const exitcmd = "exit"
+
 var (
 	releaseVersion string
 	debugmode      bool
@@ -28,7 +30,7 @@ var (
 			readline.PcItem("create"),
 			readline.PcItem("select"),
 			readline.PcItem("delete")),
-		readline.PcItem("exit"),
+		readline.PcItem(exitcmd),
 		readline.PcItem("help"),
 		readline.PcItem("kill"),
 		readline.PcItem("literally"),
