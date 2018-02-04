@@ -105,8 +105,8 @@ func main() {
 		_ = rl.Close()
 	}()
 	// create and select global environment
-	createenv(globalEnv)
-	selectenv(globalEnv)
+	createenv(globalEnv, false)
+	selectenv(globalEnv, false)
 	log.SetOutput(rl.Stderr())
 	output("Type 'help' to learn about available built-in commands.")
 	// set up hotreload watchdog:

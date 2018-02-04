@@ -28,7 +28,7 @@ func currentenv() *Environment {
 	return currentEnv
 }
 
-func createenv(name string) {
+func createenv(name string, showhint bool) {
 	// set up the environment variables table for our new environment:
 	evt := &EnvVarTable{
 		mux: new(sync.Mutex),
@@ -41,24 +41,47 @@ func createenv(name string) {
 		evt:  evt,
 	}
 	environments[name] = env
+	if showhint {
+		info("Created environment " + name)
+		info("To activate it, use env select " + name)
+	}
 }
 
-func selectenv(name string) error {
+func selectenv(name string, showhint bool) error {
 	env, ok := environments[name]
 	if !ok {
 		return fmt.Errorf("provided environment doesn't seem to exist")
 	}
 	currentEnv = &env
 	setprompt()
+	if showhint {
+		info("Selected environment " + name)
+	}
 	return nil
 }
 
-func deleteenv(name string) error {
+func deleteenv(name string, showhint bool) error {
 	_, ok := environments[name]
 	if !ok {
 		return fmt.Errorf("provided environment doesn't seem to exist")
 	}
-	_ = selectenv(globalEnv)
+	// change the environment of all dprocs in the environment:
+	for dpid, dproc := range dpt.lt {
+		if dproc.Env == name {
+			dproc.Env = globalEnv
+			dpt.lt[dpid] = dproc
+		}
+	}
+	// re-label the resources to global env:
+	_, err := kubectl(false, "label", "deploy,svc,po", "--selector=env="+name, "--overwrite", "env="+globalEnv)
+	if err != nil {
+		warn("Can't move processes from " + name + " to global environment")
+	}
+	if showhint {
+		info("Deleted environment " + name + "and now all processes are in the global environment")
+	}
+	// set current env to global env and get rid of env
+	_ = selectenv(globalEnv, true)
 	delete(environments, name)
 	return nil
 }
@@ -130,5 +153,4 @@ func setprompt() {
 	default:
 		rl.SetPrompt(fmt.Sprintf("[\033[95m%s\033[0m@\033[32m%s\033[0m::\033[36m%s\033[0m]$ ", env, context, namespace))
 	}
-
 }

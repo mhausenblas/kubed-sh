@@ -30,7 +30,8 @@ type DProc struct {
 }
 
 // DProcTable is the distributed process lookup table,
-// mappping
+// mappping distributed process IDs (dpids) to distributed
+// processes (dproc)
 type DProcTable struct {
 	mux *sync.Mutex
 	lt  map[string]DProc
@@ -77,7 +78,7 @@ func (dt *DProcTable) BuildDPT() error {
 			}
 			if strings.HasPrefix(s, "env") {
 				env = strings.Split(s, ":")[1]
-				createenv(env)
+				createenv(env, false)
 			}
 		}
 		debug("env:" + env + " id: " + id + " source: " + src)

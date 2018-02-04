@@ -97,16 +97,16 @@ func henv(line string) {
 	switch cmd {
 	case "create":
 		debug("creating new environment '" + targetenv + "'")
-		createenv(targetenv)
+		createenv(targetenv, true)
 	case "select":
 		debug("switching to environment '" + targetenv + "'")
-		err := selectenv(targetenv)
+		err := selectenv(targetenv, true)
 		if err != nil {
 			warn(err.Error())
 		}
 	case "delete":
 		debug("deleting environment '" + targetenv + "'")
-		err := deleteenv(targetenv)
+		err := deleteenv(targetenv, true)
 		if err != nil {
 			warn(err.Error())
 		}
