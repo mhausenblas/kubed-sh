@@ -1,4 +1,4 @@
-kubedsh_version := 0.4.1
+kubedsh_version := 0.5
 
 .PHONY: build clean
 
