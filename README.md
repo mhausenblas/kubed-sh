@@ -62,13 +62,13 @@ the following two prerequisites must be met:
 
 ### Download binaries
 
-Currently, only binaries for [Linux](https://github.com/mhausenblas/kubed-sh/releases/download/0.4.1/kubed-sh-linux) and
-[macOS](https://github.com/mhausenblas/kubed-sh/releases/download/0.4.1/kubed-sh-macos) are provided. Do the following to install `kubed-sh` on your machine.
+Currently, only binaries for [Linux](https://github.com/mhausenblas/kubed-sh/releases/download/0.5/kubed-sh-linux) and
+[macOS](https://github.com/mhausenblas/kubed-sh/releases/download/0.5/kubed-sh-macos) are provided. Do the following to install `kubed-sh` on your machine.
 
 For Linux:
 
 ```
-$ curl -s -L https://github.com/mhausenblas/kubed-sh/releases/download/0.4.1/kubed-sh-linux -o kubed-sh
+$ curl -s -L https://github.com/mhausenblas/kubed-sh/releases/download/0.5/kubed-sh-linux -o kubed-sh
 $ chmod +x kubed-sh
 $ sudo mv kubed-sh /usr/local/bin
 ```
@@ -76,7 +76,7 @@ $ sudo mv kubed-sh /usr/local/bin
 For macOS:
 
 ```
-$ curl -s -L https://github.com/mhausenblas/kubed-sh/releases/download/0.4.1/kubed-sh-macos -o kubed-sh
+$ curl -s -L https://github.com/mhausenblas/kubed-sh/releases/download/0.5/kubed-sh-macos -o kubed-sh
 $ chmod +x kubed-sh
 $ sudo mv kubed-sh /usr/local/bin
 ```
