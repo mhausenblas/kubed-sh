@@ -36,6 +36,8 @@ func helpall() {
 			cmd += " (cluster):\n\t\t\tlist all distributed (long-running) processes in current context"
 		case cmd == "pwd":
 			cmd += " (local):\n\t\t\tprint current working directory"
+		case cmd == "sleep":
+			cmd += " (local):\n\t\t\tsleep for specified time interval (NOP)"
 		case cmd == "use":
 			cmd += " (local):\n\t\t\tselect a certain context to work with"
 		default:
@@ -86,6 +88,8 @@ func husage(line string) {
 		cmd += " [all]\n\nThis is a cluster command that lists all distributed (long-running) processes in the current context.\nIf used with the optional 'all' argument then all distributed processes across all contexts are shown."
 	case cmd == "pwd":
 		cmd += "\n\nThis is a local command that prints the current working directory on your local machine."
+	case cmd == "sleep":
+		cmd += " $TIME_INTERVAL\n\nThis is a local command that pauses execution for the specified time interval, for example 'sleep 3s' or 'sleep 450ms'. \nFor formatting, see also https://golang.org/pkg/time/#ParseDuration"
 	case cmd == "use":
 		cmd += " $CONTEXT\n\nThis is a local command that selects a certain context to work with. \nA context is a (cluster, namespace, user) tuple, see also \nhttps://kubernetes.io/docs/tasks/access-application-cluster/configure-access-multiple-clusters/"
 	default:

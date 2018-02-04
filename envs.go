@@ -77,8 +77,6 @@ func deleteenv(name string, showhint bool) error {
 	if err != nil {
 		warn("Can't move processes from " + name + " to global environment")
 	}
-	// change the selectors of deployments and services to global env:
-
 	// set current env to global env and get rid of env
 	_ = selectenv(globalEnv, true)
 	delete(environments, name)

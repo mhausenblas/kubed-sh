@@ -8,7 +8,22 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+	"time"
 )
+
+func hsleep(line string) {
+	if !strings.ContainsAny(line, " ") {
+		warn("Need a time interval in seconds. For example, `sleep 10s` means sleep for 10s and `sleep 200ms` means sleep for 200ms")
+		return
+	}
+	arg := strings.Split(line, " ")[1]
+	d, err := time.ParseDuration(arg)
+	if err != nil {
+		warn("Don't understand the time interval, can't parse it")
+		return
+	}
+	time.Sleep(d)
+}
 
 func hcd(line string) {
 	var targetdir string

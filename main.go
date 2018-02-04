@@ -35,6 +35,7 @@ var (
 		readline.PcItem("ls"),
 		readline.PcItem("ps", readline.PcItem("all")),
 		readline.PcItem("pwd"),
+		readline.PcItem("sleep"),
 		readline.PcItem("use"),
 	)
 )
@@ -106,7 +107,7 @@ func main() {
 	}()
 	// create and select global environment
 	createenv(globalEnv, false)
-	selectenv(globalEnv, false)
+	_ = selectenv(globalEnv, false)
 	log.SetOutput(rl.Stderr())
 	output("Type 'help' to learn about available built-in commands.")
 	// set up hotreload watchdog:

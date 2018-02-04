@@ -11,15 +11,6 @@ import (
 func interpreti(rl *readline.Instance) {
 	for {
 		line, _ := rl.Readline()
-		// if err == readline.ErrInterrupt {
-		// 	if len(line) == 0 {
-		// 		break
-		// 	} else {
-		// 		continue
-		// 	}
-		// } else if err == io.EOF {
-		// 	break
-		// }
 		line = strings.TrimSpace(line)
 		done := interpretl(line)
 		if done {
@@ -71,6 +62,8 @@ func interpretl(line string) bool {
 		hps(line)
 	case strings.HasPrefix(line, "pwd"):
 		hlocalexec(line)
+	case strings.HasPrefix(line, "sleep"):
+		hsleep(line)
 	case strings.HasPrefix(line, "use"):
 		huse(line)
 	case line == "debug":
