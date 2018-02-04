@@ -115,31 +115,37 @@ Above, you notice that on start-up `kubed-sh` will tell you which client and ser
 Supported built-in commands (see also `help`) are as follows:
 
 ```
+cat (local):
+                        output content of file to terminal
 cd (local):
-                changes working directory
+                        change working directory
 curl (cluster):
-                executes a curl operation in the cluster
+                        execute a curl operation in the cluster
 contexts (local):
-                list available Kubernetes contexts (cluster, namespace, user tuples)
+                        list available Kubernetes contexts (cluster, namespace, user tuples)
 echo (local):
-                print a value or environment variable
+                        print a value or environment variable
 env (local):
-                list all environment variables currently defined
+                        list all environment variables currently defined
 exit (local):
-                leave shell
+                        leave shell
 help (local):
-                list built-in commands; use help command for more details
+                        list built-in commands; use help command for more details
 kill (cluster):
-                stop a distributed process
+                        stop a distributed process
 literally (local):
-                execute what follows as a kubectl command
-                note that you can also prefix a line with ` to achieve the same
+                        execute what follows as a kubectl command
+                        note that you can also prefix a line with ` to achieve the same
+ls (local):
+                        lists content of directory
 ps (cluster):
-                list all distributed (long-running) processes in current context
+                        list all distributed (long-running) processes in current context
 pwd (local):
-                print current working directory
+                        print current working directory
+sleep (local):
+                        sleep for specified time interval (NOP)
 use (local):
-                select a certain context to work with
+                        select a certain context to work with
 ```
 
 ### Environment variables
