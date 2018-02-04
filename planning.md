@@ -12,7 +12,7 @@
 - [x] create architecture diagram and complete design doc
 - [x] create katacoda scenario
 - [x] re-write docs (header, use cases)
-- [ ] updated docs re envs and scripting
+- [ ] updated docs re sleep, envs commands, and scripting support
 - [ ] create long-running Python 3 TC and rename existing to 2
 - [ ] implement [0.5 milestones](https://github.com/mhausenblas/kubed-sh/milestone/4)
 
