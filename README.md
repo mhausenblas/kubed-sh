@@ -22,7 +22,8 @@ Looks familiar to what you do in your local shell? That's the point of `kubed-sh
   - [Build from source](#build-from-source)
 - [Usage](#use-it)
   - [Built-in commands](#built-in-commands)
-  - [Environment variables](#environment-variables)
+  - [Modes](#modes)
+  - [Environments](#environments)
   - [Configuration](#configuration)
 - [FAQ](#faq)
 
@@ -148,9 +149,45 @@ use (local):
                         select a certain context to work with
 ```
 
-### Environment variables
+### Modes
 
-`kubed-sh` supports environment variables, similar to your local shell (bash, zsh, fish) does. There are some pre-defined environment variables which influence the creation of the cluster processes you create by either specifying a binary or interpreter and script:
+You can use `kubed-sh` either interactively or in script mode. In script mode, you provide `kubed-sh` a script file to interpret or make it executable (for example using `chmod 755 thescript` along with a [hashbang](https://en.wikipedia.org/wiki/Shebang_(Unix)) header). The following example illustrates using `kubed-sh` in script mode:
+
+Imagine you have a script file called `test.kbdsh` with the following content:
+
+```
+#!/usr/bin/env kubed-sh
+use minikube
+# This line is a comment that will be ignored
+node ../thescript.js &
+ps
+```
+
+Then, you can make it executable and execute it like so:
+
+```
+$ chmod 755 test.kbdsh
+$ ./test.kbdsh
+```
+
+Alternatively you can provide a script via `stdin`:
+
+```
+$ cat tc/script.kbdsh | kubed-sh
+```
+
+… or as a command line argument:
+
+```
+$ kubed-sh tc/script.kbdsh
+```
+
+Note that all three ways shown above are equivalent.
+
+
+### Environments
+
+`kubed-sh` supports environments and within it variables—akin to what your local shell (bash, zsh, fish) does. There are some pre-defined environment variables which influence the creation of the cluster processes you create by either specifying a binary or interpreter and script:
 
 - `BINARY_IMAGE` (default: `alpine:3.7`) … used for executing binaries
 - `NODE_IMAGE` (default: `node:9.4-alpine`) … used for executing Node.js scripts
@@ -163,6 +200,16 @@ use (local):
 >**TIP**
 
 > You can overwrite at any time any of the above environment variables to change the runtime behaviour of the cluster processes you create. All changes are valid for the runtime of `kubed-sh`. That is, when you quit `kubed-sh` all pre-defined environment variables are reset to their default values.
+
+Useful for scripting and advanced users: with the 0.5 release there are now four sub-commands to `env` (which itself simply lists the defined variables):
+
+- `env list` … list all defined environments in current context
+- `env create ENVNAME` … create a new environment called `ENVNAME`
+- `env select ENVNAME` … make environment called `ENVNAME` the active one
+- `env delete ENVNAME` … delete environment called `ENVNAME`
+
+If no environment is selected, you are operating in the global environment.
+See also the [design](http://kubed.sh/design) as well as [Issue #6](https://github.com/mhausenblas/kubed-sh/issues/6) for what environments are and how to work with them. Note that when you do an `env delete ENVNAME`, this environment is reaped and goes back into the global.
 
 ### Configuration
 

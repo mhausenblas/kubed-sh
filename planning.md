@@ -2,6 +2,7 @@
 
 ## 0.6 release
 
+- [ ] create long-running Python 3 TC and rename existing to 2
 - [ ] create microservices demo, for example using [this](https://github.com/nathanpeck/nodejs-aws-workshop)
 - [ ] write blog post incl. motivation and new demo recording (microservices demo)
 - [ ] add and update help on `version` and `debug`
@@ -12,9 +13,8 @@
 - [x] create architecture diagram and complete design doc
 - [x] create katacoda scenario
 - [x] re-write docs (header, use cases)
-- [ ] updated docs re sleep, envs commands, and scripting support
-- [ ] create long-running Python 3 TC and rename existing to 2
-- [ ] implement [0.5 milestones](https://github.com/mhausenblas/kubed-sh/milestone/4)
+- [x] updated docs re sleep, envs commands, and scripting support
+- [x] implement [0.5 milestones](https://github.com/mhausenblas/kubed-sh/milestone/4)
 
 ## 0.4 release
 
