@@ -114,7 +114,7 @@ func main() {
 		warn("Encountered issues during startup: " + err.Error())
 	}
 	log.SetOutput(rl.Stderr())
-	output("Type 'help' to learn about available built-in commands.")
+	output("\nType 'help' to learn about available built-in commands.")
 	// set up hotreload watchdog:
 	rwatch = &ReloadWatchdog{}
 	rwatch.init(currentenv().evt)

@@ -1,19 +1,14 @@
 package main
 
 import (
-	"bufio"
 	"bytes"
 	"fmt"
-	"io"
 	"io/ioutil"
 	"os"
 	"os/exec"
 	"runtime"
 	"strings"
-	"sync"
 	"time"
-
-	log "github.com/Sirupsen/logrus"
 )
 
 const (
@@ -184,35 +179,6 @@ func prepullimg(serverversion, targetid, targetimg, targetmanifest string) error
 	return nil
 }
 
-func shellout(withstderr bool, cmd string, args ...string) (string, error) {
-	result := ""
-	var out bytes.Buffer
-	log.Debug(cmd, args)
-	c := exec.Command(cmd, args...)
-	c.Env = os.Environ()
-	if withstderr {
-		c.Stderr = os.Stderr
-	}
-	c.Stdout = &out
-	err := c.Run()
-	if err != nil {
-		return result, err
-	}
-	result = strings.TrimSpace(out.String())
-	return result, nil
-}
-
-func shelloutbg(cmd string, args ...string) error {
-	log.Debug(cmd, args)
-	c := exec.Command(cmd, args...)
-	c.Env = os.Environ()
-	err := c.Run()
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
 func kubectl(withstderr bool, cmd string, args ...string) (string, error) {
 	kubectlbin := customkubectl
 	if kubectlbin == "" {
@@ -223,7 +189,6 @@ func kubectl(withstderr bool, cmd string, args ...string) (string, error) {
 		kubectlbin = bin
 	}
 	all := append([]string{cmd}, args...)
-	debug("kubectl " + strings.Join(all, " "))
 	result, err := shellout(withstderr, kubectlbin, all...)
 	if err != nil {
 		return "", err
@@ -248,68 +213,32 @@ func kubectlbg(cmd string, args ...string) error {
 	return nil
 }
 
-func kubectli(cmd string, args ...string) (string, error) {
-	kubectlbin := customkubectl
-	if kubectlbin == "" {
-		bin, err := shellout(false, "which", "kubectl")
-		if err != nil {
-			return "", err
-		}
-		kubectlbin = bin
+func shellout(withstderr bool, cmd string, args ...string) (string, error) {
+	result := ""
+	var out bytes.Buffer
+	all := cmd + " " + strings.Join(args, " ")
+	debug(all)
+	c := exec.Command("bash", "-c", all)
+	c.Env = os.Environ()
+	if withstderr {
+		c.Stderr = os.Stderr
 	}
-	all := append([]string{cmd}, args...)
-	go shellouti(kubectlbin, all...)
-	return "", nil
-}
-
-func shellouti(cmd string, args ...string) {
-	r := bufio.NewReader(os.Stdin)
-	in := make(chan string)
-	go func(i chan string) {
-		for {
-			tmp, _ := r.ReadString('\n')
-			i <- tmp
-		}
-	}(in)
-	runi(cpstd(in), cmd, args...)
-
-}
-
-func cpstd(input <-chan string) func(io.WriteCloser) {
-	return func(stdin io.WriteCloser) {
-		defer stdin.Close()
-		str := <-input
-		io.Copy(stdin, bytes.NewBufferString(str))
+	c.Stdout = &out
+	err := c.Run()
+	if err != nil {
+		return result, err
 	}
+	result = strings.TrimSpace(out.String())
+	return result, nil
 }
 
-func runi(cpstd func(io.WriteCloser), cmd string, args ...string) {
+func shelloutbg(cmd string, args ...string) error {
+	debug(cmd + " " + strings.Join(args, " "))
 	c := exec.Command(cmd, args...)
-	stdin, err := c.StdinPipe()
+	c.Env = os.Environ()
+	err := c.Run()
 	if err != nil {
-		log.Panic(err)
+		return err
 	}
-	stdout, err := c.StdoutPipe()
-	if err != nil {
-		log.Panic(err)
-	}
-	err = c.Start()
-	if err != nil {
-		log.Panic(err)
-	}
-	var wg sync.WaitGroup
-	wg.Add(2)
-	go func() {
-		defer wg.Done()
-		cpstd(stdin)
-	}()
-	go func() {
-		defer wg.Done()
-		io.Copy(os.Stdout, stdout)
-	}()
-	wg.Wait()
-	err = c.Wait()
-	if err != nil {
-		log.Panic(err)
-	}
+	return nil
 }
