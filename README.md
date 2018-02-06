@@ -27,7 +27,7 @@ Looks familiar to what you do in your local shell? That's the point of `kubed-sh
   - [Configuration](#configuration)
 - [FAQ](#faq)
 
-See it in action, below or try it out in your browser using this [Katacoda scenario](https://www.katacoda.com/mhausenblas/scenarios/10):
+See it in action, below or try it out in your browser using this [Katacoda scenario](https://katacoda.com/mhausenblas/scenarios/kubed-sh_101):
 
 | [![Introducing kubed-sh](img/introducing-kubed-sh.png)](https://www.youtube.com/watch?v=gqi1-XLiq-o) | [![kubed-sh hot-reload feature demo](img/hotreload.png)](https://www.useloom.com/share/441a97fd48ae46da8d786194f93968f6) |
 |:--------------------------------:|:------------------------------------------:|
