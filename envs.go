@@ -156,10 +156,12 @@ func setprompt() {
 	}
 	env := currentenv().name
 	debug(env + " " + context + " " + namespace)
-	switch env {
-	case globalEnv:
-		rl.SetPrompt(fmt.Sprintf("[\033[32m%s\033[0m::\033[36m%s\033[0m]$ ", context, namespace))
-	default:
-		rl.SetPrompt(fmt.Sprintf("[\033[95m%s\033[0m@\033[32m%s\033[0m::\033[36m%s\033[0m]$ ", env, context, namespace))
+	if rl != nil {
+		switch env {
+		case globalEnv:
+			rl.SetPrompt(fmt.Sprintf("[\033[32m%s\033[0m::\033[36m%s\033[0m]$ ", context, namespace))
+		default:
+			rl.SetPrompt(fmt.Sprintf("[\033[95m%s\033[0m@\033[32m%s\033[0m::\033[36m%s\033[0m]$ ", env, context, namespace))
+		}
 	}
 }

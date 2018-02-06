@@ -96,7 +96,7 @@ func main() {
 	if err != nil {
 		warn("Encountered issues during startup: " + err.Error())
 	}
-	rl, err := readline.NewEx(&readline.Config{
+	rl, err = readline.NewEx(&readline.Config{
 		AutoComplete:    completer,
 		HistoryFile:     "/tmp/readline.tmp",
 		InterruptPrompt: "^C",
