@@ -96,20 +96,23 @@ func main() {
 	if err != nil {
 		warn("Encountered issues during startup: " + err.Error())
 	}
-	rl, err = readline.NewEx(&readline.Config{
+	rl, err := readline.NewEx(&readline.Config{
 		AutoComplete:    completer,
 		HistoryFile:     "/tmp/readline.tmp",
 		InterruptPrompt: "^C",
 	})
 	if err != nil {
-		panic(err)
+		warn("Encountered issues during startup: " + err.Error())
 	}
 	defer func() {
 		_ = rl.Close()
 	}()
 	// create and select global environment
 	createenv(globalEnv, false)
-	_ = selectenv(globalEnv, false)
+	err = selectenv(globalEnv, false)
+	if err != nil {
+		warn("Encountered issues during startup: " + err.Error())
+	}
 	log.SetOutput(rl.Stderr())
 	output("Type 'help' to learn about available built-in commands.")
 	// set up hotreload watchdog:

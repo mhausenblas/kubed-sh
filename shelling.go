@@ -129,22 +129,22 @@ func prepullimgs(serverversion string) {
 	if ppdaemonsets != "" { // the Daemonset is already active
 		return
 	}
-	img := currentenv().evt.get("BINARY_IMAGE")
+	img := defaultBinaryImage
 	err := prepullimg(serverversion, "prepullbin", img, "/tmp/kubed-sh_ds_binary.yaml")
 	if err != nil {
 		info("Wasn't able to pre-pull container image " + img)
 	}
-	img = currentenv().evt.get("NODE_IMAGE")
+	img = defaultNodeImage
 	err = prepullimg(serverversion, "prepulljs", img, "/tmp/kubed-sh_ds_node.yaml")
 	if err != nil {
 		info("Wasn't able to pre-pull container image " + img)
 	}
-	img = currentenv().evt.get("PYTHON_IMAGE")
+	img = defaultPythonImage
 	err = prepullimg(serverversion, "prepullpy", img, "/tmp/kubed-sh_ds_python.yaml")
 	if err != nil {
 		info("Wasn't able to pre-pull container image " + img)
 	}
-	img = currentenv().evt.get("RUBY_IMAGE")
+	img = defaultRubyImage
 	err = prepullimg(serverversion, "prepullrb", img, "/tmp/kubed-sh_ds_ruby.yaml")
 	if err != nil {
 		info("Wasn't able to pre-pull container image " + img)

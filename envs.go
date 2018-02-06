@@ -18,6 +18,13 @@ type Environment struct {
 	evt  *EnvVarTable
 }
 
+const (
+	defaultBinaryImage = "alpine:3.7"
+	defaultNodeImage   = "node:9.4-alpine"
+	defaultPythonImage = "python:3.6-alpine3.7"
+	defaultRubyImage   = "ruby:2.5-alpine3.7"
+)
+
 var (
 	globalEnv    = "KUBED-SH_GLOBAL_ENVIRONMENT"
 	currentEnv   *Environment
@@ -117,10 +124,10 @@ func (et *EnvVarTable) init() {
 	// set defaults:
 	et.set("SERVICE_PORT", "80")
 	et.set("SERVICE_NAME", "")
-	et.set("BINARY_IMAGE", "alpine:3.7")
-	et.set("NODE_IMAGE", "node:9.4-alpine")
-	et.set("PYTHON_IMAGE", "python:3.6-alpine3.7")
-	et.set("RUBY_IMAGE", "ruby:2.5-alpine3.7")
+	et.set("BINARY_IMAGE", defaultBinaryImage)
+	et.set("NODE_IMAGE", defaultNodeImage)
+	et.set("PYTHON_IMAGE", defaultPythonImage)
+	et.set("RUBY_IMAGE", defaultRubyImage)
 	et.set("HOTRELOAD", "false")
 	// load from parent shell, if present:
 	val, ok := os.LookupEnv("KUBECTL_BINARY")
@@ -145,8 +152,10 @@ func setprompt() {
 	namespace, err := kubectl(false, "run", "ns", "--rm", "-i", "-t", "--restart=Never", "--image=alpine:3.7", "--", "cat", "/var/run/secrets/kubernetes.io/serviceaccount/namespace")
 	if err != nil {
 		warn("Can't determine namespace")
+		namespace = ""
 	}
 	env := currentenv().name
+	debug(env + " " + context + " " + namespace)
 	switch env {
 	case globalEnv:
 		rl.SetPrompt(fmt.Sprintf("[\033[32m%s\033[0m::\033[36m%s\033[0m]$ ", context, namespace))
