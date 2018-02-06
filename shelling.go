@@ -216,9 +216,8 @@ func kubectlbg(cmd string, args ...string) error {
 func shellout(withstderr bool, cmd string, args ...string) (string, error) {
 	result := ""
 	var out bytes.Buffer
-	all := cmd + " " + strings.Join(args, " ")
-	debug(all)
-	c := exec.Command("bash", "-c", all)
+	debug(cmd + " " + strings.Join(args, " "))
+	c := exec.Command(cmd, args...)
 	c.Env = os.Environ()
 	if withstderr {
 		c.Stderr = os.Stderr
