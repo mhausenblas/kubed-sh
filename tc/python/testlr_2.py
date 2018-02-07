@@ -2,7 +2,7 @@
 """
 A simple HTTP server.
 Usage::
-    ./testlr.py
+    ./testlr_2.py
 Send a GET request::
     curl http://localhost
 """
