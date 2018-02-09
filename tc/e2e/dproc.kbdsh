@@ -1,0 +1,5 @@
+#!/usr/bin/env kubed-sh
+
+# let's create a long-running processes
+python ../python/testlr_3.py &
+ps

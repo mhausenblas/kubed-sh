@@ -1,11 +1,5 @@
 #!/usr/bin/env python
-"""
-A simple HTTP server.
-Usage::
-    ./testlr_2.py
-Send a GET request::
-    curl http://localhost
-"""
+
 from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
 import SocketServer
 
