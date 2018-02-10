@@ -1,5 +1,27 @@
 #!/usr/bin/env kubed-sh
 
-# let's create a long-running processes
+# visibility:
+debug
+
+# need to create an env since the global one
+# only exists in interactive mode:
+env create test-dproc
+env select test-dproc
+
+# we're overwriting the service name here because
+# as per RFC 1035 only certain characters are allowed
+# in a FQDN (for example a _ is not):
+SERVICE_NAME=lrpy
+SERVICE_PORT=8080
+
+# let's create a long-running processes:
 python ../python/testlr_3.py &
+
+# expect to see it here:
 ps
+
+# get content:
+curl lrpy:8080
+
+# clean up all the stuff:
+literally delete deploy,rs,po,svc --selector=gen=kubed-sh,env=test-dproc
