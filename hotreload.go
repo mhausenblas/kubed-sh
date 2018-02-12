@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"path/filepath"
 	"strings"
 	"time"
 
@@ -74,6 +75,8 @@ func (rw *ReloadWatchdog) watch() {
 }
 
 func (rw *ReloadWatchdog) update(targetfile string) {
+	// get rid of any silly stuff:
+	targetfile = filepath.Clean(targetfile)
 	debug("Restarting: " + targetfile)
 	// find target pod and original file:
 	po, err := kubectl(true, "get", "po",
