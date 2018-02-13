@@ -120,6 +120,6 @@ func main() {
 	rwatch.init(currentenv().evt)
 	go rwatch.run()
 	// kick off garbage collection:
-	go rmOrphanTerminatingDProcs()
+	go gcDProcs()
 	interpreti(rl)
 }

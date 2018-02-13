@@ -6,11 +6,14 @@ import (
 )
 
 var (
-	gcPause             = 10 * time.Second
-	maxOrphanRuntimeSec = 20.0
+	// how often we check for orphans:
+	gcPause = 10 * time.Second
+	// how long a pod of a terminating dproc can run
+	// until we consider it an orphan (in seconds):
+	maxOrphanRuntimeSec = 30.0
 )
 
-func rmOrphanTerminatingDProcs() {
+func gcDProcs() {
 	for {
 		poNstart, err := kubectl(true, "get", "po",
 			"--selector=dproctype="+string(DProcTerminating), "-o=custom-columns=:metadata.name,:status.startTime", "--field-selector=status.phase=Running",
