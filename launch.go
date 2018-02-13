@@ -70,17 +70,19 @@ func launch(line string) (string, string, error) {
 		dproctype = DProcLongRunning
 	}
 	img := currentenv().evt.get("BINARY_IMAGE")
-	res, err := kubectl(true, "run", hostpod,
-		"--image="+img, "--restart="+strategy,
-		"--labels=gen=kubed-sh,bin="+binfile+
-			",env="+currentenv().name+
-			",dproctype="+string(dproctype),
-		"--", "sh", "-c", "sleep "+keepAliveInSec)
-	if err != nil {
-		return hostpod, "", err
-	}
-	info(res)
-	time.Sleep(5 * time.Second) // this is a hack. need to do prefilght checks and warmup
+	go func() {
+		res, lerr := kubectl(true, "run", hostpod,
+			"--image="+img, "--restart="+strategy,
+			"--labels=gen=kubed-sh,bin="+binfile+
+				",env="+currentenv().name+
+				",dproctype="+string(dproctype),
+			"--", "sh", "-c", "sleep "+keepAliveInSec)
+		if lerr != nil {
+			warn("something went wrong launching the distributed process: " + lerr.Error())
+		}
+		info(res)
+	}()
+	time.Sleep(5 * time.Second) // this is a hack
 	// set up service and hostpod, if necessary:
 	if strings.HasSuffix(line, "&") {
 		deployment, err = kubectl(true, "get", "deployment", "--selector=gen=kubed-sh,bin="+binfile, "-o=custom-columns=:metadata.name", "--no-headers")
@@ -120,7 +122,7 @@ func launch(line string) (string, string, error) {
 		go func() error {
 			// Step 4. launch script in pod:
 			execremotebin := fmt.Sprintf("/tmp/%s", binfile)
-			res, err = kubectl(true, "exec", hostpod, "--", "sh", "-c", execremotebin)
+			res, err := kubectl(true, "exec", hostpod, "--", "sh", "-c", execremotebin)
 			if err != nil {
 				return err
 			}
@@ -131,7 +133,7 @@ func launch(line string) (string, string, error) {
 	default:
 		// Step 4. launch script in pod:
 		execremotebin := fmt.Sprintf("/tmp/%s", binfile)
-		res, err = kubectl(true, "exec", hostpod, "--", "sh", "-c", execremotebin)
+		res, err := kubectl(true, "exec", hostpod, "--", "sh", "-c", execremotebin)
 		if err != nil {
 			return hostpod, "", err
 		}
@@ -141,6 +143,7 @@ func launch(line string) (string, string, error) {
 		if err != nil {
 			return hostpod, "", err
 		}
+		debug("Delete result " + res)
 	}
 	return hostpod, "", nil
 }
@@ -168,16 +171,18 @@ func launchenv(line, image, interpreter string) (string, string, error) {
 		strategy = "Always"
 		dproctype = DProcLongRunning
 	}
-	res, err := kubectl(true, "run", hostpod,
-		"--image="+image, "--restart="+strategy,
-		"--labels=gen=kubed-sh,script="+scriptfile+
-			",env="+currentenv().name+
-			",dproctype="+string(dproctype),
-		"--", "sh", "-c", "sleep "+keepAliveInSec)
-	if err != nil {
-		return hostpod, "", err
-	}
-	info(res)
+	go func() {
+		res, lerr := kubectl(true, "run", hostpod,
+			"--image="+image, "--restart="+strategy,
+			"--labels=gen=kubed-sh,script="+scriptfile+
+				",env="+currentenv().name+
+				",dproctype="+string(dproctype),
+			"--", "sh", "-c", "sleep "+keepAliveInSec)
+		if lerr != nil {
+			warn("something went wrong launching the distributed process: " + lerr.Error())
+		}
+		info(res)
+	}()
 	// this is a hack. need to do prefilght checks and warmup:
 	time.Sleep(5 * time.Second)
 	// set up service and hostpod, if necessary:
@@ -215,29 +220,31 @@ func launchenv(line, image, interpreter string) (string, string, error) {
 	info(fmt.Sprintf("uploaded %s to %s\n", scriptloc, hostpod))
 	switch {
 	case strings.HasSuffix(line, "&"):
-		go func() error {
+		go func() {
 			// Step 4. launch script in pod:
 			execremotescript := fmt.Sprintf("/tmp/%s", scriptfile)
 			err = kubectlbg("exec", "-i", "-t", hostpod, interpreter, execremotescript)
 			if err != nil {
-				return err
+				debug(err.Error())
 			}
-			return nil
 		}()
 		return deployment, svcname, nil
 	default:
-		// Step 4. launch script in pod:
-		execremotescript := fmt.Sprintf("/tmp/%s", scriptfile)
-		res, err = kubectl(true, "exec", hostpod, interpreter, execremotescript)
-		if err != nil {
-			return hostpod, "", err
-		}
-		output(res)
+		go func() {
+			// Step 4. launch script in pod:
+			execremotescript := fmt.Sprintf("/tmp/%s", scriptfile)
+			res, err := kubectl(true, "exec", hostpod, interpreter, execremotescript)
+			if err != nil {
+				debug(err.Error())
+			}
+			debug("exec result " + res)
+		}()
 		// Step 5. clean up:
-		_, err = kubectl(true, "delete", "pod", hostpod)
+		res, err := kubectl(true, "delete", "pod", hostpod)
 		if err != nil {
 			return hostpod, "", err
 		}
+		debug("delete result " + res)
 	}
 	return hostpod, "", nil
 }

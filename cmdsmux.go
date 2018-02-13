@@ -15,6 +15,7 @@ func interpreti(rl *readline.Instance) {
 		if err != nil {
 			switch err {
 			case readline.ErrInterrupt:
+				debug("got interrupted")
 				continue
 			case io.EOF:
 				warn("got an EOF")

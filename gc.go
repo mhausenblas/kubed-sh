@@ -27,7 +27,7 @@ func gcDProcs() {
 			layout := "2006-01-02T15:04:05Z"
 			st, err := time.Parse(layout, start)
 			if err != nil {
-				warn("couldn't parse start time of pod " + poname)
+				debug("couldn't parse start time of pod " + poname)
 			}
 			now := time.Now()
 			diff := now.Sub(st)

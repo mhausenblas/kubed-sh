@@ -115,9 +115,6 @@ func main() {
 	}
 	log.SetOutput(rl.Stderr())
 	output("\nType 'help' to learn about available built-in commands.")
-	// now we start the main interactive processing:
-	var wg sync.WaitGroup
-	wg.Add(3)
 	// set up hotreload watchdog:
 	rwatch = &ReloadWatchdog{}
 	rwatch.init(currentenv().evt)
@@ -125,6 +122,5 @@ func main() {
 	// kick off garbage collection:
 	go gcDProcs()
 	// kick off main interactive interpreter loop:
-	go interpreti(rl)
-	wg.Wait()
+	interpreti(rl)
 }
