@@ -8,6 +8,10 @@ import (
 	"time"
 )
 
+// the time in seconds that the infra process should running
+// this process keeps the pod alive, currently 100,000s (~27h)
+const keepAliveInSec = "100000"
+
 func genpodname() string {
 	base := "kubed-sh"
 	now := time.Now()
@@ -60,14 +64,18 @@ func launch(line string) (string, string, error) {
 	// otherwise a simple pod, representing a foreground
 	// distributed process:
 	strategy := "Never"
+	dproctype := DProcTerminating
 	if strings.HasSuffix(line, "&") {
 		strategy = "Always"
+		dproctype = DProcLongRunning
 	}
 	img := currentenv().evt.get("BINARY_IMAGE")
 	res, err := kubectl(true, "run", hostpod,
 		"--image="+img, "--restart="+strategy,
-		"--labels=gen=kubed-sh,bin="+binfile+",env="+currentenv().name,
-		"--", "sh", "-c", "sleep 10000")
+		"--labels=gen=kubed-sh,bin="+binfile+
+			",env="+currentenv().name+
+			",dproctype="+string(dproctype),
+		"--", "sh", "-c", "sleep "+keepAliveInSec)
 	if err != nil {
 		return hostpod, "", err
 	}
@@ -155,13 +163,17 @@ func launchenv(line, image, interpreter string) (string, string, error) {
 	// otherwise a simple pod, representing a foreground
 	// distributed process:
 	strategy := "Never"
+	dproctype := DProcTerminating
 	if strings.HasSuffix(line, "&") {
 		strategy = "Always"
+		dproctype = DProcLongRunning
 	}
 	res, err := kubectl(true, "run", hostpod,
 		"--image="+image, "--restart="+strategy,
-		"--labels=gen=kubed-sh,script="+scriptfile+",env="+currentenv().name,
-		"--", "sh", "-c", "sleep 10000")
+		"--labels=gen=kubed-sh,script="+scriptfile+
+			",env="+currentenv().name+
+			",dproctype="+string(dproctype),
+		"--", "sh", "-c", "sleep "+keepAliveInSec)
 	if err != nil {
 		return hostpod, "", err
 	}
