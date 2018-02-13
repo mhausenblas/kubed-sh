@@ -119,5 +119,7 @@ func main() {
 	rwatch = &ReloadWatchdog{}
 	rwatch.init(currentenv().evt)
 	go rwatch.run()
+	// kick off garbage collection:
+	go rmOrphanTerminatingDProcs()
 	interpreti(rl)
 }
