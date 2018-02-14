@@ -144,7 +144,7 @@ func launchenv(line, image, interpreter string) (string, string, error) {
 		}()
 		return deployment, svcname, nil
 	default:
-		// Step 4. launch script in pod:
+		// Step 4. launch script or binary in pod:
 		var execres string
 		execremotefile := fmt.Sprintf("/tmp/%s", binorscriptfile)
 		switch interpreter {
@@ -159,7 +159,7 @@ func launchenv(line, image, interpreter string) (string, string, error) {
 				return hostpod, "", err
 			}
 		}
-		debug("exec result " + execres)
+		output(execres)
 		// Step 5. clean up:
 		res, err := kubectl(true, "delete", "pod", hostpod)
 		if err != nil {
