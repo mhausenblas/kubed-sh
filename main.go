@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"io/ioutil"
 	"os"
+	"os/signal"
 	"sync"
 
 	log "github.com/Sirupsen/logrus"
@@ -121,6 +122,14 @@ func main() {
 	go rwatch.run()
 	// kick off garbage collection:
 	go gcDProcs()
+	// necessary hack to make readline ignore a cascaded CTRL+C:
+	c := make(chan os.Signal, 1)
+	signal.Notify(c, os.Interrupt)
+	go func() {
+		for range c {
+			debug("caught an cascaded CTRL+C, ignoring it")
+		}
+	}()
 	// kick off main interactive interpreter loop:
 	interpreti(rl)
 }

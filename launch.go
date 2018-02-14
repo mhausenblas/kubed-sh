@@ -230,17 +230,15 @@ func launchenv(line, image, interpreter string) (string, string, error) {
 		}()
 		return deployment, svcname, nil
 	default:
-		go func() {
-			// Step 4. launch script in pod:
-			execremotescript := fmt.Sprintf("/tmp/%s", scriptfile)
-			res, err := kubectl(true, "exec", hostpod, interpreter, execremotescript)
-			if err != nil {
-				debug(err.Error())
-			}
-			debug("exec result " + res)
-		}()
+		// Step 4. launch script in pod:
+		execremotescript := fmt.Sprintf("/tmp/%s", scriptfile)
+		res, err := kubectl(true, "exec", hostpod, interpreter, execremotescript)
+		if err != nil {
+			debug(err.Error())
+		}
+		debug("exec result " + res)
 		// Step 5. clean up:
-		res, err := kubectl(true, "delete", "pod", hostpod)
+		res, err = kubectl(true, "delete", "pod", hostpod)
 		if err != nil {
 			return hostpod, "", err
 		}
