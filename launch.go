@@ -48,118 +48,27 @@ func verify(file string) (string, error) {
 	return fileloc, nil
 }
 
-func launch(line string) (string, string, error) {
-	bin := strings.Split(line, " ")[0]
-	hostpod := genpodname()
-	var deployment, svcname string
-	// Step 1. find and verify binary locally:
-	binloc, err := verify(bin)
-	if err != nil {
-		return hostpod, "", err
-	}
-	_, binfile := filepath.Split(binloc)
-	// Step 2. launch generic pod:
-	// If line ends in a ' &' we create a background
-	// distributed process via a deployment and a service,
-	// otherwise a simple pod, representing a foreground
-	// distributed process:
-	strategy := "Never"
-	dproctype := DProcTerminating
-	if strings.HasSuffix(line, "&") {
-		strategy = "Always"
-		dproctype = DProcLongRunning
-	}
-	img := currentenv().evt.get("BINARY_IMAGE")
-	go func() {
-		res, lerr := kubectl(true, "run", hostpod,
-			"--image="+img, "--restart="+strategy,
-			"--labels=gen=kubed-sh,bin="+binfile+
-				",env="+currentenv().name+
-				",dproctype="+string(dproctype),
-			"--", "sh", "-c", "sleep "+keepAliveInSec)
-		if lerr != nil {
-			warn("something went wrong launching the distributed process: " + lerr.Error())
-		}
-		info(res)
-	}()
-	time.Sleep(5 * time.Second) // this is a hack
-	// set up service and hostpod, if necessary:
-	if strings.HasSuffix(line, "&") {
-		deployment, err = kubectl(true, "get", "deployment", "--selector=gen=kubed-sh,bin="+binfile, "-o=custom-columns=:metadata.name", "--no-headers")
-		if err != nil {
-			return hostpod, "", err
-		}
-		svcname = binfile[0 : len(binfile)-len(filepath.Ext(binfile))]
-		userdefsvcname := currentenv().evt.get("SERVICE_NAME")
-		if userdefsvcname != "" {
-			svcname = userdefsvcname
-		}
-		port := currentenv().evt.get("SERVICE_PORT")
-		sres, serr := kubectl(true, "expose", "deployment", deployment, "--name="+svcname, "--port="+port, "--target-port="+port)
-		if serr != nil {
-			return hostpod, "", serr
-		}
-		info(sres)
-		hostpod, serr = kubectl(true, "get", "pods", "--selector=gen=kubed-sh,bin="+binfile, "-o=custom-columns=:metadata.name", "--no-headers")
-		if err != nil {
-			return hostpod, "", serr
-		}
-	}
-	// Step 3. copy binary from step 1 into pod and annotate it:
-	dest := fmt.Sprintf("%s:/tmp/", hostpod)
-	_, err = kubectl(true, "cp", binloc, dest)
-	if err != nil {
-		return hostpod, "", err
-	}
-	_, err = kubectl(true, "annotate", "pods", hostpod, "original="+binloc)
-	if err != nil {
-		return hostpod, "", err
-	}
-	info(fmt.Sprintf("Uploaded %s to %s\n", binloc, hostpod))
-	// Step 4. launch binary in pod:
-	switch {
-	case strings.HasSuffix(line, "&"):
-		go func() error {
-			// Step 4. launch script in pod:
-			execremotebin := fmt.Sprintf("/tmp/%s", binfile)
-			res, err := kubectl(true, "exec", hostpod, "--", "sh", "-c", execremotebin)
-			if err != nil {
-				return err
-			}
-			debug("Exec result " + res)
-			return nil
-		}()
-		return deployment, svcname, nil
-	default:
-		// Step 4. launch script in pod:
-		execremotebin := fmt.Sprintf("/tmp/%s", binfile)
-		res, err := kubectl(true, "exec", hostpod, "--", "sh", "-c", execremotebin)
-		if err != nil {
-			return hostpod, "", err
-		}
-		output(res)
-		// Step 5. clean up:
-		_, err = kubectl(true, "delete", "pod", hostpod)
-		if err != nil {
-			return hostpod, "", err
-		}
-		debug("Delete result " + res)
-	}
-	return hostpod, "", nil
-}
-
 func launchenv(line, image, interpreter string) (string, string, error) {
-	// line is something like 'interpreter script.ext args'
-	script := strings.Split(line, " ")[1]
+	var binorscript string
+	launchtype := "script"
+	switch interpreter {
+	case "binary":
+		// line is something like 'binary args'
+		binorscript = strings.Split(line, " ")[0]
+		launchtype = "bin"
+	default:
+		// line is something like 'interpreter script.ext args'
+		binorscript = strings.Split(line, " ")[1]
+	}
 	hostpod := genpodname()
 	deployment := ""
 	svcname := ""
 	// Step 1. find and verify script locally:
-	scriptloc, err := verify(script)
+	binorscriptloc, err := verify(binorscript)
 	if err != nil {
 		return hostpod, "", err
 	}
-	_, scriptfile := filepath.Split(scriptloc)
+	_, binorscriptfile := filepath.Split(binorscriptloc)
 	// Step 2. launch interpreter pod:
 	// If line ends in a ' &' we create a background
 	// distributed process via a deployment and a service,
@@ -174,7 +83,7 @@ func launchenv(line, image, interpreter string) (string, string, error) {
 	go func() {
 		res, lerr := kubectl(true, "run", hostpod,
 			"--image="+image, "--restart="+strategy,
-			"--labels=gen=kubed-sh,script="+scriptfile+
+			"--labels=gen=kubed-sh,"+launchtype+"="+binorscriptfile+
 				",env="+currentenv().name+
 				",dproctype="+string(dproctype),
 			"--", "sh", "-c", "sleep "+keepAliveInSec)
@@ -183,15 +92,14 @@ func launchenv(line, image, interpreter string) (string, string, error) {
 		}
 		info(res)
 	}()
-	// this is a hack. need to do prefilght checks and warmup:
-	time.Sleep(5 * time.Second)
+	time.Sleep(5 * time.Second) // this is a (necessary) hack
 	// set up service and hostpod, if necessary:
 	if strings.HasSuffix(line, "&") {
-		deployment, err = kubectl(true, "get", "deployment", "--selector=gen=kubed-sh,script="+scriptfile, "-o=custom-columns=:metadata.name", "--no-headers")
+		deployment, err = kubectl(true, "get", "deployment", "--selector=gen=kubed-sh,"+launchtype+"="+binorscriptfile, "-o=custom-columns=:metadata.name", "--no-headers")
 		if err != nil {
 			return hostpod, "", err
 		}
-		svcname = scriptfile[0 : len(scriptfile)-len(filepath.Ext(scriptfile))]
+		svcname = binorscriptfile[0 : len(binorscriptfile)-len(filepath.Ext(binorscriptfile))]
 		userdefsvcname := currentenv().evt.get("SERVICE_NAME")
 		if userdefsvcname != "" {
 			svcname = userdefsvcname
@@ -202,27 +110,27 @@ func launchenv(line, image, interpreter string) (string, string, error) {
 			return hostpod, "", serr
 		}
 		info(sres)
-		hostpod, serr = kubectl(true, "get", "pods", "--selector=gen=kubed-sh,script="+scriptfile, "-o=custom-columns=:metadata.name", "--no-headers")
+		hostpod, serr = kubectl(true, "get", "pods", "--selector=gen=kubed-sh,"+launchtype+"="+binorscriptfile, "-o=custom-columns=:metadata.name", "--no-headers")
 		if err != nil {
 			return hostpod, "", serr
 		}
 	}
-	// Step 3. copy script from step 1 into pod and annotate it:
+	// Step 3. copy script or binary from step 1 into pod and annotate it:
 	dest := fmt.Sprintf("%s:/tmp/", hostpod)
-	_, err = kubectl(true, "cp", scriptloc, dest)
+	_, err = kubectl(true, "cp", binorscriptfile, dest)
 	if err != nil {
 		return hostpod, "", err
 	}
-	_, err = kubectl(true, "annotate", "pods", hostpod, "original="+scriptloc, "interpreter="+interpreter)
+	_, err = kubectl(true, "annotate", "pods", hostpod, "original="+binorscriptloc, "interpreter="+interpreter)
 	if err != nil {
 		return hostpod, "", err
 	}
-	info(fmt.Sprintf("uploaded %s to %s\n", scriptloc, hostpod))
+	info(fmt.Sprintf("uploaded %s to %s\n", binorscriptloc, hostpod))
 	switch {
 	case strings.HasSuffix(line, "&"):
 		go func() {
-			// Step 4. launch script in pod:
-			execremotescript := fmt.Sprintf("/tmp/%s", scriptfile)
+			// Step 4. launch script or binary in pod:
+			execremotescript := fmt.Sprintf("/tmp/%s", binorscriptfile)
 			err = kubectlbg("exec", "-i", "-t", hostpod, interpreter, execremotescript)
 			if err != nil {
 				debug(err.Error())
@@ -231,20 +139,34 @@ func launchenv(line, image, interpreter string) (string, string, error) {
 		return deployment, svcname, nil
 	default:
 		// Step 4. launch script in pod:
-		execremotescript := fmt.Sprintf("/tmp/%s", scriptfile)
-		res, err := kubectl(true, "exec", hostpod, interpreter, execremotescript)
-		if err != nil {
-			debug(err.Error())
+		var execres string
+		execremotefile := fmt.Sprintf("/tmp/%s", binorscriptfile)
+		switch interpreter {
+		case "binary":
+			execres, err = kubectl(true, "exec", hostpod, "--", "sh", "-c", execremotefile)
+			if err != nil {
+				return hostpod, "", err
+			}
+		default:
+			execres, err = kubectl(true, "exec", hostpod, interpreter, execremotefile)
+			if err != nil {
+				return hostpod, "", err
+			}
 		}
-		debug("exec result " + res)
+		debug("exec result " + execres)
 		// Step 5. clean up:
-		res, err = kubectl(true, "delete", "pod", hostpod)
+		res, err := kubectl(true, "delete", "pod", hostpod)
 		if err != nil {
 			return hostpod, "", err
 		}
 		debug("delete result " + res)
 	}
 	return hostpod, "", nil
+}
+
+func launchbin(line string) (string, string, error) {
+	img := currentenv().evt.get("BINARY_IMAGE")
+	return launchenv(line, img, "binary")
 }
 
 func launchpy(line string) (string, string, error) {

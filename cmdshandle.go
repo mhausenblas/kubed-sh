@@ -269,7 +269,7 @@ func hlaunch(line string) {
 		dpid = d
 		svcname = s
 	default: // binary
-		d, s, err := launch(line)
+		d, s, err := launchbin(line)
 		if err != nil {
 			launchfail(line, err.Error())
 			return
