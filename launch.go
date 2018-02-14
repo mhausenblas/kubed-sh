@@ -123,7 +123,7 @@ func launchenv(line, image, interpreter string) (string, string, error) {
 	}
 	// Step 3. copy script or binary from step 1 into pod and annotate it:
 	dest := fmt.Sprintf("%s:/tmp/", hostpod)
-	_, err = kubectl(true, "cp", binorscriptfile, dest)
+	_, err = kubectl(true, "cp", binorscriptloc, dest)
 	if err != nil {
 		return hostpod, "", err
 	}

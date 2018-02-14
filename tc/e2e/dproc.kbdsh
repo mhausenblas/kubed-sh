@@ -23,5 +23,5 @@ ps
 # get content:
 curl lrpy:8080
 
-# clean up all the stuff:
+# clean up all the stuff in the environment:
 literally delete deploy,rs,po,svc --selector=gen=kubed-sh,env=test-dproc
