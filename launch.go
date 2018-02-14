@@ -110,9 +110,15 @@ func launchenv(line, image, interpreter string) (string, string, error) {
 			return hostpod, "", serr
 		}
 		info(sres)
-		hostpod, serr = kubectl(true, "get", "pods", "--selector=gen=kubed-sh,"+launchtype+"="+binorscriptfile, "-o=custom-columns=:metadata.name", "--no-headers")
+		candidatepods, serr := kubectl(true, "get", "pods", "--selector=gen=kubed-sh,"+launchtype+"="+binorscriptfile, "-o=custom-columns=:metadata.name", "--no-headers")
 		if err != nil {
 			return hostpod, "", serr
+		}
+		for _, canp := range strings.Split(candidatepods, "\n") {
+			if strings.HasPrefix(canp, deployment) {
+				hostpod = canp
+				break
+			}
 		}
 	}
 	// Step 3. copy script or binary from step 1 into pod and annotate it:
