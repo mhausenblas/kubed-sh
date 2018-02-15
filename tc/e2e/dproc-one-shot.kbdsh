@@ -1,0 +1,15 @@
+#!/usr/bin/env kubed-sh
+
+# visibility:
+debug
+
+# need to create an env since the global one
+# only exists in interactive mode:
+env create dproc-one-shot
+env select dproc-one-shot
+
+# let's create a one-shot dproc based on a binary:
+../binary/binary
+
+# clean up all the stuff in the environment:
+literally delete deploy,rs,po,svc --selector=gen=kubed-sh,env=dproc-one-shot
