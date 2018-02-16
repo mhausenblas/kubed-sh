@@ -83,12 +83,17 @@ func (rw *ReloadWatchdog) update(targetfile string) {
 		"--selector=script="+targetfile, "-o=custom-columns=:metadata.name", "--no-headers")
 	if err != nil {
 		debug(err.Error())
+		return
 	}
 	debug("updating pod " + po)
 	res, err := kubectl(true, "get", "po", po,
 		"-o=custom-columns=:metadata.annotations.original,:metadata.annotations.interpreter", "--no-headers")
 	if err != nil {
 		debug(err.Error())
+		return
+	}
+	if strings.TrimSpace(res) == "" {
+		return
 	}
 	original, interpreter := strings.Split(res, " ")[0], strings.Split(res, " ")[3]
 	original = strings.TrimSpace(original)
