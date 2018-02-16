@@ -1,5 +1,7 @@
 # Test Cases
 
+For end-to-end tests see the [e2e](e2e/) directory.
+
 ## Observe
 
 ```
