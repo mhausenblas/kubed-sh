@@ -34,6 +34,7 @@ func (rw *ReloadWatchdog) checkstatus() {
 	rw.active = false
 	if hr == "true" {
 		rw.active = true
+		debug("hot-reload active")
 	}
 }
 
@@ -53,7 +54,7 @@ func (rw *ReloadWatchdog) run() {
 		warn(err.Error())
 	}
 	<-done
-	debug("RUN DONE")
+	debug("hot-reload run done")
 }
 
 func (rw *ReloadWatchdog) watch() {
