@@ -3,7 +3,7 @@
 ## 0.6 release
 
 - [x] create long-running Python 3 TC and rename existing to 2
-- [ ] add e2e tests using `kubed-sh` scripts
+- [x] add e2e tests using `kubed-sh` scripts
 - [ ] create microservices demo, for example using [this](https://github.com/nathanpeck/nodejs-aws-workshop)
 - [ ] write blog post incl. motivation and new demo recording (microservices demo)
 - [ ] add and update help on `version` and `debug`
