@@ -1,8 +1,16 @@
 # The kubed-sh test suite
 
-## TC: long-running distributed process
+## TC: one-shot dproc (binary)
 
 ```
 $ cd tc/e2e/
-$ ./dproc.kbdsh
+$ ./dproc-one-shot.kbdsh
+```
+
+
+## TC: long-running dproc (Python)
+
+```
+$ cd tc/e2e/
+$ ./dproc-longrunning.kbdsh
 ```
