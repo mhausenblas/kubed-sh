@@ -1,5 +1,7 @@
-FROM ubuntu:16.04
+FROM alpine:3.7
 MAINTAINER Michael Hausenblas, mhausenblas.info
+
+RUN apk add --no-cache curl
 
 USER 1001
 WORKDIR /app
