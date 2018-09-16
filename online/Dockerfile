@@ -12,4 +12,4 @@ RUN mkdir /tmp/ko && curl -s -L -k https://github.com/tsl0922/ttyd/releases/down
     chmod 750 /tmp/ko/kubed-sh
 
 EXPOSE 8080
-ENTRYPOINT [ "sh", "-c", "/tmp/ko/ttyd", "-p", "8080", "/tmp/ko/kubed-sh" ]
+ENTRYPOINT [ "/tmp/ko/ttyd", "-p 8080", "/tmp/ko/kubed-sh" ]
