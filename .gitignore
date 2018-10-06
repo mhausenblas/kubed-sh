@@ -13,3 +13,4 @@
 # Ignore the test case Linux binary:
 /tc/tc
 binary
+.DS_Store
