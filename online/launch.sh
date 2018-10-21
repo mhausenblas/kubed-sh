@@ -9,7 +9,7 @@ NAMESPACE="${1:-default}"
 
 # set permissions 
 kubectl -n $NAMESPACE create sa kubed-sh 
-kubectl -n $NAMESPACE create rolebinding givekdsuperpower \
+kubectl -n $NAMESPACE create clusterrolebinding givekdsuperpower \
         --clusterrole=cluster-admin \
         --serviceaccount=$NAMESPACE:kubed-sh \
         --namespace=$NAMESPACE
