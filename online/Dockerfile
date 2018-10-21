@@ -5,6 +5,8 @@ RUN apk add --no-cache curl
 
 USER 1001
 
+ENV KUBECTL_BINARY=/tmp/ko/kubectl
+
 # install ttyd and kubed-sh
 RUN mkdir /tmp/ko && curl -s -L -k https://github.com/tsl0922/ttyd/releases/download/1.4.2/ttyd_linux.x86_64 -o /tmp/ko/ttyd && \
     chmod 750 /tmp/ko/ttyd && \
@@ -14,4 +16,4 @@ RUN mkdir /tmp/ko && curl -s -L -k https://github.com/tsl0922/ttyd/releases/down
     chmod 750 /tmp/ko/kubectl
 
 EXPOSE 8080
-ENTRYPOINT [ "/tmp/ko/ttyd", "-p 8080", "KUBECTL_BINARY=/tmp/ko/kubectl /tmp/ko/kubed-sh" ]
+ENTRYPOINT [ "/tmp/ko/ttyd", "-p 8080", "/tmp/ko/kubed-sh" ]
