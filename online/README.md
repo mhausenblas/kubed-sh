@@ -3,8 +3,8 @@
 To launch `kubed-sh` containerized, as a Kubernetes deployment, do:
 
 ```
-$ kubectl run kubed-sh --image=quay.io/mhausenblas/kubed-sh:0.5.2
-$ kubectl port-forward deploy/kubed-sh 8888:8080
+$ kubectl create ns kd
+$ ./launch.sh kd
 ```
 
-Now you can access it via `localhost:8888` on you local machine.
+Now you can access `kubed-sh` in your favorite browser at `http://localhost:8888` on you local machine.
