@@ -11,8 +11,7 @@ NAMESPACE="${1:-default}"
 kubectl -n $NAMESPACE create sa kubed-sh 
 kubectl -n $NAMESPACE create clusterrolebinding givekdsuperpower \
         --clusterrole=cluster-admin \
-        --serviceaccount=$NAMESPACE:kubed-sh \
-        --namespace=$NAMESPACE
+        --serviceaccount=$NAMESPACE:kubed-sh
 
 # launch kubed-sh
 kubectl -n $NAMESPACE run kubed-sh \
