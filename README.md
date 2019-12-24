@@ -4,7 +4,7 @@
 [![GitHub issues](https://img.shields.io/github/issues/mhausenblas/kubed-sh.svg)](https://github.com/mhausenblas/kubed-sh/issues)
 [![Go Report Card](https://goreportcard.com/badge/github.com/mhausenblas/kubed-sh)](https://goreportcard.com/report/github.com/mhausenblas/kubed-sh)
 
-Welcome to `kubed-sh`, the Kubernetes distributed shell for the casual cluster user. In a nutshell, `kubed-sh` lets you execute a program in a Kubernetes cluster without having to create a container image or learn new concepts. For example, let's say you have a Node.js script called [test.js](https://github.com/mhausenblas/kubed-sh/blob/master/tc/test.js) and you want to launch it as a containerized app in your Kubernetes cluster, here's what you'd need to do in `kubed-sh`:
+Welcome to `kubed-sh`, the Kubernetes distributed shell for the casual cluster user. In a nutshell, `kubed-sh` lets you execute a program in a Kubernetes cluster without having to create a container image or learn new concepts. For example, let's say you have a Node.js script called [test.js](tc/node/test.js) and you want to launch it as a containerized app in your Kubernetes cluster, here's what you'd need to do in `kubed-sh`:
 
 ```
 [minikube::default]$ node test.js &
