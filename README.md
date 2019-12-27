@@ -35,7 +35,7 @@ See it in action, below or try it out in your browser using this [Katacoda scena
 
 In addition to launching (Linux ELF) binaries directly, the following interpreted environments are currently supported:
 
-- When you enter `node script.js`, a Node.js (default version: 9.4) environment is provided and `script.js` is executed.
+- When you enter `node script.js`, a Node.js (default version: 12) environment is provided and `script.js` is executed.
 - When you enter `python script.py`, a Python (default version: 3.6) environment is provided and the `script.py` is executed.
 - When you enter `ruby script.rb`, a Ruby (default version: 2.5) environment is provided and the `script.rb` is executed.
 
@@ -190,7 +190,7 @@ Note that all three ways shown above are equivalent.
 `kubed-sh` supports environments and within it variables—akin to what your local shell (bash, zsh, fish) does. There are some pre-defined environment variables which influence the creation of the cluster processes you create by either specifying a binary or interpreter and script:
 
 - `BINARY_IMAGE` (default: `alpine:3.7`) … used for executing binaries
-- `NODE_IMAGE` (default: `node:9.4-alpine`) … used for executing Node.js scripts
+- `NODE_IMAGE` (default: `node:12-alpine`) … used for executing Node.js scripts
 - `PYTHON_IMAGE` (default: `python:3.6-alpine3.7`) … used for executing Python scripts
 - `RUBY_IMAGE` (default: `ruby:2.5-alpine3.7`) … used for executing Ruby scripts
 - `SERVICE_PORT` (default: `80`) … used to expose long-running processes within the cluster
