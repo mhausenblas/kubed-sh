@@ -49,7 +49,7 @@ func helpall() {
 To run a program in the Kubernetes cluster, specify the binary
 or call it with one of the following supported interpreters:
 
-- Node.js … node script.js (default version: 9.4)
+- Node.js … node script.js (default version: 12)
 - Python … python script.py (default version: 3.6)
 - Ruby … ruby script.rb (default version: 2.5)
 `)
