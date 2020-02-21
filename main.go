@@ -7,8 +7,8 @@ import (
 	"os/signal"
 	"sync"
 
-	log "github.com/Sirupsen/logrus"
 	"github.com/chzyer/readline"
+	log "github.com/sirupsen/logrus"
 )
 
 const exitcmd = "exit"
