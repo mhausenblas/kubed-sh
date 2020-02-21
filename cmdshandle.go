@@ -53,7 +53,7 @@ func hcurl(line string) {
 	}
 	url := strings.Split(line, " ")[1]
 	res, err := kubectl(false, "run", "-i", "-t", "--rm", "curljump", "--restart=Never",
-		"--image=quay.io/mhausenblas/jump:v0.1", "--", "curl", url)
+		"--image=quay.io/mhausenblas/jump:0.2", "--", "curl", url)
 	if err != nil {
 		warn(fmt.Sprintf("Can't curl %s due to: %s", url, err.Error()))
 		return
