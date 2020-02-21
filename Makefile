@@ -1,15 +1,16 @@
-kubedsh_version := 0.5.1
+release_version:= 0.6
 
-.PHONY: build clean
+export GO111MODULE=on
 
-build :
-  # macOS binaries:
-	GOOS=darwin go build -ldflags "-X main.releaseVersion=$(kubedsh_version)" -o ./kubed-sh-macos .
-	# Linux binaries:
-	GOOS=linux GOARCH=amd64 go build -ldflags "-X main.releaseVersion=$(kubedsh_version)" -o ./kubed-sh-linux .
-	# Windows binaries:
-	# TBD
+.PHONY: bin
+bin:
+	go build -o bin/kubed-sh github.com/mhausenblas/kubed-sh
 
-clean :
-	@rm kubed-sh-macos
-	@rm kubed-sh-linux
+.PHONY: release
+release:
+	curl -sL https://git.io/goreleaser | bash -s -- --rm-dist --config .goreleaser.yml
+
+.PHONY: publish
+publish:
+	git tag ${release_version}
+	git push --tags

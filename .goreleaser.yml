@@ -1,0 +1,23 @@
+project_name: kubed-sh
+release:
+  github:
+    owner: mhausenblas
+    name: kubed-sh
+builds:
+  - id: kubed-sh
+    goos:
+    - linux
+    - darwin
+    goarch:
+    - amd64
+    - arm
+    - arm64
+    env:
+      - CGO_ENABLED=0
+      - GO111MODULE=on
+    main: .
+archives:
+  - id: kubed-sh
+    builds:
+    - kubed-sh
+    name_template: "{{ .ProjectName }}_{{ .Os }}_{{ .Arch }}"

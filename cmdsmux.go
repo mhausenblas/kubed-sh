@@ -90,7 +90,7 @@ func interpretl(line string) bool {
 	case line == exitcmd:
 		return true
 	case line == "version":
-		output(releaseVersion)
+		output(version)
 	case strings.Contains(line, "="):
 		envar := strings.Split(line, "=")[0]
 		value := strings.Split(line, "=")[1]

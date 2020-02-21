@@ -14,13 +14,13 @@ import (
 const exitcmd = "exit"
 
 var (
-	releaseVersion string
-	debugmode      bool
-	noprepull      bool
-	customkubectl  string
-	prevdir        string
-	rl             *readline.Instance
-	completer      = readline.NewPrefixCompleter(
+	version       string
+	debugmode     bool
+	noprepull     bool
+	customkubectl string
+	prevdir       string
+	rl            *readline.Instance
+	completer     = readline.NewPrefixCompleter(
 		readline.PcItem("cat"),
 		readline.PcItem("cd"),
 		readline.PcItem("curl"),
