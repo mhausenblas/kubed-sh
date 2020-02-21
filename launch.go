@@ -74,15 +74,13 @@ func launchenv(line, image, interpreter string) (string, string, error) {
 	// distributed process via a deployment and a service,
 	// otherwise a simple pod, representing a foreground
 	// distributed process:
-	strategy := "Never"
 	dproctype := DProcTerminating
 	if strings.HasSuffix(line, "&") {
-		strategy = "Always"
 		dproctype = DProcLongRunning
 	}
 	go func() {
-		res, lerr := kubectl(true, "run", hostpod,
-			"--image="+image, "--restart="+strategy,
+		res, lerr := kubectl(true, "create", "deployment",
+			hostpod, "--image="+image,
 			"--labels=gen=kubed-sh,"+launchtype+"="+binorscriptfile+
 				",env="+currentenv().name+
 				",dproctype="+string(dproctype),
@@ -92,7 +90,7 @@ func launchenv(line, image, interpreter string) (string, string, error) {
 		}
 		info(res)
 	}()
-	time.Sleep(5 * time.Second) // this is a (necessary) hack
+	time.Sleep(2 * time.Second) // this is a (necessary) hack
 	// set up service and hostpod, if necessary:
 	if strings.HasSuffix(line, "&") {
 		deployment, err = kubectl(true, "get", "deployment", "--selector=gen=kubed-sh,"+launchtype+"="+binorscriptfile, "-o=custom-columns=:metadata.name", "--no-headers")
