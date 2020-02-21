@@ -23,7 +23,7 @@ For example:
 [example.com@kind::demo]
 ```
 
-Above means you're currently in the `example.com` environment, using the `minikube` context with the `default` namespace.
+Above means you're currently in the `example.com` environment, using the `kind` context in the `demo` namespace.
 
 Here are the rules:
 
@@ -34,7 +34,7 @@ Here are the rules:
 
 ### Launching programs
 
-`kubed-sh` follows two simple rules that mimic the behaviour you're used to from a local shell:
+`kubed-sh` follows two simple rules that mimic the behavior you're used to from a local shell:
 
 1. If a launch command via a binary or a script with an interpreted environment (initially: support for Node.js, Python, and Ruby) ends with an `&`, this causes the creation of a deployment and a service (name equals the name of the binary or script); this is good for any long-running app, effectively executing in the background.
 1. If the launch command doesn't end in an `&` then a pod is created; this is good for one-shot batch or interactive apps.
