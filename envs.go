@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"strings"
 	"sync"
 )
 
@@ -154,6 +155,7 @@ func setprompt() {
 		warn("Can't determine namespace")
 		namespace = ""
 	}
+	namespace = strings.TrimSuffix(namespace, "pod \"ns\" deleted")
 	env := currentenv().name
 	debug(env + " " + context + " " + namespace)
 	if rl != nil {
