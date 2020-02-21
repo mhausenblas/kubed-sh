@@ -1,0 +1,39 @@
+site_name: kubed.sh
+site_description: 'A cloud native shell for Kubernetes'
+site_author: 'Michael Hausenblas'
+repo_name: 'mhausenblas/kubed-sh'
+repo_url: 'https://github.com/mhausenblas/kubed-sh'
+copyright: 'Copyright &copy; 2020 Amazon'
+nav:
+    - Home: index.md
+    - Use Cases: usecases.md
+    - Installation: install.md
+    - Usage: usage.md
+    - FAQ: faq.md
+    - Background:
+        - Motivation: motivation.md
+        - Design: design.md
+theme:
+    name: 'material'
+    logo:
+        icon: 'launch'
+    font:
+      text: 'Lato'
+      code: 'PT Mono'
+    palette:
+      primary: 'orange'
+      accent: 'blue'
+    highlightjs: true
+    hljs_languages:
+        - yaml
+        - json
+        - bash
+markdown_extensions:
+    - toc:
+        permalink: true
+    - admonition
+    - codehilite:
+        linenums: true
+    - pymdownx.details
+    - pymdownx.superfences
+
