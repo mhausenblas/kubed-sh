@@ -483,7 +483,7 @@
 </pre></div>
 </td></tr></table>
 
-<p>Above means you're currently in the <code>example.com</code> environment, using the <code>minikube</code> context with the <code>default</code> namespace.</p>
+<p>Above means you're currently in the <code>example.com</code> environment, using the <code>kind</code> context in the <code>demo</code> namespace.</p>
 <p>Here are the rules:</p>
 <ul>
 <li>If no environment is explicitly created, the global environment is used. The prompt then changes to <code>[context::namespace]</code>. This is the default at startup.</li>
@@ -492,7 +492,7 @@
 <li>If the environment name (<code>$ENV</code>) is a FQDN and you launch a long-running (background) process called <code>theapp</code> then the resulting underlying service will be exposed to the outside world at <code>$ENV/theapp</code>.</li>
 </ul>
 <h3 id="launching-programs">Launching programs<a class="headerlink" href="#launching-programs" title="Permanent link">&para;</a></h3>
-<p><code>kubed-sh</code> follows two simple rules that mimic the behaviour you're used to from a local shell:</p>
+<p><code>kubed-sh</code> follows two simple rules that mimic the behavior you're used to from a local shell:</p>
 <ol>
 <li>If a launch command via a binary or a script with an interpreted environment (initially: support for Node.js, Python, and Ruby) ends with an <code>&amp;</code>, this causes the creation of a deployment and a service (name equals the name of the binary or script); this is good for any long-running app, effectively executing in the background.</li>
 <li>If the launch command doesn't end in an <code>&amp;</code> then a pod is created; this is good for one-shot batch or interactive apps.</li>
