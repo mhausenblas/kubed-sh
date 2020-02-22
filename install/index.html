@@ -40,7 +40,7 @@
     
     
       
-        <title>Installation - kubed-sh</title>
+        <title>Install - kubed-sh</title>
       
     
     
@@ -111,7 +111,7 @@
             </span>
             <span class="md-header-nav__topic">
               
-                Installation
+                Install
               
             </span>
           
@@ -232,18 +232,6 @@
       
       
 
-
-  <li class="md-nav__item">
-    <a href="../usecases/" title="Use Cases" class="md-nav__link">
-      Use Cases
-    </a>
-  </li>
-
-    
-      
-      
-      
-
   
 
 
@@ -252,8 +240,8 @@
     <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="__toc">
     
     
-    <a href="./" title="Installation" class="md-nav__link md-nav__link--active">
-      Installation
+    <a href="./" title="Install" class="md-nav__link md-nav__link--active">
+      Install
     </a>
     
   </li>
@@ -265,8 +253,8 @@
 
 
   <li class="md-nav__item">
-    <a href="../usage/" title="Usage" class="md-nav__link">
-      Usage
+    <a href="../use/" title="Use" class="md-nav__link">
+      Use
     </a>
   </li>
 
@@ -290,13 +278,13 @@
 
   <li class="md-nav__item md-nav__item--nested">
     
-      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-6" type="checkbox" id="nav-6">
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-5" type="checkbox" id="nav-5">
     
-    <label class="md-nav__link" for="nav-6">
+    <label class="md-nav__link" for="nav-5">
       Background
     </label>
     <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
-      <label class="md-nav__title" for="nav-6">
+      <label class="md-nav__title" for="nav-5">
         Background
       </label>
       <ul class="md-nav__list" data-md-scrollfix>
@@ -326,6 +314,18 @@
   </li>
 
         
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../usecases/" title="Use Cases" class="md-nav__link">
+      Use Cases
+    </a>
+  </li>
+
+        
       </ul>
     </nav>
   </li>
@@ -346,20 +346,23 @@
                   <a href="https://github.com/mhausenblas/kubed-sh/edit/master/docs/install.md" title="Edit this page" class="md-icon md-content__icon">&#xE3C9;</a>
                 
                 
-                  <h1>Installation</h1>
+                  <h1>Install</h1>
                 
-                <p>To use <code>kubed-sh</code> you must meet two prerequisites:</p>
+                <p>In order to be able to install and use <code>kubed-sh</code> you must meet two prerequisites:</p>
 <ol>
 <li><code>kubectl</code> must be <a href="https://kubernetes.io/docs/tasks/tools/install-kubectl/">installed</a>, tested with client version up to and included <code>1.17</code>.</li>
 <li>Access to a Kubernetes cluster must be configured, tested with up to <code>1.14</code>. </li>
 </ol>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
 <p>To verify your setup, you can use the following two steps:</p>
 <ul>
-<li>If you execute <code>ls ~/.kube/config &gt; /dev/null &amp;&amp; echo $?</code> and you see a <code>0</code> as a result, you're good, and further</li>
-<li>If you execute <code>kubectl config get-contexts | wc -l</code> and see a number greater than <code>0</code>, then that's super dope.</li>
+<li>Execute <code>ls ~/.kube/config &gt; /dev/null &amp;&amp; echo $?</code> and if you see a <code>0</code> as a result, you're good, and further</li>
+<li>Execute <code>kubectl config get-contexts | wc -l</code> and if you see a number greater than <code>0</code>, then that's super dope.</li>
 </ul>
-<p>Now, download the <a href="https://github.com/mhausenblas/kubed-sh/releases/latest">latest binary</a> for Linux and macOS.</p>
-<p>For example, to install <code>kubed-sh</code> from binary on macOS you could do the following:</p>
+</div>
+<p>To install and set up <code>kubed-sh</code>, simply download the <a href="https://github.com/mhausenblas/kubed-sh/releases/latest">latest binary</a> for Linux and macOS.
+For example, to install <code>kubed-sh</code> from binary on macOS you could do the following:</p>
 <table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1
 2
 3
@@ -371,6 +374,8 @@
     rm kubed-sh*
 </pre></div>
 </td></tr></table>
+
+<p>Now you're good to go, learn how to <a href="../use">use</a> <code>kubed-sh</code> …</p>
                 
                   
                 
@@ -391,7 +396,7 @@
     <div class="md-footer-nav">
       <nav class="md-footer-nav__inner md-grid">
         
-          <a href="../usecases/" title="Use Cases" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+          <a href=".." title="Home" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
             <div class="md-flex__cell md-flex__cell--shrink">
               <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
             </div>
@@ -400,19 +405,19 @@
                 <span class="md-footer-nav__direction">
                   Previous
                 </span>
-                Use Cases
+                Home
               </span>
             </div>
           </a>
         
         
-          <a href="../usage/" title="Usage" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
+          <a href="../use/" title="Use" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
             <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
               <span class="md-flex__ellipsis">
                 <span class="md-footer-nav__direction">
                   Next
                 </span>
-                Usage
+                Use
               </span>
             </div>
             <div class="md-flex__cell md-flex__cell--shrink">

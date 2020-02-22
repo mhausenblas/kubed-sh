@@ -234,8 +234,8 @@
 
 
   <li class="md-nav__item">
-    <a href="../usecases/" title="Use Cases" class="md-nav__link">
-      Use Cases
+    <a href="../install/" title="Install" class="md-nav__link">
+      Install
     </a>
   </li>
 
@@ -246,20 +246,8 @@
 
 
   <li class="md-nav__item">
-    <a href="../install/" title="Installation" class="md-nav__link">
-      Installation
-    </a>
-  </li>
-
-    
-      
-      
-      
-
-
-  <li class="md-nav__item">
-    <a href="../usage/" title="Usage" class="md-nav__link">
-      Usage
+    <a href="../use/" title="Use" class="md-nav__link">
+      Use
     </a>
   </li>
 
@@ -290,13 +278,13 @@
 
   <li class="md-nav__item md-nav__item--nested">
     
-      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-6" type="checkbox" id="nav-6">
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-5" type="checkbox" id="nav-5">
     
-    <label class="md-nav__link" for="nav-6">
+    <label class="md-nav__link" for="nav-5">
       Background
     </label>
     <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
-      <label class="md-nav__title" for="nav-6">
+      <label class="md-nav__title" for="nav-5">
         Background
       </label>
       <ul class="md-nav__list" data-md-scrollfix>
@@ -326,6 +314,18 @@
   </li>
 
         
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../usecases/" title="Use Cases" class="md-nav__link">
+      Use Cases
+    </a>
+  </li>
+
+        
       </ul>
     </nav>
   </li>
@@ -349,39 +349,40 @@
                   <h1>FAQ</h1>
                 
                 <div class="admonition question">
-<p class="admonition-title">Question</p>
-<p>For whom is <code>kubed-sh</code>? When to use it?</p>
+<p class="admonition-title">For whom is <code>kubed-sh</code>? When to use it?</p>
 </div>
 <div class="admonition quote">
 <p class="admonition-title">Answer</p>
 <p>I suppose it's mainly useful in a prototyping, development, or testing phase, although for low-level interactions you might find it handy in prod environments as well since it provides an interactive, context-aware version of <code>kubectl</code>. See also <a href="../usecases/">use cases</a>.</p>
 </div>
+<hr />
 <div class="admonition question">
-<p class="admonition-title">Question</p>
-<p>How is <code>kubed-sh</code> pronounced?</p>
+<p class="admonition-title">How is <code>kubed-sh</code> pronounced?</p>
 </div>
 <div class="admonition quote">
 <p class="admonition-title">Answer</p>
 <p>Glad you asked. Well, I pronounce it /ku:bˈdæʃ/ as in 'kube dash' ;)</p>
 </div>
+<hr />
 <div class="admonition question">
-<p class="admonition-title">Question</p>
-<p>Why another Kubernetes shell? There are already some, such as <a href="https://github.com/cloudnativelabs/kube-shell">cloudnativelabs/kube-shell</a>,
-<a href="https://github.com/errordeveloper/kubeplay">errordeveloper/kubeplay</a>, and <a href="https://github.com/c-bata/kube-prompt">c-bata/kube-prompt</a>. Are they not cool or what?</p>
+<p class="admonition-title">Why another Kubernetes shell? </p>
+<p>There are already some, such as <a href="https://github.com/cloudnativelabs/kube-shell">cloudnativelabs/kube-shell</a>,
+<a href="https://github.com/errordeveloper/kubeplay">errordeveloper/kubeplay</a>, and <a href="https://github.com/c-bata/kube-prompt">c-bata/kube-prompt</a>. Why write another Kubernetes shell, are they not cool or what?</p>
 </div>
 <div class="admonition quote">
 <p class="admonition-title">Answer</p>
 <p>True, there is previous art, though these shells more or less aim at making <code>kubectl</code> interactive, exposing the commands such as <code>get</code> or <code>apply</code> to the user.</p>
 <p>In a sense <code>kubed-sh</code> is more like <a href="https://github.com/technosophos/kubeshell">technosophos/kubeshell</a>, trying to provide an environment a typical *nix user is comfortable with. For example, rather than providing a <code>create</code> or <code>apply</code> command to run a program, the user would simply enter the name of the executable, as she would do, for example, in the bash shell. See also the <a href="../motivation/">motivation</a>.</p>
 </div>
+<hr />
 <div class="admonition question">
-<p class="admonition-title">Question</p>
-<p>How does <code>kubed-sh</code> work? </p>
+<p class="admonition-title">How does <code>kubed-sh</code> work? </p>
 </div>
 <div class="admonition quote">
 <p class="admonition-title">Answer</p>
-<p>Good question. Essentially it's really just a glorified <code>kubectl</code> wrapper on steroids. See also the <a href="../design/#architecture">architecture</a> section.</p>
+<p>Essentially it's just a glorified <code>kubectl</code> wrapper on steroids. See also the <a href="../design/#architecture">architecture</a> section.</p>
 </div>
+<hr />
                 
                   
                 
@@ -402,7 +403,7 @@
     <div class="md-footer-nav">
       <nav class="md-footer-nav__inner md-grid">
         
-          <a href="../usage/" title="Usage" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+          <a href="../use/" title="Use" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
             <div class="md-flex__cell md-flex__cell--shrink">
               <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
             </div>
@@ -411,7 +412,7 @@
                 <span class="md-footer-nav__direction">
                   Previous
                 </span>
-                Usage
+                Use
               </span>
             </div>
           </a>

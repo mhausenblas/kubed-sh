@@ -241,8 +241,8 @@
 
 
   <li class="md-nav__item">
-    <a href="usecases/" title="Use Cases" class="md-nav__link">
-      Use Cases
+    <a href="install/" title="Install" class="md-nav__link">
+      Install
     </a>
   </li>
 
@@ -253,20 +253,8 @@
 
 
   <li class="md-nav__item">
-    <a href="install/" title="Installation" class="md-nav__link">
-      Installation
-    </a>
-  </li>
-
-    
-      
-      
-      
-
-
-  <li class="md-nav__item">
-    <a href="usage/" title="Usage" class="md-nav__link">
-      Usage
+    <a href="use/" title="Use" class="md-nav__link">
+      Use
     </a>
   </li>
 
@@ -290,13 +278,13 @@
 
   <li class="md-nav__item md-nav__item--nested">
     
-      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-6" type="checkbox" id="nav-6">
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-5" type="checkbox" id="nav-5">
     
-    <label class="md-nav__link" for="nav-6">
+    <label class="md-nav__link" for="nav-5">
       Background
     </label>
     <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
-      <label class="md-nav__title" for="nav-6">
+      <label class="md-nav__title" for="nav-5">
         Background
       </label>
       <ul class="md-nav__list" data-md-scrollfix>
@@ -326,6 +314,18 @@
   </li>
 
         
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="usecases/" title="Use Cases" class="md-nav__link">
+      Use Cases
+    </a>
+  </li>
+
+        
       </ul>
     </nav>
   </li>
@@ -349,12 +349,9 @@
                   <h1>Home</h1>
                 
                 <p><a href="https://github.com/mhausenblas/kubed-sh/releases/"><img alt="GitHub release" src="https://github.com/mhausenblas/kubed-sh/workflows/release/badge.svg" /></a>
-<a href="https://github.com/mhausenblas/kubed-sh/issues"><img alt="GitHub issues" src="https://img.shields.io/github/issues/mhausenblas/kubed-sh.svg" /></a>
 <a href="https://goreportcard.com/report/github.com/mhausenblas/kubed-sh"><img alt="Go Report Card" src="https://goreportcard.com/badge/github.com/mhausenblas/kubed-sh" /></a></p>
-<p>Welcome to <code>kubed-sh</code>, the Kubernetes distributed shell for the casual cluster user. 
-In a nutshell, <code>kubed-sh</code> lets you execute a program in a Kubernetes cluster 
-without having to create a container image or learn new concepts. 
-For example, let's say you have a Node.js script called <a href="https://raw.githubusercontent.com/mhausenblas/kubed-sh/master/tc/node/test.js">test.js</a> 
+<p>Welcome to <code>kubed-sh</code>, the Kubernetes distributed shell for the casual cluster user. In a nutshell, <code>kubed-sh</code> lets you execute a program in a Kubernetes cluster  without having to create a container image or learn new concepts. </p>
+<p>For example, let's say you have a Node.js script called <a href="https://raw.githubusercontent.com/mhausenblas/kubed-sh/master/tc/node/test.js">test.js</a> 
 and you want to launch it as a containerized app in your Kubernetes cluster, 
 here's what you'd need to do in <code>kubed-sh</code>:</p>
 <table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span>1
@@ -367,7 +364,8 @@ here's what you'd need to do in <code>kubed-sh</code>:</p>
 </pre></div>
 </td></tr></table>
 
-<p>Does this look familiar to what you do in your 'local' shell? That's the point of <code>kubed-sh</code> :)</p>
+<p>Does this look familiar to what you do in your "local" shell? That's the point of <code>kubed-sh</code>: it allows you to use Kubernetes without needing to learn anything new.</p>
+<p>See it in action:</p>
 <table>
 <thead>
 <tr>
@@ -382,15 +380,18 @@ here's what you'd need to do in <code>kubed-sh</code>:</p>
 </tr>
 </tbody>
 </table>
-<p>In addition to launching (Linux ELF) binaries directly, the following interpreted environments are currently supported:</p>
+<p>In addition to launching (Linux ELF) binaries directly, the following interpreted environments are supported:</p>
 <ul>
-<li>When you enter <code>node script.js</code>, a Node.js (default version: 12) environment is provided and <code>script.js</code> is executed.</li>
-<li>When you enter <code>python script.py</code>, a Python (default version: 3.6) environment is provided and the <code>script.py</code> is executed.</li>
-<li>When you enter <code>ruby script.rb</code>, a Ruby (default version: 2.5) environment is provided and the <code>script.rb</code> is executed.</li>
+<li>When you enter <code>node script.js</code>, <code>kubed-sh</code> launches a Node.js (default v12) container, copies the script into it and starts it.</li>
+<li>When you enter <code>python script.py</code>, <code>kubed-sh</code> launches a Python (default v3.6) container, copies the script into it and starts it.</li>
+<li>When you enter <code>ruby script.rb</code>, <code>kubed-sh</code> launches a Ruby (default v2.5) container, copies the script into it and starts it.</li>
 </ul>
-<p>Note that <code>kubed-sh</code> is a proper shell environment. This means you can expect
-features such as auto-complete of built-in commands, 
-history operations (<code>CTRL+R</code>), or clearing the screen (<code>CTRL+L</code>) to work as per usual.</p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>Since <code>kubed-sh</code> is a proper shell environment. This means you can expect
+features such as auto-complete of built-in commands, history operations (<code>CTRL+R</code>), or clearing the screen (<code>CTRL+L</code>) to work as per usual.</p>
+</div>
+<p>Want to give it a try? Go ahead and <a href="install">install</a> it now!</p>
                 
                   
                 
@@ -412,13 +413,13 @@ history operations (<code>CTRL+R</code>), or clearing the screen (<code>CTRL+L</
       <nav class="md-footer-nav__inner md-grid">
         
         
-          <a href="usecases/" title="Use Cases" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
+          <a href="install/" title="Install" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
             <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
               <span class="md-flex__ellipsis">
                 <span class="md-footer-nav__direction">
                   Next
                 </span>
-                Use Cases
+                Install
               </span>
             </div>
             <div class="md-flex__cell md-flex__cell--shrink">
