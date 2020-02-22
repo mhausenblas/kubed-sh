@@ -6,13 +6,13 @@ repo_url: 'https://github.com/mhausenblas/kubed-sh'
 copyright: 'Copyright &copy; 2020 Amazon'
 nav:
     - Home: index.md
-    - Use Cases: usecases.md
-    - Installation: install.md
-    - Usage: usage.md
+    - Install: install.md
+    - Use: use.md
     - FAQ: faq.md
     - Background:
         - Motivation: motivation.md
         - Design: design.md
+        - Use Cases: usecases.md
 theme:
     name: 'material'
     favicon: 'img/favicon.ico'
