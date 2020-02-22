@@ -16,7 +16,7 @@ const exitcmd = "exit"
 var (
 	version       string
 	debugmode     bool
-	noprepull     bool
+	prepull       bool
 	customkubectl string
 	prevdir       string
 	rl            *readline.Instance
@@ -47,8 +47,8 @@ func init() {
 	if env := os.Getenv("KUBEDSH_DEBUG"); env != "" {
 		debugmode = true
 	}
-	if env := os.Getenv("KUBEDSH_NOPREPULL"); env != "" {
-		noprepull = true
+	if env := os.Getenv("KUBEDSH_PREPULL"); env != "" {
+		prepull = true
 	}
 	if env := os.Getenv("KUBECTL_BINARY"); env != "" {
 		customkubectl = env

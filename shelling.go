@@ -115,7 +115,7 @@ func whatversion() (string, string, error) {
 }
 
 func prepullimgs(serverversion string) {
-	if noprepull { // user told us not to pre-pull images
+	if !prepull { // user told us not to pre-pull images
 		return
 	}
 	ppdaemonsets, _ := kubectl(false, "get", "daemonset",
