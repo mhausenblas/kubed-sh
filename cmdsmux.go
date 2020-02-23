@@ -70,6 +70,8 @@ func interpretl(line string) bool {
 		hlocalexec(line)
 	case strings.HasPrefix(line, "ls"):
 		hlocalexec(line)
+	case strings.HasPrefix(line, "ns"):
+		hns(line)
 	case strings.HasPrefix(line, "ps"):
 		hps(line)
 	case strings.HasPrefix(line, "pwd"):

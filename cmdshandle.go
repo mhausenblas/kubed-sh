@@ -19,7 +19,7 @@ func hsleep(line string) {
 	arg := strings.Split(line, " ")[1]
 	d, err := time.ParseDuration(arg)
 	if err != nil {
-		warn("Don't understand the time interval, can't parse it")
+		warn("Can't parse time interval:" + err.Error())
 		return
 	}
 	time.Sleep(d)
@@ -69,7 +69,7 @@ func hlocalexec(line string) {
 	}
 	res, err := shellout(true, cmd, args...)
 	if err != nil {
-		fmt.Printf("Failed to execute %s locally due to: %s", cmd, err)
+		fmt.Printf("Can't execute %s locally: %s", cmd, err)
 	}
 	output(res)
 }
@@ -206,7 +206,7 @@ func hcontexts(line string) {
 	if !strings.ContainsAny(line, " ") {
 		res, err := kubectl(true, "config", "get-contexts")
 		if err != nil {
-			fmt.Printf("\nFailed to list contexts due to:\n%s\n\n", err)
+			warn(fmt.Sprintf("Can't list contexts: %s", err))
 		}
 		output(res)
 		return
@@ -214,7 +214,33 @@ func hcontexts(line string) {
 	targetcontext := strings.Split(line, " ")[1]
 	res, err := kubectl(true, "config", "use-context", targetcontext)
 	if err != nil {
-		fmt.Printf("\nFailed to switch contexts due to:\n%s\n\n", err)
+		warn(fmt.Sprintf("Can't switch context: %s", err))
+		return
+	}
+	output(res)
+	if rl != nil {
+		setprompt()
+	}
+}
+
+func hns(line string) {
+	if !strings.ContainsAny(line, " ") {
+		res, err := kubectl(true, "get", "ns")
+		if err != nil {
+			warn(fmt.Sprintf("Can't list namespaces: %s", err))
+		}
+		output(res)
+		return
+	}
+	currentcx, err := kubectl(false, "config", "current-context")
+	if err != nil {
+		warn("Can't determine current context")
+	}
+	targetns := strings.Split(line, " ")[1]
+	res, err := kubectl(true, "config", "set-context", currentcx,
+		"--namespace="+targetns)
+	if err != nil {
+		warn(fmt.Sprintf("Can't switch namespace: %s", err))
 		return
 	}
 	output(res)
@@ -224,28 +250,27 @@ func hcontexts(line string) {
 }
 
 func launchfail(line, reason string) {
-	fmt.Printf("\nFailed to launch %s in the cluster due to:\n%s\n\n", strconv.Quote(line), reason)
+	fmt.Printf("\nCan't launch %s in the cluster:\n%s\n\n", strconv.Quote(line), reason)
 }
 
 func killfail(line, reason string) {
-	fmt.Printf("\nFailed to kill %s due to:\n%s\n\n", strconv.Quote(line), reason)
+	fmt.Printf("\nCan't kill %s:\n%s\n\n", strconv.Quote(line), reason)
 }
 
 func extractsrc(line string) string {
-	debug("input line: " + line)
 	line = strings.TrimSuffix(line, "&")
 	line = strings.TrimSpace(line)
-	debug("sanitized line: " + line)
+	debug("input line: " + line)
 	// a binary is standalone:
 	if !strings.ContainsAny(line, " ") {
 		_, binfile := filepath.Split(line)
-		debug("binfile extracted: " + binfile)
+		debug("binary extracted: " + binfile)
 		return binfile
 	}
 	// … otherwise it's a script:
 	script := strings.Split(line, " ")[1]
 	_, scriptfile := filepath.Split(script)
-	debug("scriptfile extracted: " + scriptfile)
+	debug("script extracted: " + scriptfile)
 	return scriptfile
 }
 
@@ -304,7 +329,7 @@ func hlaunch(line string) {
 
 func hliterally(line string) {
 	if !strings.ContainsAny(line, " ") {
-		info("Not enough input for a valid kubectl command")
+		info("Can't execute kubectl command, not enough arguments")
 		return
 	}
 	l := strings.Split(line, " ")

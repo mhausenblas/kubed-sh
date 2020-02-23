@@ -36,6 +36,7 @@ var (
 		readline.PcItem("kill"),
 		readline.PcItem("literally"),
 		readline.PcItem("ls"),
+		readline.PcItem("ns"),
 		readline.PcItem("ps", readline.PcItem("all")),
 		readline.PcItem("pwd"),
 		readline.PcItem("sleep"),

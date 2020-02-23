@@ -32,6 +32,8 @@ func helpall() {
 			cmd += " (local):\n\t\t\texecute what follows as a kubectl command\n\t\t\tnote that you can also prefix a line with ` to achieve the same"
 		case cmd == "ls":
 			cmd += " (local):\n\t\t\tlist contents of directory"
+		case cmd == "ns":
+			cmd += " (local):\n\t\t\tlist/select Kubernetes namespaces"
 		case cmd == "ps":
 			cmd += " (cluster):\n\t\t\tlist distributed processes in current context"
 		case cmd == "pwd":
@@ -82,6 +84,8 @@ func husage(line string) {
 		cmd += " $COMMAND\n\nThis is a local command that executes what follows as a kubectl command\n.Note that you can also prefix a line with ` to achieve the same."
 	case cmd == "ls":
 		cmd += " $dir\n\nThis is a local command that lists the content of directory 'dir'."
+	case cmd == "ns":
+		cmd += "\n\nThis is a local command that lists available namespaces in the current context or selects one to use."
 	case cmd == "ps":
 		cmd += " [all]\n\nThis is a cluster command that lists all distributed (long-running) processes in the current context.\nIf used with the optional 'all' argument then all distributed processes across all contexts are shown."
 	case cmd == "pwd":
