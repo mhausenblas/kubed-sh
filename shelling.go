@@ -11,42 +11,6 @@ import (
 	"time"
 )
 
-const (
-	prePullImgDS = `apiVersion: APIVERSION
-kind: DaemonSet
-metadata:
-  name: PREPULLID
-  annotations:
-    source: "https://gist.github.com/itaysk/7bc3e56d69c4d72a549286d98fd557dd"
-  labels:
-    gen: kubed-sh
-    scope: pre-flight
-spec:
-  selector:
-    matchLabels:
-      name: prepull
-  template:
-    metadata:
-      labels:
-        name: prepull
-    spec:
-      initContainers:
-      - name: prepull
-        image: docker
-        command: ["docker", "pull", "IMG"]
-        volumeMounts:
-        - name: docker
-          mountPath: /var/run
-      volumes:
-      - name: docker
-        hostPath:
-          path: /var/run
-      containers:
-      - name: pause
-        image: gcr.io/google_containers/pause
-`
-)
-
 // output prints primary, output messages to shell
 func output(msg string) {
 	fmt.Println(msg)

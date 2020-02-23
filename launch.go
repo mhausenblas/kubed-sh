@@ -9,37 +9,16 @@ import (
 	"time"
 )
 
-const longRunningTemplate = `apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: DROPC_NAME
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: DROPC_NAME
-  template:
-    metadata:
-      labels:
-        app: DROPC_NAME
-    spec:
-      containers:
-        - image: DROPC_IMAGE
-          name: main
-          command:
-            - "sh"
-            - "-c"
-            - "sleep 10000"
-`
-
+// genDPID generates a distributed process ID (DPID)
+// based on a Unix timestamp
 func genDPID() string {
 	base := "kubed-sh"
 	now := time.Now()
 	return fmt.Sprintf("%s-%v", base, now.UnixNano())
 }
 
-
-
+// verify checks if a file exists and returns
+// its absolute filepath
 func verify(file string) (string, error) {
 	fileloc, err := filepath.Abs(file)
 	if err != nil {
@@ -52,10 +31,10 @@ func verify(file string) (string, error) {
 	return fileloc, nil
 }
 
-// launchlrhost launches a long-running host, using a deployment
-func launchlrhost(name, image string) error {
+// launchhost launches a host, using a template
+func launchhost(template, name, image string) error {
 	manifest := "/tmp/" + name + ".yaml"
-	deploy := strings.Replace(longRunningTemplate, "DROPC_NAME", name, -1)
+	deploy := strings.Replace(template, "DPROC_NAME", name, -1)
 	deploy = strings.Replace(deploy, "DROPC_IMAGE", image, -1)
 	err := ioutil.WriteFile(manifest, []byte(deploy), 0644)
 	if err != nil {
@@ -121,11 +100,11 @@ func inject(dproct DProcType, dpid, program, programtype, interpreter, pod strin
 		default:
 			executor = interpreter
 		}
-		execres, err := kubectl(true, "exec", pod, "--", executor, execremotefile)
+		res, err := kubectl(true, "exec", pod, "--", executor, execremotefile)
 		if err != nil {
 			warn(("Can't start launch program: " + err.Error()))
 		}
-		output(execres)
+		debug(res)
 	}()
 	return svcname, err
 }
@@ -148,18 +127,16 @@ func launchenv(line, image, interpreter string) (string, string, error) {
 		return dpid, "", err
 	}
 	_, programfile := filepath.Split(programloc)
-	// Step 2. launch interpreter pod:
-	// If line ends in a ' &' we create a background
-	// distributed process via a deployment and a service,
-	// otherwise a  pod, representing a foreground
-	// distributed process:
+	// Step 2. launch host depending on dproc type.
+	// If line ends in ' &' we create a Kubernetes
+	// deployment and a service, otherwise a pod:
 	dproctype := DProcTerminating
 	if strings.HasSuffix(line, "&") {
 		dproctype = DProcLongRunning
 	}
 	switch dproctype {
 	case DProcLongRunning:
-		err := launchlrhost(dpid, image)
+		err := launchhost(longRunningTemplate, dpid, image)
 		if err != nil {
 			warn("Can't launch long-running distributed process: " + err.Error())
 		}
@@ -172,32 +149,28 @@ func launchenv(line, image, interpreter string) (string, string, error) {
 			warn("Can't label long-running distributed process: " + err.Error())
 		}
 	case DProcTerminating:
-		res, lerr := kubectl(true, "run", dpid,
-			"--image="+image, "--restart=Never")
-		if lerr != nil {
-			warn("Can't launch terminating distributed process: " + lerr.Error())
+		err := launchhost(terminatingTemplate, dpid, image)
+		if err != nil {
+			warn("Can't launch terminating distributed process: " + err.Error())
 		}
-		info(res)
-		_, lerr = kubectl(false, "label", "pod", dpid,
+		_, err = kubectl(false, "label", "pod", dpid,
 			"gen=kubed-sh",
 			programtype+"="+programfile,
 			"env="+currentenv().name,
 			"dproctype="+string(dproctype))
-		if lerr != nil {
-			warn("Can't label terminating distributed process: " + lerr.Error())
+		if err != nil {
+			warn("Can't label terminating distributed process: " + err.Error())
 		}
 	default:
 		warn("Can't launch distributed process, unknown type!")
 	}
-
 	time.Sleep(2 * time.Second) // this is a (necessary) hack
-
+	// Step 3. determine the target pod we use to inject program:
 	var pod string
 	switch dproctype {
 	case DProcLongRunning:
 		candidatepods, err := kubectl(true, "get", "pods",
-			"--selector=app="+dpid,
-			"-o=custom-columns=:metadata.name", "--no-headers")
+			"--selector=app="+dpid, "-o=custom-columns=:metadata.name", "--no-headers")
 		if err != nil {
 			debug(err.Error())
 		}
@@ -210,8 +183,11 @@ func launchenv(line, image, interpreter string) (string, string, error) {
 	case DProcTerminating:
 		pod = dpid
 	}
-	// Step 3. inject program
+	// Step4. inject program
 	svcname, err := inject(dproctype, dpid, program, programtype, interpreter, pod)
+	if err != nil {
+		warn(fmt.Sprintf("Can't upload and start program: %v", err))
+	}
 	return dpid, svcname, err
 }
 
