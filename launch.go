@@ -38,23 +38,7 @@ func genDPID() string {
 	return fmt.Sprintf("%s-%v", base, now.UnixNano())
 }
 
-func extractsrc(line string) string {
-	debug("input line: " + line)
-	line = strings.TrimSuffix(line, "&")
-	line = strings.TrimSpace(line)
-	debug("sanitized line: " + line)
-	// a binary is standalone:
-	if !strings.ContainsAny(line, " ") {
-		_, binfile := filepath.Split(line)
-		debug("binfile extracted: " + binfile)
-		return binfile
-	}
-	// … otherwise it's a script:
-	script := strings.Split(line, " ")[1]
-	_, scriptfile := filepath.Split(script)
-	debug("scriptfile extracted: " + scriptfile)
-	return scriptfile
-}
+
 
 func verify(file string) (string, error) {
 	fileloc, err := filepath.Abs(file)

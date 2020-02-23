@@ -237,6 +237,24 @@ func killfail(line, reason string) {
 	fmt.Printf("\nFailed to kill %s due to:\n%s\n\n", strconv.Quote(line), reason)
 }
 
+func extractsrc(line string) string {
+	debug("input line: " + line)
+	line = strings.TrimSuffix(line, "&")
+	line = strings.TrimSpace(line)
+	debug("sanitized line: " + line)
+	// a binary is standalone:
+	if !strings.ContainsAny(line, " ") {
+		_, binfile := filepath.Split(line)
+		debug("binfile extracted: " + binfile)
+		return binfile
+	}
+	// … otherwise it's a script:
+	script := strings.Split(line, " ")[1]
+	_, scriptfile := filepath.Split(script)
+	debug("scriptfile extracted: " + scriptfile)
+	return scriptfile
+}
+
 func hlaunch(line string) {
 	// If a line doesn't start with one of the
 	// known environments, assume user wants to
