@@ -24,7 +24,7 @@ var (
 		readline.PcItem("cat"),
 		readline.PcItem("cd"),
 		readline.PcItem("curl"),
-		readline.PcItem("contexts"),
+		readline.PcItem("cx"),
 		readline.PcItem("echo"),
 		readline.PcItem("env",
 			readline.PcItem("list"),
@@ -39,7 +39,6 @@ var (
 		readline.PcItem("ps", readline.PcItem("all")),
 		readline.PcItem("pwd"),
 		readline.PcItem("sleep"),
-		readline.PcItem("use"),
 	)
 )
 
@@ -121,13 +120,13 @@ func main() {
 	rwatch.init(currentenv().evt)
 	go rwatch.run()
 	// make jump pod available:
-	go func() {
-		_, err := kubectl(false, "run", "curljump", "--restart=Never",
-			"--image=quay.io/mhausenblas/jump:0.2", "--", "sh", "-c", "sleep 10000")
-		if err != nil {
-			warn(err.Error())
-		}
-	}()
+	// go func() {
+	// 	_, err := kubectl(false, "run", "curljump", "--restart=Never",
+	// 		"--image=quay.io/mhausenblas/jump:0.2", "--", "sh", "-c", "sleep 10000")
+	// 	if err != nil {
+	// 		warn(err.Error())
+	// 	}
+	// }()
 	// necessary hack to make readline ignore a cascaded CTRL+C:
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt)

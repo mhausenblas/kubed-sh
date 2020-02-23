@@ -47,8 +47,8 @@ func interprets(script string) {
 // used both in interactive and scripting mode.
 func interpretl(line string) bool {
 	switch {
-	case strings.HasPrefix(line, "contexts"):
-		hcontexts()
+	case strings.HasPrefix(line, "cx"):
+		hcontexts(line)
 	case strings.HasPrefix(line, "cd"):
 		hcd(line)
 	case strings.HasPrefix(line, "curl"):
@@ -76,8 +76,6 @@ func interpretl(line string) bool {
 		hlocalexec(line)
 	case strings.HasPrefix(line, "sleep"):
 		hsleep(line)
-	case strings.HasPrefix(line, "use"):
-		huse(line)
 	case line == "debug":
 		switch debugmode {
 		case true:

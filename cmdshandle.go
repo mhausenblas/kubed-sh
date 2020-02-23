@@ -202,9 +202,13 @@ func hps(line string) {
 	output(res)
 }
 
-func huse(line string) {
+func hcontexts(line string) {
 	if !strings.ContainsAny(line, " ") {
-		info("Need a target cluster")
+		res, err := kubectl(true, "config", "get-contexts")
+		if err != nil {
+			fmt.Printf("\nFailed to list contexts due to:\n%s\n\n", err)
+		}
+		output(res)
 		return
 	}
 	targetcontext := strings.Split(line, " ")[1]
@@ -217,14 +221,6 @@ func huse(line string) {
 	if rl != nil {
 		setprompt()
 	}
-}
-
-func hcontexts() {
-	res, err := kubectl(true, "config", "get-contexts")
-	if err != nil {
-		fmt.Printf("\nFailed to list contexts due to:\n%s\n\n", err)
-	}
-	output(res)
 }
 
 func launchfail(line, reason string) {
