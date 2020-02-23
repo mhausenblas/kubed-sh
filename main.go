@@ -120,8 +120,6 @@ func main() {
 	rwatch = &ReloadWatchdog{}
 	rwatch.init(currentenv().evt)
 	go rwatch.run()
-	// kick off garbage collection:
-	go gcDProcs()
 	// necessary hack to make readline ignore a cascaded CTRL+C:
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt)
@@ -132,4 +130,5 @@ func main() {
 	}()
 	// kick off main interactive interpreter loop:
 	interpreti(rl)
+	gcDProcs()
 }

@@ -83,9 +83,9 @@ func preflight() error {
 func checkruntime() {
 	switch runtime.GOOS {
 	case "linux":
-		fmt.Printf("Note: As you're running kubed-sh on Linux you can directly launch binaries.\n\n")
+		fmt.Printf("Seems you're running kubed-sh on Linux you can directly launch binaries.\n\n")
 	default:
-		fmt.Printf("Note: It seems you're running kubed-sh in a non-Linux environment (detected: %s),\nso make sure the binaries you launch are Linux binaries in ELF format.\n\n", runtime.GOOS)
+		fmt.Printf("Seems you're running kubed-sh in a non-Linux environment (detected: %s),\nso make sure the binaries you launch are Linux binaries in ELF format.\n\n", runtime.GOOS)
 	}
 }
 
@@ -171,7 +171,7 @@ func prepullimg(serverversion, targetid, targetimg, targetmanifest string) error
 	if err != nil {
 		return err
 	}
-	res, err := kubectl(false, "create", "-f", targetmanifest)
+	res, err := kubectl(false, "apply", "-f", targetmanifest)
 	if err != nil {
 		return err
 	}
@@ -216,7 +216,9 @@ func kubectlbg(cmd string, args ...string) error {
 func shellout(withstderr bool, cmd string, args ...string) (string, error) {
 	result := ""
 	var out bytes.Buffer
-	debug(cmd + " " + strings.Join(args, " "))
+	if !strings.HasPrefix(cmd, "which") {
+		debug(cmd + " " + strings.Join(args, " "))
+	}
 	c := exec.Command(cmd, args...)
 	c.Env = os.Environ()
 	if withstderr {
@@ -232,7 +234,9 @@ func shellout(withstderr bool, cmd string, args ...string) (string, error) {
 }
 
 func shelloutbg(cmd string, args ...string) error {
-	debug(cmd + " " + strings.Join(args, " "))
+	if !strings.HasPrefix(cmd, "which") {
+		debug(cmd + " " + strings.Join(args, " "))
+	}
 	c := exec.Command(cmd, args...)
 	c.Env = os.Environ()
 	err := c.Run()

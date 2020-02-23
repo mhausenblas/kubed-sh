@@ -2,30 +2,37 @@ package main
 
 import (
 	"strings"
-	"time"
-)
-
-var (
-	// how often we check for orphans:
-	gcPause = 30 * time.Second
 )
 
 func gcDProcs() {
-	for {
-		orphandeploys, err := kubectl(false, "get", "deploy",
-			"--selector=dproctype="+string(DProcTerminating), "-o=custom-columns=:metadata.name", "--no-headers")
-		if err != nil {
-			debug(err.Error())
-		}
-		debug(orphandeploys)
-		if orphandeploys != "" {
-			for _, d := range strings.Split(orphandeploys, "\n") {
-				_, err := kubectl(false, "delete", "deploy", d)
-				if err != nil {
-					warn("GC: couldn't reap orphaned deployment " + d)
-				}
+	// reap orphaned deployments:
+	orphandeploys, err := kubectl(false, "get", "deploy",
+		"--selector=gen=kubed-sh", "-o=custom-columns=:metadata.name", "--no-headers")
+	if err != nil {
+		debug(err.Error())
+	}
+	debug(orphandeploys)
+	if orphandeploys != "" {
+		for _, d := range strings.Split(orphandeploys, "\n") {
+			_, err := kubectl(false, "delete", "deploy", d)
+			if err != nil {
+				warn("GC: couldn't reap orphaned deployment " + d)
 			}
 		}
-		time.Sleep(gcPause)
+	}
+	// reap orphaned services:
+	orphandesvcs, err := kubectl(false, "get", "services",
+		"--selector=gen=kubed-sh", "-o=custom-columns=:metadata.name", "--no-headers")
+	if err != nil {
+		debug(err.Error())
+	}
+	debug(orphandesvcs)
+	if orphandesvcs != "" {
+		for _, s := range strings.Split(orphandesvcs, "\n") {
+			_, err := kubectl(false, "delete", "service", s)
+			if err != nil {
+				warn("GC: couldn't reap orphaned service " + s)
+			}
+		}
 	}
 }

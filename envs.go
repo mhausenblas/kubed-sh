@@ -21,7 +21,7 @@ type Environment struct {
 
 const (
 	defaultBinaryImage = "alpine:3.7"
-	defaultNodeImage   = "node:12-alpine"
+	defaultNodeImage   = "node:13.8.0"
 	defaultPythonImage = "python:3.6-alpine3.7"
 	defaultRubyImage   = "ruby:2.5-alpine3.7"
 )

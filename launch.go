@@ -2,17 +2,37 @@ package main
 
 import (
 	"fmt"
+	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
 	"time"
 )
 
-// the time in seconds that the infra process should running
-// this process keeps the pod alive, currently 100,000s (~27h)
-const keepAliveInSec = "100000"
+const longRunningTemplate = `apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: DROPC_NAME
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: DROPC_NAME
+  template:
+    metadata:
+      labels:
+        app: DROPC_NAME
+    spec:
+      containers:
+        - image: DROPC_IMAGE
+          name: main
+          command:
+            - "sh"
+            - "-c"
+            - "sleep 10000"
+`
 
-func gendname() string {
+func genDPID() string {
 	base := "kubed-sh"
 	now := time.Now()
 	return fmt.Sprintf("%s-%v", base, now.UnixNano())
@@ -48,128 +68,164 @@ func verify(file string) (string, error) {
 	return fileloc, nil
 }
 
-func launchenv(line, image, interpreter string) (string, string, error) {
-	var binorscript string
-	launchtype := "script"
+// launchlrhost launches a long-running host, using a deployment
+func launchlrhost(name, image string) error {
+	manifest := "/tmp/" + name + ".yaml"
+	deploy := strings.Replace(longRunningTemplate, "DROPC_NAME", name, -1)
+	deploy = strings.Replace(deploy, "DROPC_IMAGE", image, -1)
+	err := ioutil.WriteFile(manifest, []byte(deploy), 0644)
+	if err != nil {
+		return err
+	}
+	res, err := kubectl(false, "apply", "-f", manifest)
+	if err != nil {
+		return err
+	}
+	debug(res)
+	return nil
+}
+
+// inject uploads the program (binary or script and its dependencies)
+// into a given pod and launches it there; for long-running dprocs
+// it also creates the service so that we can talk to it via HTTP.
+func inject(dproct DProcType, dpid, program, programtype, interpreter, pod string) (string, error) {
+	svcname := "undefined"
+	// upload program into pod and remember it via annotation:
+	src, err := filepath.Abs(program)
+	if err != nil {
+		return svcname, err
+	}
+	dest := fmt.Sprintf("%s:/tmp/", pod)
+	_, err = kubectl(true, "cp", src, dest)
+	if err != nil {
+		return svcname, err
+	}
+	_, err = kubectl(true, "annotate", "pods", pod,
+		"original="+program, "interpreter="+interpreter)
+	if err != nil {
+		return svcname, err
+	}
+	debug(fmt.Sprintf("Uploaded %s to %s and wrote it into annotation\n", program, pod))
+	// handle dproc type specific things:
+	switch dproct {
+	case DProcLongRunning:
+		// create service for deployment:
+		go func() {
+			pb := filepath.Base(program)
+			svcname = pb[0 : len(pb)-len(filepath.Ext(pb))]
+			userdefsvcname := currentenv().evt.get("SERVICE_NAME")
+			if userdefsvcname != "" {
+				svcname = userdefsvcname
+			}
+			port := currentenv().evt.get("SERVICE_PORT")
+			res, err := kubectl(true, "expose", "deployment", dpid,
+				"--name="+svcname, "--port="+port, "--target-port="+port)
+			if err != nil {
+				debug(err.Error())
+			}
+			debug(res)
+		}()
+	case DProcTerminating:
+	default:
+		return svcname, fmt.Errorf("Can't inject program: unknown distributed process type")
+	}
+	// launch program in the given pod:
+	var executor string
+	execremotefile := fmt.Sprintf("/tmp/%s", program)
 	switch interpreter {
 	case "binary":
-		// line is something like 'binary args'
-		binorscript = strings.Split(line, " ")[0]
-		launchtype = "bin"
+		executor = ""
 	default:
-		// line is something like 'interpreter script.ext args'
-		binorscript = strings.Split(line, " ")[1]
+		executor = interpreter
 	}
-	envdname := gendname()
-	deployment := ""
-	svcname := ""
+	execres, err := kubectl(true, "exec", pod, "--", executor, execremotefile)
+	output(execres)
+	return svcname, err
+}
+
+func launchenv(line, image, interpreter string) (string, string, error) {
+	var program, programtype string
+	switch interpreter {
+	case "binary": // line akin to 'binary args'
+		program = strings.Split(line, " ")[0]
+		programtype = "bin"
+	default: // line akin to 'interpreter script.ext args'
+		program = strings.Split(line, " ")[1]
+		programtype = "script"
+	}
+	dpid := genDPID()
+	info(fmt.Sprintf("Launching %s of type [%s] with DPID %s", program, programtype, dpid))
 	// Step 1. find and verify script locally:
-	binorscriptloc, err := verify(binorscript)
+	programloc, err := verify(program)
 	if err != nil {
-		return envdname, "", err
+		return dpid, "", err
 	}
-	_, binorscriptfile := filepath.Split(binorscriptloc)
+	_, programfile := filepath.Split(programloc)
 	// Step 2. launch interpreter pod:
 	// If line ends in a ' &' we create a background
 	// distributed process via a deployment and a service,
-	// otherwise a simple pod, representing a foreground
+	// otherwise a  pod, representing a foreground
 	// distributed process:
 	dproctype := DProcTerminating
 	if strings.HasSuffix(line, "&") {
 		dproctype = DProcLongRunning
 	}
-	go func() {
-		res, lerr := kubectl(true, "create", "deployment",
-			envdname, "--image="+image, "--", "sh", "-c", "sleep "+keepAliveInSec)
+	switch dproctype {
+	case DProcLongRunning:
+		err := launchlrhost(dpid, image)
+		if err != nil {
+			warn("Can't launch long-running distributed process: " + err.Error())
+		}
+		_, err = kubectl(false, "label", "deployment", dpid,
+			"gen=kubed-sh",
+			programtype+"="+programfile,
+			"env="+currentenv().name,
+			"dproctype="+string(dproctype))
+		if err != nil {
+			warn("Can't label long-running distributed process: " + err.Error())
+		}
+	case DProcTerminating:
+		res, lerr := kubectl(true, "run", dpid,
+			"--image="+image, "--restart=Never")
 		if lerr != nil {
-			warn("Can't launch distributed process: " + lerr.Error())
+			warn("Can't launch terminating distributed process: " + lerr.Error())
 		}
 		info(res)
-		_, lerr = kubectl(false, "label", "deployment", envdname,
+		_, lerr = kubectl(false, "label", "pod", dpid,
 			"gen=kubed-sh",
-			launchtype+"="+binorscriptfile,
+			programtype+"="+programfile,
 			"env="+currentenv().name,
 			"dproctype="+string(dproctype))
 		if lerr != nil {
-			warn("Can't label distributed process: " + lerr.Error())
+			warn("Can't label terminating distributed process: " + lerr.Error())
 		}
-	}()
+	default:
+		warn("Can't launch distributed process, unknown type!")
+	}
+
 	time.Sleep(2 * time.Second) // this is a (necessary) hack
-	// set up service and hostpod, if necessary:
-	if strings.HasSuffix(line, "&") {
-		deployment, err = kubectl(true, "get", "deployment", "--selector=gen=kubed-sh,"+launchtype+"="+binorscriptfile, "-o=custom-columns=:metadata.name", "--no-headers")
+
+	var pod string
+	switch dproctype {
+	case DProcLongRunning:
+		candidatepods, err := kubectl(true, "get", "pods",
+			"--selector=app="+dpid,
+			"-o=custom-columns=:metadata.name", "--no-headers")
 		if err != nil {
-			return envdname, "", err
+			debug(err.Error())
 		}
-		svcname = binorscriptfile[0 : len(binorscriptfile)-len(filepath.Ext(binorscriptfile))]
-		userdefsvcname := currentenv().evt.get("SERVICE_NAME")
-		if userdefsvcname != "" {
-			svcname = userdefsvcname
-		}
-		port := currentenv().evt.get("SERVICE_PORT")
-		sres, serr := kubectl(true, "expose", "deployment", deployment, "--name="+svcname, "--port="+port, "--target-port="+port)
-		if serr != nil {
-			return envdname, "", serr
-		}
-		info(sres)
-		candidatepods, serr := kubectl(true, "get", "pods", "--selector=gen=kubed-sh,"+launchtype+"="+binorscriptfile, "-o=custom-columns=:metadata.name", "--no-headers")
-		if err != nil {
-			return envdname, "", serr
-		}
-		for _, canp := range strings.Split(candidatepods, "\n") {
-			if strings.HasPrefix(canp, deployment) {
-				envdname = canp
+		for _, targetpod := range strings.Split(candidatepods, "\n") {
+			if strings.HasPrefix(targetpod, dpid) {
+				pod = targetpod
 				break
 			}
 		}
+	case DProcTerminating:
+		pod = dpid
 	}
-	// Step 3. copy script or binary from step 1 into pod and annotate it:
-	dest := fmt.Sprintf("%s:/tmp/", envdname)
-	_, err = kubectl(true, "cp", binorscriptloc, dest)
-	if err != nil {
-		return envdname, "", err
-	}
-	_, err = kubectl(true, "annotate", "pods", envdname, "original="+binorscriptloc, "interpreter="+interpreter)
-	if err != nil {
-		return envdname, "", err
-	}
-	info(fmt.Sprintf("uploaded %s to %s\n", binorscriptloc, envdname))
-	switch {
-	case strings.HasSuffix(line, "&"):
-		go func() {
-			// Step 4. launch script or binary in pod:
-			execremotescript := fmt.Sprintf("/tmp/%s", binorscriptfile)
-			err = kubectlbg("exec", "-i", "-t", envdname, interpreter, execremotescript)
-			if err != nil {
-				debug(err.Error())
-			}
-		}()
-		return deployment, svcname, nil
-	default:
-		// Step 4. launch script or binary in pod:
-		var execres string
-		execremotefile := fmt.Sprintf("/tmp/%s", binorscriptfile)
-		switch interpreter {
-		case "binary":
-			execres, err = kubectl(true, "exec", envdname, "--", "sh", "-c", execremotefile)
-			if err != nil {
-				return envdname, "", err
-			}
-		default:
-			execres, err = kubectl(true, "exec", envdname, interpreter, execremotefile)
-			if err != nil {
-				return envdname, "", err
-			}
-		}
-		output(execres)
-		// Step 5. clean up:
-		res, err := kubectl(true, "delete", "pod", envdname)
-		if err != nil {
-			return envdname, "", err
-		}
-		debug("delete result " + res)
-	}
-	return envdname, "", nil
+	// Step 3. inject program
+	svcname, err := inject(dproctype, dpid, program, programtype, interpreter, pod)
+	return dpid, svcname, err
 }
 
 func launchbin(line string) (string, string, error) {
