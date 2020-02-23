@@ -52,12 +52,13 @@ func hcurl(line string) {
 		return
 	}
 	url := strings.Split(line, " ")[1]
-	res, err := kubectl(false, "run", "-i", "-t", "--rm", "curljump", "--restart=Never",
-		"--image=quay.io/mhausenblas/jump:0.2", "--", "curl", url)
+	res, err := kubectl(false, "run", "-i", "-t", "--rm", "curljump", "--restart=Never", "--image=quay.io/mhausenblas/jump:0.2",
+		"--", "curl", "-s", url, "2>/dev/null")
 	if err != nil {
 		warn(fmt.Sprintf("Can't curl %s due to: %s", url, err.Error()))
 		return
 	}
+	res = strings.TrimSuffix(res, "pod \"curljump\" deleted")
 	output(res)
 }
 
