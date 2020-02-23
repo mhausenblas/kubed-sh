@@ -27,7 +27,7 @@ func helpall() {
 		case cmd == "help":
 			cmd += " (local):\n\t\t\thelp on built-ins; use help 'command' for more"
 		case cmd == "img":
-			cmd += " (cluster):\n\t\t\tlists all container images"
+			cmd += " (cluster):\n\t\t\tlist all container images"
 		case cmd == "kill":
 			cmd += " (cluster):\n\t\t\tstop a distributed process"
 		case cmd == "literally":

@@ -38,15 +38,17 @@ The built-in commands of `kubed-sh` (see also `help`) are as follows:
 | `cat`      | local | output the content of file to terminal                  |
 | `cd`       | local | change working directory                                |
 | `curl`     | cluster | execute a curl operation in the cluster               |
-| `contexts` | local | list available Kubernetes contexts                      |
+| `cx`       | local | list/select Kubernetes contexts                         |
 | `debug`    | local | toggle debug mode (detailed info printed)               | 
 | `echo`     | local | print a value or environment variable                   |
 | `env`      | local | see below                                               |
 | `exit`     | local | exit `kubed-sh`                                         |
 | `help`     | local | list built-in commands; use help `command` for details  |
+| `img`      | local | list container images                                   |
 | `kill`     | cluster | stop a distributed process                            |
 | `literally`| local | literally execute as a `kubectl` command                |
 | `ls`       | local | list content of directory                               |
+| `ns`       | local | list/select Kubernetes namespaces                       |
 | `ps`       | cluster |  list all distributed processes in current environment|
 | `pwd`      | local | print current working directory                         |
 | `sleep`    | local | sleep for specified time interval (a NOP)               |
