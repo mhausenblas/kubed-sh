@@ -33,14 +33,14 @@ func verify(file string) (string, error) {
 
 // launchhost launches a host, using a template
 func launchhost(template, name, image string) error {
-	manifest := "/tmp/" + name + ".yaml"
-	deploy := strings.Replace(template, "DPROC_NAME", name, -1)
-	deploy = strings.Replace(deploy, "DROPC_IMAGE", image, -1)
-	err := ioutil.WriteFile(manifest, []byte(deploy), 0644)
+	manifestloc := "/tmp/" + name + ".yaml"
+	manifest := strings.Replace(template, "DPROC_NAME", name, -1)
+	manifest = strings.Replace(manifest, "DPROC_IMAGE", image, -1)
+	err := ioutil.WriteFile(manifestloc, []byte(manifest), 0644)
 	if err != nil {
 		return err
 	}
-	res, err := kubectl(false, "apply", "-f", manifest)
+	res, err := kubectl(false, "apply", "-f", manifestloc)
 	if err != nil {
 		return err
 	}
@@ -69,7 +69,15 @@ func inject(dproct DProcType, dpid, program, programtype, interpreter, pod strin
 		return svcname, err
 	}
 	debug(fmt.Sprintf("Uploaded %s to %s and wrote it into annotation\n", program, pod))
-	// handle dproc type specific things:
+	// start program in pod, handle dproc type specific things:
+	var executor string
+	execremotefile := fmt.Sprintf("/tmp/%s", program)
+	switch interpreter {
+	case "binary":
+		executor = ""
+	default:
+		executor = interpreter
+	}
 	switch dproct {
 	case DProcLongRunning:
 		// create service for deployment:
@@ -86,29 +94,28 @@ func inject(dproct DProcType, dpid, program, programtype, interpreter, pod strin
 			return svcname, err
 		}
 		debug(res)
-	case DProcTerminating:
+		// launch program in the given pod, in the background:
+		go func() {
+			res, err := kubectl(true, "exec", pod, "--", executor, execremotefile)
+			if err != nil {
+				warn(("Can't start program: " + err.Error()))
+			}
+			debug(res)
+		}()
+	case DProcTerminating: // launch program in the given pod
+		res, err := kubectl(true, "exec", pod, "--", executor, execremotefile)
+		if err != nil {
+			warn(("Can't start program: " + err.Error()))
+		}
+		output(res)
 	default:
 		return svcname, fmt.Errorf("Can't inject program: unknown distributed process type")
 	}
-	// launch program in the given pod:
-	go func() {
-		var executor string
-		execremotefile := fmt.Sprintf("/tmp/%s", program)
-		switch interpreter {
-		case "binary":
-			executor = ""
-		default:
-			executor = interpreter
-		}
-		res, err := kubectl(true, "exec", pod, "--", executor, execremotefile)
-		if err != nil {
-			warn(("Can't start launch program: " + err.Error()))
-		}
-		debug(res)
-	}()
 	return svcname, err
 }
 
+// launchenv takes a command line input and launches the program
+// depending on the dproc type (we consider lines ending with & as long-running)
 func launchenv(line, image, interpreter string) (string, string, error) {
 	var program, programtype string
 	switch interpreter {

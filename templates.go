@@ -26,7 +26,7 @@ spec:
 	terminatingTemplate = `apiVersion: v1
 kind: Pod
 metadata:
-  name: DROPC_NAME
+  name: DPROC_NAME
   labels:
     app: DPROC_NAME
 spec:
