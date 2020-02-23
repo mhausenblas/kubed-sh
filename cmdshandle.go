@@ -207,6 +207,7 @@ func hcontexts(line string) {
 		res, err := kubectl(true, "config", "get-contexts")
 		if err != nil {
 			warn(fmt.Sprintf("Can't list contexts: %s", err))
+			return
 		}
 		output(res)
 		return
@@ -228,6 +229,7 @@ func hns(line string) {
 		res, err := kubectl(true, "get", "ns")
 		if err != nil {
 			warn(fmt.Sprintf("Can't list namespaces: %s", err))
+			return
 		}
 		output(res)
 		return
@@ -235,6 +237,7 @@ func hns(line string) {
 	currentcx, err := kubectl(false, "config", "current-context")
 	if err != nil {
 		warn("Can't determine current context")
+		return
 	}
 	targetns := strings.Split(line, " ")[1]
 	res, err := kubectl(true, "config", "set-context", currentcx,
@@ -247,6 +250,33 @@ func hns(line string) {
 	if rl != nil {
 		setprompt()
 	}
+}
+
+func himg() {
+	res, err := kubectl(true, "get", "po", "--all-namespaces", "-o", "jsonpath=\"{..image}\"")
+	if err != nil {
+		warn(fmt.Sprintf("Can't list container images: %s", err))
+		return
+	}
+	seenimgs := []string{}
+	for _, img := range strings.Split(strings.Trim(res, "\""), " ") {
+		if !contains(seenimgs, img) {
+			seenimgs = append(seenimgs, img)
+		}
+	}
+	sort.Strings(seenimgs)
+	for _, uimg := range seenimgs {
+		output(uimg)
+	}
+}
+
+func contains(s []string, e string) bool {
+	for _, a := range s {
+		if a == e {
+			return true
+		}
+	}
+	return false
 }
 
 func launchfail(line, reason string) {

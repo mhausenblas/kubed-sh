@@ -59,6 +59,8 @@ func interpretl(line string) bool {
 		henv(line)
 	case strings.HasPrefix(line, "help"):
 		husage(line)
+	case strings.HasPrefix(line, "img"):
+		himg()
 	case strings.HasPrefix(line, "kill"):
 		hkill(line)
 	case strings.HasPrefix(line, "literally") || strings.HasPrefix(line, "`"):

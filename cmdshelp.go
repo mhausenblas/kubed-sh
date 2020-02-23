@@ -26,6 +26,8 @@ func helpall() {
 			cmd += " (local):\n\t\t\tleave shell"
 		case cmd == "help":
 			cmd += " (local):\n\t\t\thelp on built-ins; use help 'command' for more"
+		case cmd == "img":
+			cmd += " (cluster):\n\t\t\tlists all container images"
 		case cmd == "kill":
 			cmd += " (cluster):\n\t\t\tstop a distributed process"
 		case cmd == "literally":
@@ -78,6 +80,8 @@ func husage(line string) {
 		cmd += "\n\nThis is a local command that you can use to leave the kubed-sh shell."
 	case cmd == "help":
 		cmd += "\n\nThis is a local command that lists all built-in commands. You can use 'help command' for more details on a certain command."
+	case cmd == "img":
+		cmd += " \n\nThis is a cluster command that lists all container images that are used in the cluster."
 	case cmd == "kill":
 		cmd += " $DPID\n\nThis is a cluster command that stops the distributed process with the distributed process ID 'DPID'."
 	case cmd == "literally":
