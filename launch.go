@@ -110,36 +110,39 @@ func inject(dproct DProcType, dpid, program, programtype, interpreter, pod strin
 	switch dproct {
 	case DProcLongRunning:
 		// create service for deployment:
-		go func() {
-			pb := filepath.Base(program)
-			svcname = pb[0 : len(pb)-len(filepath.Ext(pb))]
-			userdefsvcname := currentenv().evt.get("SERVICE_NAME")
-			if userdefsvcname != "" {
-				svcname = userdefsvcname
-			}
-			port := currentenv().evt.get("SERVICE_PORT")
-			res, err := kubectl(true, "expose", "deployment", dpid,
-				"--name="+svcname, "--port="+port, "--target-port="+port)
-			if err != nil {
-				debug(err.Error())
-			}
-			debug(res)
-		}()
+		pb := filepath.Base(program)
+		svcname = pb[0 : len(pb)-len(filepath.Ext(pb))]
+		userdefsvcname := currentenv().evt.get("SERVICE_NAME")
+		if userdefsvcname != "" {
+			svcname = userdefsvcname
+		}
+		port := currentenv().evt.get("SERVICE_PORT")
+		res, err := kubectl(true, "expose", "deployment", dpid,
+			"--name="+svcname, "--port="+port, "--target-port="+port)
+		if err != nil {
+			return svcname, err
+		}
+		debug(res)
 	case DProcTerminating:
 	default:
 		return svcname, fmt.Errorf("Can't inject program: unknown distributed process type")
 	}
 	// launch program in the given pod:
-	var executor string
-	execremotefile := fmt.Sprintf("/tmp/%s", program)
-	switch interpreter {
-	case "binary":
-		executor = ""
-	default:
-		executor = interpreter
-	}
-	execres, err := kubectl(true, "exec", pod, "--", executor, execremotefile)
-	output(execres)
+	go func() {
+		var executor string
+		execremotefile := fmt.Sprintf("/tmp/%s", program)
+		switch interpreter {
+		case "binary":
+			executor = ""
+		default:
+			executor = interpreter
+		}
+		execres, err := kubectl(true, "exec", pod, "--", executor, execremotefile)
+		if err != nil {
+			warn(("Can't start launch program: " + err.Error()))
+		}
+		output(execres)
+	}()
 	return svcname, err
 }
 
