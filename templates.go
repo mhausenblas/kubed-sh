@@ -37,7 +37,7 @@ spec:
       command:
         - "sh"
         - "-c"
-        - "sleep 10000"
+        - "sleep 20"
 `
 
 	prePullImgDS = `apiVersion: APIVERSION

@@ -54,12 +54,9 @@ func launchhost(template, name, image string) error {
 func inject(dproct DProcType, dpid, program, programtype, interpreter, pod string) (string, error) {
 	svcname := "undefined"
 	// upload program into pod and remember it via annotation:
-	src, err := filepath.Abs(program)
-	if err != nil {
-		return svcname, err
-	}
-	dest := fmt.Sprintf("%s:/tmp/", pod)
-	_, err = kubectl(true, "cp", src, dest)
+	src := program
+	dest := fmt.Sprintf("%s:/tmp/%s", pod, filepath.Base(program))
+	_, err := kubectl(true, "cp", src, dest)
 	if err != nil {
 		return svcname, err
 	}
@@ -71,7 +68,7 @@ func inject(dproct DProcType, dpid, program, programtype, interpreter, pod strin
 	debug(fmt.Sprintf("Uploaded %s to %s and wrote it into annotation\n", program, pod))
 	// start program in pod, handle dproc type specific things:
 	var executor string
-	execremotefile := fmt.Sprintf("/tmp/%s", program)
+	execremotefile := fmt.Sprintf("/tmp/%s", filepath.Base(program))
 	switch interpreter {
 	case "binary":
 		executor = ""
@@ -127,13 +124,13 @@ func launchenv(line, image, interpreter string) (string, string, error) {
 		programtype = "script"
 	}
 	dpid := genDPID()
-	info(fmt.Sprintf("Launching %s of type [%s] with DPID %s", program, programtype, dpid))
 	// Step 1. find and verify script locally:
 	programloc, err := verify(program)
 	if err != nil {
 		return dpid, "", err
 	}
-	_, programfile := filepath.Split(programloc)
+	info(fmt.Sprintf("Launching %s of type [%s] with DPID %s", program, programtype, dpid))
+	programfile := filepath.Base(programloc)
 	// Step 2. launch host depending on dproc type.
 	// If line ends in ' &' we create a Kubernetes
 	// deployment and a service, otherwise a pod:
