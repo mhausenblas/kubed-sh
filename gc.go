@@ -5,6 +5,21 @@ import (
 )
 
 func gcDProcs() {
+	// reap orphaned pods:
+	orphandpods, err := kubectl(false, "get", "po",
+		"--selector=gen=kubed-sh", "-o=custom-columns=:metadata.name", "--no-headers")
+	if err != nil {
+		debug(err.Error())
+	}
+	debug(orphandpods)
+	if orphandpods != "" {
+		for _, p := range strings.Split(orphandpods, "\n") {
+			_, err := kubectl(false, "delete", "po", p)
+			if err != nil {
+				warn("GC: couldn't reap orphaned pod " + p)
+			}
+		}
+	}
 	// reap orphaned deployments:
 	orphandeploys, err := kubectl(false, "get", "deploy",
 		"--selector=gen=kubed-sh", "-o=custom-columns=:metadata.name", "--no-headers")
