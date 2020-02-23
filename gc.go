@@ -5,6 +5,11 @@ import (
 )
 
 func gcDProcs() {
+	// reap jump pod:
+	_, err := kubectl(false, "delete", "po", "curljump")
+	if err != nil {
+		warn("GC: couldn't reap jump pod")
+	}
 	// reap orphaned pods:
 	orphandpods, err := kubectl(false, "get", "po",
 		"--selector=gen=kubed-sh", "-o=custom-columns=:metadata.name", "--no-headers")
