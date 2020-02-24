@@ -2,9 +2,12 @@ package main
 
 import (
 	"bufio"
+	"fmt"
 	"io/ioutil"
 	"os"
 	"os/signal"
+	"path/filepath"
+	"strings"
 	"sync"
 
 	"github.com/chzyer/readline"
@@ -21,6 +24,7 @@ var (
 	prevdir       string
 	rl            *readline.Instance
 	completer     *readline.PrefixCompleter
+	kplugins      map[string]string
 )
 
 func init() {
@@ -143,16 +147,23 @@ func autocompleter() {
 			readline.PcItem("ls"),
 			readline.PcItem("ns"),
 			readline.PcItem("ps", readline.PcItem("all")),
-			readline.PcItem("plugins", readline.PcItemDynamic(func(name string) []string {
-				// auto-discover kubectl plugins and make them available natively:
-				// res, err := kubectl(false, "plugin", "list")
-				// if err != nil {
-				// 	fmt.Println(err.Error())
-				// }
-				// plugincmds := strings.Split(res, "\n")
-				// output(fmt.Sprintf("%v", plugincmds))
-				// return plugincmds
-				return []string{"a", "b", "c"}
+			readline.PcItem("plugin", readline.PcItemDynamic(func(name string) []string {
+				//auto-discover kubectl plugins and make them available natively:
+				res, err := kubectl(false, "plugin", "list")
+				if err != nil {
+					fmt.Println(err.Error())
+				}
+				plugins := strings.Split(res, "\n")
+				kplugins := make(map[string]string)
+				for _, p := range plugins {
+					cmd := filepath.Base(p)
+					kplugins[strings.TrimPrefix(cmd, "kubectl-")] = p
+				}
+				plugincmds := make([]string, 0, len(kplugins))
+				for k := range kplugins {
+					plugincmds = append(plugincmds, k)
+				}
+				return plugincmds
 			})),
 			readline.PcItem("pwd"),
 			readline.PcItem("sleep"),
@@ -163,5 +174,4 @@ func autocompleter() {
 	}
 	r.Config.AutoComplete = completer
 	rl = r
-	output(completer.Tree(" "))
 }
