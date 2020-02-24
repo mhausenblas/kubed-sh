@@ -39,7 +39,7 @@ The built-in commands of `kubed-sh` (see also `help`) are as follows:
 | `cd`       | local | change working directory                                |
 | `curl`     | cluster | execute a curl operation in the cluster               |
 | `cx`       | local | list/select Kubernetes contexts                         |
-| `debug`    | local | toggle debug mode (detailed info printed)               | 
+| `debug`    | local | toggle debug mode (show kubectl commands, etc.)         | 
 | `echo`     | local | print a value or environment variable                   |
 | `env`      | local | see below                                               |
 | `exit`     | local | exit `kubed-sh`                                         |
@@ -53,7 +53,6 @@ The built-in commands of `kubed-sh` (see also `help`) are as follows:
 | `ps`       | cluster |  list all distributed processes in current environment|
 | `pwd`      | local | print current working directory                         |
 | `sleep`    | local | sleep for specified time interval (a NOP)               |
-| `use `     | cluster | select a Kubernetes context to work with              |
 | `version ` | local | print `kubed-sh` version                                |
 
 !!! tip
