@@ -20,28 +20,7 @@ var (
 	customkubectl string
 	prevdir       string
 	rl            *readline.Instance
-	completer     = readline.NewPrefixCompleter(
-		readline.PcItem("cat"),
-		readline.PcItem("cd"),
-		readline.PcItem("curl"),
-		readline.PcItem("cx"),
-		readline.PcItem("echo"),
-		readline.PcItem("env",
-			readline.PcItem("list"),
-			readline.PcItem("create"),
-			readline.PcItem("select"),
-			readline.PcItem("delete")),
-		readline.PcItem(exitcmd),
-		readline.PcItem("help"),
-		readline.PcItem("img"),
-		readline.PcItem("kill"),
-		readline.PcItem("literally"),
-		readline.PcItem("ls"),
-		readline.PcItem("ns"),
-		readline.PcItem("ps", readline.PcItem("all")),
-		readline.PcItem("pwd"),
-		readline.PcItem("sleep"),
-	)
+	completer     *readline.PrefixCompleter
 )
 
 func init() {
@@ -98,14 +77,8 @@ func main() {
 	if err != nil {
 		warn("Encountered issues during startup: " + err.Error())
 	}
-	rl, err = readline.NewEx(&readline.Config{
-		AutoComplete:    completer,
-		HistoryFile:     "/tmp/readline.tmp",
-		InterruptPrompt: "^C",
-	})
-	if err != nil {
-		warn("Encountered issues during startup: " + err.Error())
-	}
+	// set up auto-completion:
+	autocompleter()
 	defer func() {
 		_ = rl.Close()
 	}()
@@ -122,7 +95,7 @@ func main() {
 	rwatch.init(currentenv().evt)
 	go rwatch.run()
 	// make jump pod available:
-	go jpod()
+	// go jpod()
 	// necessary hack to make readline ignore a cascaded CTRL+C:
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt)
@@ -143,4 +116,52 @@ func jpod() {
 	if err != nil {
 		warn(err.Error())
 	}
+}
+
+func autocompleter() {
+	r, err := readline.NewEx(&readline.Config{
+		HistoryFile:     "/tmp/readline.tmp",
+		InterruptPrompt: "^C",
+	})
+	completer =
+		readline.NewPrefixCompleter(
+			readline.PcItem("cat"),
+			readline.PcItem("cd"),
+			readline.PcItem("curl"),
+			readline.PcItem("cx"),
+			readline.PcItem("echo"),
+			readline.PcItem("env",
+				readline.PcItem("list"),
+				readline.PcItem("create"),
+				readline.PcItem("select"),
+				readline.PcItem("delete")),
+			readline.PcItem(exitcmd),
+			readline.PcItem("help"),
+			readline.PcItem("img"),
+			readline.PcItem("kill"),
+			readline.PcItem("literally"),
+			readline.PcItem("ls"),
+			readline.PcItem("ns"),
+			readline.PcItem("ps", readline.PcItem("all")),
+			readline.PcItem("plugins", readline.PcItemDynamic(func(name string) []string {
+				// auto-discover kubectl plugins and make them available natively:
+				// res, err := kubectl(false, "plugin", "list")
+				// if err != nil {
+				// 	fmt.Println(err.Error())
+				// }
+				// plugincmds := strings.Split(res, "\n")
+				// output(fmt.Sprintf("%v", plugincmds))
+				// return plugincmds
+				return []string{"a", "b", "c"}
+			})),
+			readline.PcItem("pwd"),
+			readline.PcItem("sleep"),
+		)
+
+	if err != nil {
+		warn("Encountered issues during startup: " + err.Error())
+	}
+	r.Config.AutoComplete = completer
+	rl = r
+	output(completer.Tree(" "))
 }

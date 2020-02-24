@@ -47,9 +47,9 @@ func preflight() error {
 func checkruntime() {
 	switch runtime.GOOS {
 	case "linux":
-		fmt.Printf("Seems you're running kubed-sh on Linux you can directly launch binaries.\n\n")
+		info(fmt.Sprintf("Seems you're running kubed-sh on Linux. This means you can directly launch binaries."))
 	default:
-		fmt.Printf("Seems you're running kubed-sh in a non-Linux environment (detected: %s),\nso make sure the binaries you launch are Linux binaries in ELF format.\n\n", runtime.GOOS)
+		info(fmt.Sprintf("Seems you're running kubed-sh on %s,\nso make sure that the binaries you launch are Linux binaries in ELF format.", runtime.GOOS))
 	}
 }
 
