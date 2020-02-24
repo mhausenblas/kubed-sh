@@ -61,7 +61,7 @@ See `test.rb`, one-shot.
 Scenario: https://www.katacoda.com/mhausenblas/scenarios/10
 
 ```
-curl -s -L https://github.com/mhausenblas/kubed-sh/releases/download/0.4/kubed-sh-linux -o kubed-sh
+curl -s -L https://github.com/mhausenblas/kubed-sh/releases/latest/download/kubed-sh-linux -o kubed-sh
 chmod +x kubed-sh && sudo mv kubed-sh /usr/local/bin
 kubectl config set-context katacoda --cluster=kubernetes --user=kubernetes-admin && kubectl config use-context katacoda
 ```

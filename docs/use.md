@@ -127,7 +127,7 @@ Imagine you have a script file called `test.kbdsh` with the following content:
 
 ```
 #!/usr/bin/env kubed-sh
-use user@somecluster.eu-west-1.eksctl.io
+cx user@somecluster.eu-west-1.eksctl.io
 # This line is a comment that will be ignored
 node ../thescript.js &
 ps
