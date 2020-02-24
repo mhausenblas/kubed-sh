@@ -36,6 +36,8 @@ func helpall() {
 			cmd += " (local):\n\t\t\tlist contents of directory"
 		case cmd == "ns":
 			cmd += " (local):\n\t\t\tlist/select Kubernetes namespaces"
+		case cmd == "plugin":
+			cmd += " (local):\n\t\t\tlists/executes kubectl plugins"
 		case cmd == "ps":
 			cmd += " (cluster):\n\t\t\tlist distributed processes in current context"
 		case cmd == "pwd":
@@ -53,8 +55,7 @@ or call it with one of the following supported interpreters:
 
 - Node.js … node script.js (default version: 12)
 - Python … python script.py (default version: 3.6)
-- Ruby … ruby script.rb (default version: 2.5)
-`)
+- Ruby … ruby script.rb (default version: 2.5)`)
 }
 
 func husage(line string) {
@@ -90,6 +91,8 @@ func husage(line string) {
 		cmd += " $dir\n\nThis is a local command that lists the content of directory 'dir'."
 	case cmd == "ns":
 		cmd += "\n\nThis is a local command that lists available namespaces in the current context or selects one to use."
+	case cmd == "plugin":
+		cmd += "\n\nThis is a local command that lists auto-discovered kubectl plugins and on selection executes one."
 	case cmd == "ps":
 		cmd += " [all]\n\nThis is a cluster command that lists all distributed (long-running) processes in the current context.\nIf used with the optional 'all' argument then all distributed processes across all contexts are shown."
 	case cmd == "pwd":

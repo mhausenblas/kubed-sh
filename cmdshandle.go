@@ -382,3 +382,17 @@ func hecho(line string) {
 	}
 	fmt.Println(echo)
 }
+
+func hplugins(line string) {
+	cmd := line
+	args := []string{}
+	if strings.ContainsAny(line, " ") {
+		cmd = strings.Split(line, " ")[1]
+		args = strings.Split(line, " ")[2:]
+	}
+	res, err := kubectl(true, cmd, args...)
+	if err != nil {
+		fmt.Printf("Can't execute %s locally: %s", cmd, err)
+	}
+	output(res)
+}

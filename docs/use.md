@@ -49,6 +49,7 @@ The built-in commands of `kubed-sh` (see also `help`) are as follows:
 | `literally`| local | literally execute as a `kubectl` command                |
 | `ls`       | local | list content of directory                               |
 | `ns`       | local | list/select Kubernetes namespaces                       |
+| `plugin`   | local | list/execute kubectl plugin                             |
 | `ps`       | cluster |  list all distributed processes in current environment|
 | `pwd`      | local | print current working directory                         |
 | `sleep`    | local | sleep for specified time interval (a NOP)               |

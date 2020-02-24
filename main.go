@@ -99,7 +99,7 @@ func main() {
 	rwatch.init(currentenv().evt)
 	go rwatch.run()
 	// make jump pod available:
-	// go jpod()
+	go jpod()
 	// necessary hack to make readline ignore a cascaded CTRL+C:
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt)
