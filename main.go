@@ -167,6 +167,7 @@ func autocompleter() {
 			})),
 			readline.PcItem("pwd"),
 			readline.PcItem("sleep"),
+			readline.PcItem("version"),
 		)
 
 	if err != nil {

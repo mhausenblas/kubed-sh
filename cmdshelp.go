@@ -44,6 +44,8 @@ func helpall() {
 			cmd += " (local):\n\t\t\tprint current working directory"
 		case cmd == "sleep":
 			cmd += " (local):\n\t\t\tsleep for specified time interval (NOP)"
+		case cmd == "version":
+			cmd += " (local):\n\t\t\tprint kubed-sh version)"
 		default:
 			cmd += "\t\tto be done"
 		}
