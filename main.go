@@ -122,13 +122,7 @@ func main() {
 	rwatch.init(currentenv().evt)
 	go rwatch.run()
 	// make jump pod available:
-	go func() {
-		_, err := kubectl(false, "run", "curljump", "--restart=Never",
-			"--image=quay.io/mhausenblas/jump:0.2", "--", "sh", "-c", "sleep 10000")
-		if err != nil {
-			warn(err.Error())
-		}
-	}()
+	go jpod()
 	// necessary hack to make readline ignore a cascaded CTRL+C:
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt)
@@ -139,5 +133,14 @@ func main() {
 	}()
 	// kick off main interactive interpreter loop:
 	interpreti(rl)
-	gcDProcs()
+	// perform garbage collection on exit:
+	doGC()
+}
+
+func jpod() {
+	_, err := kubectl(false, "run", "curljump", "--restart=Never",
+		"--image=quay.io/mhausenblas/jump:0.2", "--", "sh", "-c", "sleep 10000")
+	if err != nil {
+		warn(err.Error())
+	}
 }

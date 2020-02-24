@@ -4,7 +4,7 @@ import (
 	"strings"
 )
 
-func gcDProcs() {
+func doGC() {
 	// reap jump pod:
 	_, err := kubectl(false, "delete", "po", "curljump")
 	if err != nil {
