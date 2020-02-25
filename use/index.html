@@ -670,6 +670,11 @@ them in the parent shell (such as bash) to influence the runtime behavior of
 </thead>
 <tbody>
 <tr>
+<td align="right"><code>KUBEDSH_GC</code></td>
+<td>-</td>
+<td>define garbage collection strategy</td>
+</tr>
+<tr>
 <td align="right"><code>KUBEDSH_DEBUG</code></td>
 <td><code>false</code></td>
 <td>print detailed debug messages</td>
@@ -696,6 +701,15 @@ them in the parent shell (such as bash) to influence the runtime behavior of
   EKS on Fargate or OpenShift Online, where nodes as such are not visible
   or accessible.</p>
 </div>
+<p>For garbage collection, valid values for <code>KUBEDSH_GC</code> are:</p>
+<ul>
+<li><code>JUMP_POD</code> … on exit, delete the jump pod</li>
+<li><code>ALL_PODS</code> … on exit, delete all pods stemming from terminating dprocs</li>
+<li><code>ALL_DEPLOYS</code> …  on exit, delete all deployments and pods stemming from long-running dprocs</li>
+<li><code>ALL_SVCS</code> … on exit, delete all services stemming from long-running dprocs</li>
+</ul>
+<p>You can also combine the values, for example: <code>KUBEDSH_GC=JUMP_POD,ALL_DEPLOYS</code> 
+would delete the jump pod and all deployments and pods from long-running dprocs.</p>
 <h2 id="modes">Modes<a class="headerlink" href="#modes" title="Permanent link">&para;</a></h2>
 <p>You can use <code>kubed-sh</code> either interactively or in script mode. In script mode, 
 you provide <code>kubed-sh</code> a script file to interpret or make it executable—for 
@@ -707,7 +721,7 @@ The following example illustrates using <code>kubed-sh</code> in script mode.</p
 3
 4
 5</pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span class="err">#!</span><span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">env</span><span class="w"> </span><span class="n">kubed</span><span class="o">-</span><span class="n">sh</span><span class="w"></span>
-<span class="k">use</span><span class="w"> </span><span class="k">user</span><span class="nv">@somecluster</span><span class="p">.</span><span class="n">eu</span><span class="o">-</span><span class="n">west</span><span class="o">-</span><span class="mf">1.</span><span class="n">eksctl</span><span class="p">.</span><span class="n">io</span><span class="w"></span>
+<span class="n">cx</span><span class="w"> </span><span class="k">user</span><span class="nv">@somecluster</span><span class="p">.</span><span class="n">eu</span><span class="o">-</span><span class="n">west</span><span class="o">-</span><span class="mf">1.</span><span class="n">eksctl</span><span class="p">.</span><span class="n">io</span><span class="w"></span>
 <span class="err">#</span><span class="w"> </span><span class="n">This</span><span class="w"> </span><span class="n">line</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">comment</span><span class="w"> </span><span class="n">that</span><span class="w"> </span><span class="n">will</span><span class="w"> </span><span class="n">be</span><span class="w"> </span><span class="n">ignored</span><span class="w"></span>
 <span class="n">node</span><span class="w"> </span><span class="p">..</span><span class="o">/</span><span class="n">thescript</span><span class="p">.</span><span class="n">js</span><span class="w"> </span><span class="o">&amp;</span><span class="w"></span>
 <span class="n">ps</span><span class="w"></span>
