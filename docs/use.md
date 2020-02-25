@@ -102,6 +102,7 @@ them in the parent shell (such as bash) to influence the runtime behavior of
 
 | environment variable| default | set to … |
 | -------------------:| ------- | ------- |
+| `KUBEDSH_GC`        | -       | define garbage collection strategy | 
 | `KUBEDSH_DEBUG`     | `false` | print detailed debug messages |
 | `KUBEDSH_PREPULL` | `false` | pre-pull images via `DaemonSet` |
 | `KUBECTL_BINARY`    | use `which kubectl` | use this binary for API server communication |
@@ -115,6 +116,15 @@ them in the parent shell (such as bash) to influence the runtime behavior of
       EKS on Fargate or OpenShift Online, where nodes as such are not visible
       or accessible.
 
+For garbage collection, valid values for `KUBEDSH_GC` are:
+
+- `JUMP_POD` … on exit, delete the jump pod
+- `ALL_PODS` … on exit, delete all pods stemming from terminating dprocs
+- `ALL_DEPLOYS` …  on exit, delete all deployments and pods stemming from long-running dprocs
+- `ALL_SVCS` … on exit, delete all services stemming from long-running dprocs
+
+You can also combine the values, for example: `KUBEDSH_GC=JUMP_POD,ALL_DEPLOYS` 
+would delete the jump pod and all deployments and pods from long-running dprocs.
 
 ## Modes
 
