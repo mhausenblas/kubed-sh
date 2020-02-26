@@ -487,7 +487,7 @@
 <p>Here are the rules:</p>
 <ul>
 <li>If no environment is explicitly created, the global environment is used. The prompt then changes to <code>[context::namespace]</code>. This is the default at startup.</li>
-<li>The context can be changed by issuing the built-in <code>use</code> command.</li>
+<li>The context can be changed by issuing the built-in <code>cx</code> command.</li>
 <li>The environment can be changed by issuing the built in <code>env</code> command.</li>
 <li>If the environment name (<code>$ENV</code>) is a FQDN and you launch a long-running (background) process called <code>theapp</code> then the resulting underlying service will be exposed to the outside world at <code>$ENV/theapp</code>.</li>
 </ul>
@@ -497,7 +497,8 @@
 <li>If a launch command via a binary or a script with an interpreted environment (initially: support for Node.js, Python, and Ruby) ends with an <code>&amp;</code>, this causes the creation of a deployment and a service (name equals the name of the binary or script); this is good for any long-running app, effectively executing in the background.</li>
 <li>If the launch command doesn't end in an <code>&amp;</code> then a pod is created; this is good for one-shot batch or interactive apps.</li>
 </ol>
-<p>Further, <code>kubed-sh</code> supports environment variables to define and overwrite behavior such as the images used, exposed service port, runtime features like hot-reload, etc.</p>
+<p>Further, <code>kubed-sh</code> supports <a href="../use/#environment-variables">environment variables</a> to define and overwrite behavior such as the container
+images used, exposed service port, runtime features like hot-reload, etc.</p>
 <h2 id="architecture">Architecture<a class="headerlink" href="#architecture" title="Permanent link">&para;</a></h2>
 <p>The system architecture of <code>kubed-sh</code> looks as follows:</p>
 <p><img alt="kubed-sh system architecture" src="../img/kubed-sh-arch.png" /></p>
