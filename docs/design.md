@@ -28,7 +28,7 @@ Above means you're currently in the `example.com` environment, using the `kind` 
 Here are the rules:
 
 - If no environment is explicitly created, the global environment is used. The prompt then changes to `[context::namespace]`. This is the default at startup.
-- The context can be changed by issuing the built-in `use` command.
+- The context can be changed by issuing the built-in `cx` command.
 - The environment can be changed by issuing the built in `env` command.
 - If the environment name (`$ENV`) is a FQDN and you launch a long-running (background) process called `theapp` then the resulting underlying service will be exposed to the outside world at `$ENV/theapp`.
 
@@ -39,7 +39,8 @@ Here are the rules:
 1. If a launch command via a binary or a script with an interpreted environment (initially: support for Node.js, Python, and Ruby) ends with an `&`, this causes the creation of a deployment and a service (name equals the name of the binary or script); this is good for any long-running app, effectively executing in the background.
 1. If the launch command doesn't end in an `&` then a pod is created; this is good for one-shot batch or interactive apps.
 
- Further, `kubed-sh` supports environment variables to define and overwrite behavior such as the images used, exposed service port, runtime features like hot-reload, etc.
+ Further, `kubed-sh` supports [environment variables](../use/#environment-variables) to define and overwrite behavior such as the container
+images used, exposed service port, runtime features like hot-reload, etc.
 
 
 ## Architecture
