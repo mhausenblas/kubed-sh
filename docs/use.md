@@ -98,7 +98,7 @@ which influence the creation of the distributed processes:
 
 Let's see some of the commands and env vars in action.
 
-For example, let's say you want to launch a [simple app server in Python](https://github.com/mhausenblas/kubed-sh/blob/master/tc/python/testlr_3.py).
+For example, let's say you want to launch a [simple app server in Python](https://github.com/mhausenblas/kubed-sh/blob/master/tc/python/testlr-3.py).
 This app server uses port `8080` and `kubed-sh` by default exposes port `80`.
 So, in order to launch it and being able to connect it, we have to tell `kubed-sh` to use the right port: `SERVICE_PORT` to the rescue:
 
