@@ -84,6 +84,12 @@ func inject(dproct DProcType, dpid, program, programtype, interpreter, pod strin
 		if userdefsvcname != "" {
 			svcname = userdefsvcname
 		}
+		// make sure the service name is confirming to the
+		// https://tools.ietf.org/html/rfc1035 spec, that is, only
+		// lower-case alphanumerics and `-` are allowed:
+		svcname = strings.ToLower(svcname)
+		svcname = strings.ReplaceAll(svcname, "_", "-")
+		svcname = strings.ReplaceAll(svcname, " ", "-")
 		port := currentenv().evt.get("SERVICE_PORT")
 		res, err := kubectl(true, "expose", "deployment", dpid,
 			"--name="+svcname, "--port="+port, "--target-port="+port)
