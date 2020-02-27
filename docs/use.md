@@ -94,11 +94,105 @@ which influence the creation of the distributed processes:
       valid for the runtime of `kubed-sh`. That is, when you quit `kubed-sh` all
       pre-defined environment variables are reset to their default values.
 
+## Examples
+
+Let's see some of the commands and env vars in action.
+
+For example, let's say you want to launch a [simple app server in Python](https://github.com/mhausenblas/kubed-sh/blob/master/tc/python/testlr_3.py).
+This app server uses port `8080` and `kubed-sh` by default exposes port `80`.
+So, in order to launch it and being able to connect it, we have to tell `kubed-sh` to use the right port: `SERVICE_PORT` to the rescue:
+
+```
+[user@example.eu-west-1.eksctl.io::demo]$ SERVICE_PORT=8080
+[user@example.eu-west-1.eksctl.io::demo]$ python tc/python/testlr-3.py &
+[user@example.eu-west-1.eksctl.io::demo]$ ps
+DPID                          SOURCE       URL
+kubed-sh-1582802881222866000  testlr-3.py  testlr-3
+[user@example.eu-west-1.eksctl.io::demo]$ curl testlr-3:8080
+Hello from Python 3
+[user@example.eu-west-1.eksctl.io::demo]$ kill kubed-sh-1582802881222866000
+[user@example.eu-west-1.eksctl.io::demo]$ ps
+DPID                          SOURCE       URL
+
+[user@example.eu-west-1.eksctl.io::demo]$ 
+```
+
+Now let's go one step further and launch the same app server with a custom
+image and URL. By default, `kubed-sh` would use `python:3.6-alpine3.7`
+to launch a Python script, and the URL you see in `ps` would be derived from 
+the script name (use the `env` command to list the current settings). Let's overwrite both:
+
+```
+[user@example.eu-west-1.eksctl.io::demo]$ PYTHON_IMAGE=python:3.6-alpine3.10
+[user@example.eu-west-1.eksctl.io::demo]$ SERVICE_NAME=myappserver
+[user@example.eu-west-1.eksctl.io::demo]$ python tc/python/testlr-3.py &
+[user@example.eu-west-1.eksctl.io::demo]$ ps
+DPID                          SOURCE       URL
+kubed-sh-1582803384687189000  testlr-3.py  myappserver
+[user@example.eu-west-1.eksctl.io::demo]$ curl myappserver:8080
+Hello from Python 3
+```
+
+Sometimes, you want to understand what's going on under the hood, be it for
+learning Kubernetes or simply troubleshooting. Use the `debug` and `literally` command:
+
+```
+[user@example.eu-west-1.eksctl.io::demo]$ debug
+DEBUG mode is now on.
+[user@example.eu-west-1.eksctl.io::demo]$ ps
+/usr/local/bin/kubectl config current-context
+in context user@example.eu-west-1.eksctl.io::demo
+DPID                          SOURCE       URL
+kubed-sh-1582803384687189000  testlr-3.py  myappserver
+[user@example.eu-west-1.eksctl.io::demo]$ `get po,svc,deploy
+/usr/local/bin/kubectl get po,svc,deploy
+NAME                                                READY   STATUS      RESTARTS   AGE
+pod/curljump                                        1/1     Running     0          169m
+pod/kubed-sh-1582803384687189000-5d59f6bd99-kqz2c   1/1     Running     0          2m52s
+
+NAME                  TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)    AGE
+service/myappserver   ClusterIP   10.100.96.119   <none>        8080/TCP   2m49s
+
+NAME                                                 READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.extensions/kubed-sh-1582803384687189000   1/1     1            1           2m52s
+```
+
+!!! note
+    Above, we didn't use `literally` directly (the long form of the command) but
+    we did use \` which is its short form. Faster to type ;)
+
+One more: on start-up `kubed-sh` auto-discovers any available `kubectl` 
+[plugins](https://kubernetes.io/docs/tasks/extend-kubectl/kubectl-plugins/) and 
+makes them available via the `plugin` command. This command on its own will 
+list the discovered plugins and you can select one via autocompletion (TAB key):
+
+```
+[user@example.eu-west-1.eksctl.io::demo]$ plugin
+view_utilization  bindrole          kboom             access_matrix     fleet             krew              kubesec_scan      rbac_view
+[user@example.eu-west-1.eksctl.io::demo$ plugin fleet
+CLUSTER                                               VERSION            NODES NAMESPACES PROVIDER API
+scs.eu-west-1.eksctl.io                               v1.14.9-eks-c0eccc 3/3   10         AWS      https://123456789012345678901234567890AA.sk1.eu-west-1.eks.amazonaws.com
+mngbase.us-west-2.eksctl.io                           v1.14.9-eks-c0eccc 2/2   6          AWS      https://123456789012345678901234567890AB.gr7.us-west-2.eks.amazonaws.com
+```
+
+!!! tip
+    In above example, I executed the [fleet](https://github.com/kubectl-plus/kcf) 
+    plugin, listing cluster infos. You can find more [krew](https://krew.dev) 
+    plugins via the [krew index](https://github.com/kubernetes-sigs/krew-index/blob/master/plugins.md).
+
+
+With these basic usage examples covered, let's have a look at some more advanced
+configuration options.
+
 ## Run-time configuration
 
-`kubed-sh` understands the following environment variables. You have to define
-them in the parent shell (such as bash) to influence the runtime behavior of 
-`kubed-sh`:
+To influence the runtime behavior of `kubed-sh` you can use environment variables.
+
+!!! note
+      You can to define the environment variable in the parent shell (such as bash),
+      that is, the shell you're launching `kubed-sh` itself from.
+
+The currently supported `kubed-sh` environment variables are:
 
 | environment variable| default | set to … |
 | -------------------:| ------- | ------- |
@@ -107,23 +201,29 @@ them in the parent shell (such as bash) to influence the runtime behavior of
 | `KUBEDSH_PREPULL` | `false` | pre-pull images via `DaemonSet` |
 | `KUBECTL_BINARY`    | use `which kubectl` | use this binary for API server communication |
 
-!!! tip
-      If you want to speed up the time-to-first-launch, set 
-      `KUBEDSH_PREPULL=true` and `kubed-sh` will create a `DaemonSet`, causing
-      all supported languages to be ready for use. Given the nature of a `DaemonSet`
-      this is available in all Kubernetes environments that explicitly allow
-      for node access. For example, you can not use this feature in 
-      EKS on Fargate or OpenShift Online, where nodes as such are not visible
-      or accessible.
+### Speed up time-to-first-launch
 
-For garbage collection, valid values for `KUBEDSH_GC` are:
+If you want to speed up the time-to-first-launch, set `KUBEDSH_PREPULL=true` 
+and `kubed-sh` will create a `DaemonSet` that pre-pulls the container images of
+all supported languages to be ready for use. 
+
+!!! warning
+      Given the nature of a `DaemonSet`, you can use this is in all Kubernetes
+      environments that explicitly allow for node access. For example, you can
+      not use this feature in EKS on Fargate or OpenShift Online, where nodes 
+      as such are not visible or accessible.
+
+### Garbage collection
+
+To influence the way `kubed-sh` performs garbage collection on exit use 
+the following values for `KUBEDSH_GC`:
 
 - `JUMP_POD` … on exit, delete the jump pod
 - `ALL_PODS` … on exit, delete all pods stemming from terminating dprocs
 - `ALL_DEPLOYS` …  on exit, delete all deployments and pods stemming from long-running dprocs
 - `ALL_SVCS` … on exit, delete all services stemming from long-running dprocs
 
-You can also combine the values, for example: `KUBEDSH_GC=JUMP_POD,ALL_DEPLOYS` 
+You can also combine the values, for example, setting `KUBEDSH_GC=JUMP_POD,ALL_DEPLOYS` 
 would delete the jump pod and all deployments and pods from long-running dprocs.
 
 ## Modes
@@ -138,10 +238,14 @@ Imagine you have a script file called `test.kbdsh` with the following content:
 ```
 #!/usr/bin/env kubed-sh
 cx user@somecluster.eu-west-1.eksctl.io
+ns demo
 # This line is a comment that will be ignored
 node ../thescript.js &
 ps
 ```
+
+Above script would launch `thescript.js` in the `user@somecluster.eu-west-1.eksctl.io`
+cluster, in the `demo` namespace and print out the status via `ps`.
 
 Then, you can make it executable and execute it like so:
 
