@@ -26,6 +26,7 @@ type DProc struct {
 	KubeContext string
 	Src         string
 	ServiceName string
+	ServicePort string
 	Env         string
 }
 
@@ -82,12 +83,16 @@ func (dt *DProcTable) BuildDPT() error {
 			}
 		}
 		debug("env:" + env + " id: " + id + " source: " + src)
-		svcname, err := kubectl(true, "get", "services", "--selector=gen=kubed-sh,"+strings.Replace(src, ":", "=", -1),
-			"-o=custom-columns=:metadata.name", "--no-headers")
+		svcnameport, err := kubectl(true, "get", "services", "--selector=gen=kubed-sh,"+strings.Replace(src, ":", "=", -1),
+			"-o=jsonpath=\"{.metadata.name},{.spec.ports[0].port}\"", "--no-headers")
 		if err != nil {
 			return fmt.Errorf("Failed to gather distributed processes due to:\n%s", err)
 		}
-		dt.addDProc(newDProc(id, DProcLongRunning, kubecontext, src, svcname, env))
+		// svcnameport now looks something like "testlr-3,8080"
+		svcnameport = strings.Trim(svcnameport, "\"")
+		svcname, svcport := strings.Split(svcnameport, ",")[0],
+			strings.Split(svcnameport, ",")[0]
+		dt.addDProc(newDProc(id, DProcLongRunning, kubecontext, src, svcname, svcport, env))
 	}
 	return nil
 }
@@ -103,9 +108,9 @@ func (dt *DProcTable) DumpDPT(kubecontext string) string {
 		for _, dproc := range dt.lt {
 			switch dproc.Env {
 			case globalEnv:
-				fmt.Fprintln(tw, fmt.Sprintf("%s\t%s\t%s\t%s\t%s\t", dproc.ID, "global", dproc.KubeContext, strings.Split(dproc.Src, ":")[1], dproc.ServiceName))
+				fmt.Fprintln(tw, fmt.Sprintf("%s\t%s\t%s\t%s\t%s\t", dproc.ID, "global", dproc.KubeContext, strings.Split(dproc.Src, ":")[1], dproc.ServiceName+":"+dproc.ServicePort))
 			default:
-				fmt.Fprintln(tw, fmt.Sprintf("%s\t%s\t%s\t%s\t%s\t", dproc.ID, dproc.Env, dproc.KubeContext, strings.Split(dproc.Src, ":")[1], dproc.ServiceName))
+				fmt.Fprintln(tw, fmt.Sprintf("%s\t%s\t%s\t%s\t%s\t", dproc.ID, dproc.Env, dproc.KubeContext, strings.Split(dproc.Src, ":")[1], dproc.ServiceName+":"+dproc.ServicePort))
 			}
 
 		}
@@ -113,7 +118,7 @@ func (dt *DProcTable) DumpDPT(kubecontext string) string {
 		fmt.Fprintln(tw, "DPID\tSOURCE\tURL")
 		for _, dproc := range dt.lt {
 			if dproc.KubeContext == kubecontext && dproc.Env == currentenv().name {
-				fmt.Fprintln(tw, fmt.Sprintf("%s\t%s\t%s\t", dproc.ID, strings.Split(dproc.Src, ":")[1], dproc.ServiceName))
+				fmt.Fprintln(tw, fmt.Sprintf("%s\t%s\t%s\t", dproc.ID, strings.Split(dproc.Src, ":")[1], dproc.ServiceName+":"+dproc.ServicePort))
 			}
 		}
 	}
@@ -123,13 +128,15 @@ func (dt *DProcTable) DumpDPT(kubecontext string) string {
 }
 
 // newDProc creates a distributed process entry.
-func newDProc(dpid string, dptype DProcType, context, source, svcname, env string) DProc {
+func newDProc(dpid string, dptype DProcType,
+	context, source, svcname, svcport, env string) DProc {
 	return DProc{
 		ID:          dpid,
 		Type:        dptype,
 		KubeContext: context,
 		Src:         source,
 		ServiceName: svcname,
+		ServicePort: svcport,
 		Env:         env,
 	}
 }

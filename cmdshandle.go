@@ -353,7 +353,7 @@ func hlaunch(line string) {
 			launchfail(line, err.Error())
 			return
 		}
-		dpt.addDProc(newDProc(dpid, DProcLongRunning, kubecontext, src, svcname, currentenv().name))
+		dpt.addDProc(newDProc(dpid, DProcLongRunning, kubecontext, src, svcname, currentenv().evt.get("SERVICE_PORT"), currentenv().name))
 	}
 }
 
