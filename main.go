@@ -115,10 +115,14 @@ func main() {
 }
 
 func jpod() {
-	_, err := kubectl(false, "run", "curljump", "--restart=Never",
+	res, err := kubectl(false, "get", "po", "curljump")
+	if strings.Contains(res, "NotFound") {
+		return
+	}
+	_, err = kubectl(false, "run", "curljump", "--restart=Never",
 		"--image=quay.io/mhausenblas/jump:0.2", "--", "sh", "-c", "sleep 10000")
 	if err != nil {
-		warn(err.Error())
+		debug(err.Error())
 	}
 }
 
