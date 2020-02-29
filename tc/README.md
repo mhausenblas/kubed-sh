@@ -58,7 +58,7 @@ See `test.rb`, one-shot.
 
 ## Katacoda
 
-In the [kubed-sh 101](https://www.katacoda.com/mhausenblas/scenarios/10) scenario, do the following:
+In the [kubed-sh 101](https://www.katacoda.com/mhausenblas/scenarios/kubed-sh_101) scenario, do the following:
 
 ```
 curl -L https://github.com/mhausenblas/kubed-sh/releases/latest/download/kubed-sh_linux_amd64.tar.gz \

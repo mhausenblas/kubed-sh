@@ -16,7 +16,7 @@ kubed-sh-1517679562543558000  test.js     test
 
 Does this look familiar to what you do in your "local" shell? That's the point of `kubed-sh`: it allows you to use Kubernetes without needing to learn anything new.
 
-See it in action:
+[Try it out](https://www.katacoda.com/mhausenblas/scenarios/kubed-sh_101) for free in your browser and/or see it in action:
 
 | [![Introducing kubed-sh](img/introducing-kubed-sh.png)](https://www.youtube.com/watch?v=gqi1-XLiq-o) | [![kubed-sh hot-reload feature demo](img/hotreload.png)](https://www.useloom.com/share/441a97fd48ae46da8d786194f93968f6) |
 |:--------------------------------:|:------------------------------------------:|
