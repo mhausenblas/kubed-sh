@@ -61,8 +61,12 @@ See `test.rb`, one-shot.
 In the [kubed-sh 101](https://www.katacoda.com/mhausenblas/scenarios/10) scenario, do the following:
 
 ```
-curl -s -L https://github.com/mhausenblas/kubed-sh/releases/latest/download/kubed-sh-linux -o kubed-sh
-chmod +x kubed-sh && sudo mv kubed-sh /usr/local/bin
+curl -L https://github.com/mhausenblas/kubed-sh/releases/latest/download/kubed-sh_linux_amd64.tar.gz \
+    -o kubed-sh.tar.gz && \
+    tar xvzf kubed-sh.tar.gz kubed-sh && \
+    mv kubed-sh /usr/local/bin && \
+    rm kubed-sh*
+
 kubectl config set-context katacoda --cluster=kubernetes --user=kubernetes-admin && kubectl config use-context katacoda
 ```
 
