@@ -1,0 +1,18 @@
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+
+metadata:
+  name: kubed-sh
+  region: eu-west-1
+
+iam:
+  withOIDC: true
+
+fargateProfiles:
+  - name: defaultfp
+    selectors:
+      - namespace: serverless
+
+cloudWatch:
+  clusterLogging:
+    enableTypes: ["*"]
