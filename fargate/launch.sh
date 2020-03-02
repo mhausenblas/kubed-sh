@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 
-set -e
+set -o errexit
+set -o errtrace
+set -o nounset
+set -o pipefail
 
 if ! command -v jq >/dev/null 2>&1; then
     echo "Please install jq before continuing"
@@ -12,13 +15,35 @@ if ! command -v eksctl >/dev/null 2>&1; then
     exit 1
 fi
 
-echo "Provisioning EKS cluster using Fargate"
+TARGET_REGION=${1:-eu-west-1} 
 
-# set region
+echo "Provisioning EKS on Fargate cluster in $TARGET_REGION"
 
-# eksctl create cluster -f fg-cluster-spec.yaml
+tmpdir=$(mktemp -d)
+cat <<EOF >> ${tmpdir}/fg-cluster-spec.yaml
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+
+metadata:
+  name: kubed-sh
+  region: $TARGET_REGION
+
+iam:
+  withOIDC: true
+
+fargateProfiles:
+  - name: defaultfp
+    selectors:
+      - namespace: serverless
+
+cloudWatch:
+  clusterLogging:
+    enableTypes: ["*"]
+EOF
+eksctl create cluster -f ${tmpdir}/fg-cluster-spec.yaml
 
 # check if cluster if available
+# eksctl get cluster kubed-sh -o json | jq -r '.[0].Status'
 
 # kubectl create namespace serverless
 
