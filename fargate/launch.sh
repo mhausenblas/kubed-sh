@@ -19,6 +19,7 @@ TARGET_REGION=${1:-eu-west-1}
 
 echo "Provisioning EKS on Fargate cluster in $TARGET_REGION"
 
+# create EKS on Fargate cluster:
 tmpdir=$(mktemp -d)
 cat <<EOF >> ${tmpdir}/fg-cluster-spec.yaml
 apiVersion: eksctl.io/v1alpha5
@@ -43,8 +44,16 @@ EOF
 eksctl create cluster -f ${tmpdir}/fg-cluster-spec.yaml
 
 # check if cluster if available
-# eksctl get cluster kubed-sh -o json | jq -r '.[0].Status'
+cluster_status="UNKNOWN"
+until [ "$cluster_status" == "ACTIVE" ]
+do 
+    cluster_status=$(eksctl get cluster kubed-sh --region $TARGET_REGION -o json | jq -r '.[0].Status')
+    sleep 3
+done
 
-# kubectl create namespace serverless
-
-# kubed-sh
+# create the serverless namespace for Fargate pods, make it the active NS
+# and launch kubed-sh with these setting:
+echo "EKS on Fargate cluster is ready, let's configure and launch kubed-sh"
+kubectl create namespace serverless
+kubectl config set-context $(kubectl config current-context) --namespace=serverless
+kubed-sh
